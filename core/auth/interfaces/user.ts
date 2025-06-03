@@ -18,3 +18,15 @@ export interface Pais {
   nombre: string;
   isActive: boolean;
 }
+
+export type UserUpdateData = {
+  email: string;
+  name: string;
+  identificacion: string;
+  direccion: string;
+  telefono: string;
+  rol: string;
+  pais: string;
+  isActive: boolean;
+  isAuthorized: boolean;
+};

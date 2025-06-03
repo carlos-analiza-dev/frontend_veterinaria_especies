@@ -11,6 +11,7 @@ interface ThemedPickerProps {
   onValueChange: (value: string) => void;
   placeholder?: string;
   error?: string;
+  enabled?: boolean;
 }
 
 const ThemedPicker = ({
@@ -20,6 +21,7 @@ const ThemedPicker = ({
   onValueChange,
   placeholder = "Seleccione una opción",
   error,
+  enabled = true,
 }: ThemedPickerProps) => {
   const [isActive, setIsActive] = useState(false);
   const primaryColor = useThemeColor({}, "primary");
@@ -33,6 +35,7 @@ const ThemedPicker = ({
         style={{
           ...styles.border,
           borderColor: error ? errorColor : isActive ? primaryColor : "#ccc",
+          opacity: enabled ? 1 : 0.6,
         }}
       >
         {icon && (
@@ -46,14 +49,15 @@ const ThemedPicker = ({
 
         <Picker
           selectedValue={selectedValue}
-          onValueChange={onValueChange}
-          onFocus={() => setIsActive(true)}
+          onValueChange={enabled ? onValueChange : undefined}
+          onFocus={() => enabled && setIsActive(true)}
           onBlur={() => setIsActive(false)}
           style={{
             flex: 1,
             color: selectedValue ? textColor : placeholderColor,
           }}
           dropdownIconColor={textColor}
+          enabled={enabled}
         >
           <Picker.Item label={placeholder} value="" />
           {items.map((item) => (

@@ -12,6 +12,13 @@ const CustomDrawerContent = ({ navigation, logout }: Props) => {
       <View style={styles.header}>
         <Text style={styles.title}>Menú Administrador</Text>
       </View>
+      <TouchableOpacity
+        style={styles.drawerItem}
+        onPress={() => navigation.navigate("dashboard")}
+      >
+        <MyIcon name="bar-chart-outline" size={24} color="black" />
+        <Text style={styles.itemText}>Dashboard</Text>
+      </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.drawerItem}
@@ -19,6 +26,14 @@ const CustomDrawerContent = ({ navigation, logout }: Props) => {
       >
         <MyIcon name="people-outline" size={24} color="black" />
         <Text style={styles.itemText}>Usuarios</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.drawerItem}
+        onPress={() => navigation.navigate("paises-page")}
+      >
+        <MyIcon name="globe-outline" size={24} color="black" />
+        <Text style={styles.itemText}>Paises</Text>
       </TouchableOpacity>
 
       <TouchableOpacity

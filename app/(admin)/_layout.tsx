@@ -11,7 +11,11 @@ import CustomDrawerContent from "./components/CustomDrawerContent";
 import SettingsScreen from "./settings";
 
 import GoBack from "@/presentation/components/GoBack";
+import CrearPaisPage from "./crea-pais";
 import CrearUsuarioScreen from "./crear-usuario";
+import DashboardAdminPage from "./dashboard";
+import PaisDetailsPage from "./paise-dateails";
+import PaisesPage from "./paises-page";
 import UsersDetailsScreen from "./user-details";
 import UsersScreenAdmin from "./users";
 
@@ -26,7 +30,7 @@ export default function AdminLayout() {
 
   const UsersStack = createStackNavigator<UsersStackParamList>();
 
-  const UsersStackScreen = () => {
+  const AdminStackScreen = () => {
     return (
       <UsersStack.Navigator screenOptions={{ headerShown: false }}>
         <UsersStack.Screen
@@ -63,6 +67,43 @@ export default function AdminLayout() {
     );
   };
 
+  const AdminStackScreenPaises = () => {
+    return (
+      <UsersStack.Navigator screenOptions={{ headerShown: false }}>
+        <UsersStack.Screen
+          name="PaisesPage"
+          component={PaisesPage}
+          options={{
+            headerShown: true,
+            headerTitle: "Admin Paises",
+            headerRight: () => <LogoutIconButton />,
+            headerLeft: () => <DrawerToggleButton tintColor="black" />,
+          }}
+        />
+        <UsersStack.Screen
+          name="PaisDetails"
+          component={PaisDetailsPage}
+          options={{
+            headerShown: true,
+            headerTitle: "Detalles Pais",
+            headerRight: () => <LogoutIconButton />,
+            headerLeft: () => <GoBack />,
+          }}
+        />
+        <UsersStack.Screen
+          name="CrearPais"
+          component={CrearPaisPage}
+          options={{
+            headerShown: true,
+            headerTitle: "Crear Pais",
+            headerRight: () => <LogoutIconButton />,
+            headerLeft: () => <GoBack />,
+          }}
+        />
+      </UsersStack.Navigator>
+    );
+  };
+
   return (
     <Drawer.Navigator
       drawerContent={(props) => (
@@ -70,7 +111,18 @@ export default function AdminLayout() {
       )}
       screenOptions={{ headerShown: false }}
     >
-      <Drawer.Screen name="users" component={UsersStackScreen} />
+      <Drawer.Screen
+        name="dashboard"
+        component={DashboardAdminPage}
+        options={{
+          headerShown: true,
+          headerTitle: "Admin Dashboard",
+          headerRight: () => <LogoutIconButton />,
+          headerLeft: () => <DrawerToggleButton tintColor="black" />,
+        }}
+      />
+      <Drawer.Screen name="users" component={AdminStackScreen} />
+      <Drawer.Screen name="paises-page" component={AdminStackScreenPaises} />
       <Drawer.Screen
         name="settings"
         component={SettingsScreen}
