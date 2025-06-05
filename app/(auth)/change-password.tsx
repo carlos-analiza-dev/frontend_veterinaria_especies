@@ -43,14 +43,22 @@ const ChangePasswordPage = () => {
 
       setForm({ email: "", nuevaContrasena: "", confirmPassword: "" });
     },
-    onError: (error: any) => {
+    onError: (error) => {
       if (isAxiosError(error)) {
-        Alert.alert(
-          "Error",
-          error.response?.data
-            ? error.response?.data.message
-            : "Ocurrió un error al cambiar la contraseña"
-        );
+        const messages = error.response?.data?.message;
+
+        if (Array.isArray(messages)) {
+          Alert.alert("Errores de validación", messages.join("\n"));
+        } else if (typeof messages === "string") {
+          Alert.alert("Error", messages);
+        } else {
+          Alert.alert(
+            "Error",
+            "Hubo un error al momento de actualizar la contraseña. Inténtalo de nuevo."
+          );
+        }
+      } else {
+        Alert.alert("Error", "Error inesperado, contacte con el administrador");
       }
     },
   });

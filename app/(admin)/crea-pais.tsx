@@ -1,6 +1,7 @@
 import { CrearPaises } from "@/core/paises/accions/crear-pais";
 import { CreatePais } from "@/core/paises/interfaces/crear-pais.interface";
 import ThemedButton from "@/presentation/theme/components/ThemedButton";
+import ThemedPicker from "@/presentation/theme/components/ThemedPicker";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import ThemedTextInput from "@/presentation/theme/components/ThemedTextInput";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
@@ -13,7 +14,9 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
+  Switch,
   useWindowDimensions,
+  View,
 } from "react-native";
 import Toast from "react-native-toast-message";
 
@@ -26,11 +29,18 @@ const CrearPaisPage = () => {
     handleSubmit,
     reset,
     formState: { errors, isValid, isDirty },
+    watch,
+    setValue,
   } = useForm<CreatePais>({
     mode: "onChange",
     defaultValues: {
       nombre: "",
       code: "",
+      code_phone: "+",
+      nombre_moneda: "",
+      simbolo_moneda: "$",
+      nombre_documento: "",
+      isActive: true,
     },
   });
 
@@ -72,6 +82,14 @@ const CrearPaisPage = () => {
     mutation.mutate(data);
   };
 
+  const documentOptions = [
+    { label: "DUI (El Salvador)", value: "DUI" },
+    { label: "DPI (Guatemala)", value: "DPI" },
+    { label: "DNI (Honduras)", value: "DNI" },
+    { label: "Cédula", value: "Cédula" },
+    { label: "Pasaporte", value: "Pasaporte" },
+  ];
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -80,7 +98,7 @@ const CrearPaisPage = () => {
       <ScrollView
         contentContainerStyle={[
           styles.scrollContainer,
-          { paddingTop: height * 0.1 },
+          { paddingTop: height * 0.05 },
         ]}
         keyboardShouldPersistTaps="handled"
       >
@@ -137,7 +155,7 @@ const CrearPaisPage = () => {
             }}
             render={({ field: { onChange, onBlur, value } }) => (
               <ThemedTextInput
-                placeholder="Código (ej. US, MX)"
+                placeholder="Código ISO (ej. SV, GT, HN)"
                 icon="code-outline"
                 value={value}
                 onChangeText={(text) => onChange(text.toUpperCase())}
@@ -145,10 +163,124 @@ const CrearPaisPage = () => {
                 error={errors.code?.message}
                 autoCapitalize="characters"
                 maxLength={5}
-                returnKeyType="done"
+                returnKeyType="next"
               />
             )}
           />
+
+          <Controller
+            control={control}
+            name="code_phone"
+            rules={{
+              required: "El prefijo telefónico es requerido",
+              pattern: {
+                value: /^\+\d{1,4}$/,
+                message: "Formato: + seguido de números (ej. +503)",
+              },
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <ThemedTextInput
+                placeholder="Prefijo telefónico (ej. +503)"
+                icon="call-outline"
+                value={value}
+                onChangeText={(text) => {
+                  if (!text.startsWith("+")) {
+                    if (text.length > 0) {
+                      text = "+" + text.replace(/\+/g, "");
+                    } else {
+                      text = "+";
+                    }
+                  }
+
+                  onChange(text.replace(/[^0-9+]/g, ""));
+                }}
+                onBlur={onBlur}
+                error={errors.code_phone?.message}
+                keyboardType="phone-pad"
+                maxLength={5}
+                returnKeyType="next"
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="nombre_moneda"
+            rules={{
+              required: "El nombre de la moneda es requerido",
+              minLength: {
+                value: 2,
+                message: "Mínimo 2 caracteres",
+              },
+              maxLength: {
+                value: 20,
+                message: "Máximo 20 caracteres",
+              },
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <ThemedTextInput
+                placeholder="Nombre de la moneda (ej. Dólar)"
+                icon="cash-outline"
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                error={errors.nombre_moneda?.message}
+                autoCapitalize="words"
+                returnKeyType="next"
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="simbolo_moneda"
+            rules={{
+              required: "El símbolo de la moneda es requerido",
+              maxLength: {
+                value: 3,
+                message: "Máximo 3 caracteres",
+              },
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <ThemedTextInput
+                placeholder="Símbolo (ej. $, €)"
+                icon="pricetag-outline"
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                error={errors.simbolo_moneda?.message}
+                maxLength={3}
+                returnKeyType="next"
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="nombre_documento"
+            rules={{
+              required: "El tipo de documento es requerido",
+            }}
+            render={({ field: { onChange, value } }) => (
+              <ThemedPicker
+                icon="document-text-outline"
+                items={documentOptions}
+                selectedValue={value}
+                onValueChange={onChange}
+                placeholder="Seleccione el tipo de documento"
+                error={errors.nombre_documento?.message}
+              />
+            )}
+          />
+
+          <View style={styles.switchContainer}>
+            <ThemedText style={styles.switchLabel}>País Activo</ThemedText>
+            <Switch
+              value={watch("isActive")}
+              onValueChange={(value) => setValue("isActive", value)}
+              thumbColor={watch("isActive") ? "#4CAF50" : "#f44336"}
+            />
+          </View>
 
           <ThemedButton
             icon="save-outline"
@@ -188,5 +320,18 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     marginTop: 20,
+  },
+  switchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginVertical: 15,
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+  },
+  switchLabel: {
+    fontSize: 16,
+    marginRight: 10,
   },
 });

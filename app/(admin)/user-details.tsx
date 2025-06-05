@@ -1,4 +1,6 @@
 import { UserUpdateData } from "@/core/auth/interfaces/user";
+import { obtenerDeptosPaisById } from "@/core/departamentos/accions/obtener-departamentosByPaid";
+import { obtenerMunicipiosDeptoById } from "@/core/municipios/accions/obtener-municipiosByDepto";
 import { obtenerPaises } from "@/core/paises/accions/obtener-paises";
 import {
   actualizarUsuario,
@@ -49,13 +51,6 @@ const UsersDetailsScreen = ({ route }: UserDetailsScreenProps) => {
     retry: 0,
   });
 
-  const { data: paises } = useQuery({
-    queryKey: ["paises"],
-    queryFn: obtenerPaises,
-    staleTime: 60 * 100 * 5,
-    retry: 0,
-  });
-
   const {
     control,
     handleSubmit,
@@ -63,7 +58,52 @@ const UsersDetailsScreen = ({ route }: UserDetailsScreenProps) => {
     setValue,
     watch,
     reset,
+    resetField,
   } = useForm<UserUpdateData>();
+
+  const paisId = watch("pais");
+  const departamentoId = watch("departamento");
+
+  const { data } = useQuery({
+    queryKey: ["paises"],
+    queryFn: obtenerPaises,
+    staleTime: 60 * 100 * 5,
+    retry: 0,
+  });
+
+  const { data: departamentos, isLoading: loadingDeptos } = useQuery({
+    queryKey: ["departamentos", paisId],
+    queryFn: () => obtenerDeptosPaisById(paisId),
+    staleTime: 60 * 100 * 5,
+    retry: 0,
+    enabled: !!paisId,
+  });
+
+  const { data: municipios, isLoading: loadingMunicipios } = useQuery({
+    queryKey: ["municipios", departamentoId],
+    queryFn: () => obtenerMunicipiosDeptoById(departamentoId),
+    staleTime: 60 * 100 * 5,
+    retry: 0,
+    enabled: !!departamentoId,
+  });
+
+  const countryItems =
+    data?.data.map((pais) => ({
+      label: pais.nombre,
+      value: pais.id.toString(),
+    })) || [];
+
+  const departmentItems =
+    departamentos?.data.departamentos.map((depto) => ({
+      label: depto.nombre,
+      value: depto.id.toString(),
+    })) || [];
+
+  const municipalityItems =
+    municipios?.data.municipios.map((mun) => ({
+      label: mun.nombre,
+      value: mun.id.toString(),
+    })) || [];
 
   useEffect(() => {
     if (user) {
@@ -75,22 +115,29 @@ const UsersDetailsScreen = ({ route }: UserDetailsScreenProps) => {
         telefono: user.data.telefono,
         rol: user.data.rol,
         pais: user.data.pais.id,
+        departamento: user.data.departamento?.id || "",
+        municipio: user.data.municipio?.id || "",
         isActive: user.data.isActive,
         isAuthorized: user.data.isAuthorized,
       });
     }
   }, [user, reset]);
 
-  const countryItems =
-    paises?.data.map((pais) => ({
-      label: pais.nombre,
-      value: pais.id,
-    })) || [];
-
   const rolesItems = Roles.map((rol) => ({
     label: rol.rol,
-    value: rol.rol,
+    value: rol.rol.toString(),
   }));
+
+  const handleCountryChange = (value: string) => {
+    setValue("pais", value);
+    resetField("departamento");
+    resetField("municipio");
+  };
+
+  const handleDepartmentChange = (value: string) => {
+    setValue("departamento", value);
+    resetField("municipio");
+  };
 
   const updateMutation = useMutation({
     mutationFn: (updatedData: UserUpdateData) =>
@@ -104,6 +151,10 @@ const UsersDetailsScreen = ({ route }: UserDetailsScreenProps) => {
         telefono: updatedUser.telefono,
         rol: updatedUser.rol,
         pais: updatedUser.pais.id,
+        departamento: updatedUser.departamento?.id || "",
+        municipio: updatedUser.municipio?.id || "",
+        isActive: updatedUser.isActive,
+        isAuthorized: updatedUser.isAuthorized,
       });
       queryClient.invalidateQueries({ queryKey: ["usuario", userId] });
       queryClient.invalidateQueries({ queryKey: ["usuarios-admin"] });
@@ -156,6 +207,8 @@ const UsersDetailsScreen = ({ route }: UserDetailsScreenProps) => {
         telefono: user?.data.telefono || "",
         rol: user?.data.rol || "",
         pais: user?.data.pais.id || "",
+        departamento: user?.data.departamento?.id || "",
+        municipio: user?.data.municipio?.id || "",
         isActive: user?.data.isActive,
         isAuthorized: user?.data.isAuthorized,
       });
@@ -222,11 +275,43 @@ const UsersDetailsScreen = ({ route }: UserDetailsScreenProps) => {
             icon="earth-outline"
             items={countryItems}
             selectedValue={watch("pais")}
-            onValueChange={(value) => setValue("pais", value)}
+            onValueChange={handleCountryChange}
             placeholder="Selecciona un país"
             error={errors.pais?.message}
             enabled={isEditing}
           />
+
+          {(paisId || user.data.departamento) && (
+            <ThemedPicker
+              icon="map-outline"
+              items={departmentItems}
+              selectedValue={watch("departamento")}
+              onValueChange={handleDepartmentChange}
+              placeholder={
+                loadingDeptos
+                  ? "Cargando departamentos..."
+                  : "Selecciona un departamento"
+              }
+              error={errors.departamento?.message}
+              enabled={isEditing && !loadingDeptos}
+            />
+          )}
+
+          {(departamentoId || user.data.municipio) && (
+            <ThemedPicker
+              icon="location-outline"
+              items={municipalityItems}
+              selectedValue={watch("municipio")}
+              onValueChange={(value) => setValue("municipio", value)}
+              placeholder={
+                loadingMunicipios
+                  ? "Cargando municipios..."
+                  : "Selecciona un municipio"
+              }
+              error={errors.municipio?.message}
+              enabled={isEditing && !loadingMunicipios}
+            />
+          )}
 
           <ThemedPicker
             icon="people-circle-outline"

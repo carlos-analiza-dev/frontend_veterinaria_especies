@@ -10,13 +10,31 @@ export interface User {
   isAuthorized: boolean;
   createdAt: Date;
   pais: Pais;
-  token: string;
+  departamento: Departamento;
+  municipio: Municipio;
+}
+
+export interface Departamento {
+  id: string;
+  nombre: string;
+  municipios: Municipio[];
+}
+
+export interface Municipio {
+  id: string;
+  nombre: string;
 }
 
 export interface Pais {
   id: string;
   nombre: string;
+  code: string;
+  code_phone: string;
+  nombre_moneda: string;
+  simbolo_moneda: string;
+  nombre_documento: string;
   isActive: boolean;
+  departamentos: Departamento[];
 }
 
 export type UserUpdateData = {
@@ -27,6 +45,8 @@ export type UserUpdateData = {
   telefono: string;
   rol: string;
   pais: string;
+  departamento: string;
+  municipio: string;
   isActive: boolean;
   isAuthorized: boolean;
 };

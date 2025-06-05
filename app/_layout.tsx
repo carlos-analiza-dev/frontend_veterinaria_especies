@@ -12,6 +12,7 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-gesture-handler";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { PaperProvider } from "react-native-paper";
 import "react-native-reanimated";
 import Toast from "react-native-toast-message";
 
@@ -33,17 +34,19 @@ export default function RootLayout() {
     <AuthProvider>
       <QueryClientProvider client={queryClient}>
         <GestureHandlerRootView style={{ backgroundColor, flex: 1 }}>
-          <ThemeProvider
-            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-          >
-            <Stack
-              screenOptions={{
-                headerShown: false,
-              }}
-            ></Stack>
-            <Toast />
-            <StatusBar style="auto" />
-          </ThemeProvider>
+          <PaperProvider>
+            <ThemeProvider
+              value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+            >
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                }}
+              ></Stack>
+              <Toast />
+              <StatusBar style="auto" />
+            </ThemeProvider>
+          </PaperProvider>
         </GestureHandlerRootView>
       </QueryClientProvider>
     </AuthProvider>

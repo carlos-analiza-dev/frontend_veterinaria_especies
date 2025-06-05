@@ -1,3 +1,5 @@
+import { obtenerDeptosPaisById } from "@/core/departamentos/accions/obtener-departamentosByPaid";
+import { obtenerMunicipiosDeptoById } from "@/core/municipios/accions/obtener-municipiosByDepto";
 import { obtenerPaises } from "@/core/paises/accions/obtener-paises";
 import { CreateUser } from "@/core/users/accions/crear-usuario";
 import { CrearUsuario } from "@/core/users/interfaces/create-user.interface";
@@ -22,7 +24,6 @@ import Toast from "react-native-toast-message";
 
 const FormCreateUser = () => {
   const { height } = useWindowDimensions();
-
   const queryClient = useQueryClient();
 
   const {
@@ -31,6 +32,7 @@ const FormCreateUser = () => {
     formState: { errors },
     setValue,
     watch,
+    resetField,
   } = useForm<CrearUsuario>({
     defaultValues: {
       email: "",
@@ -40,9 +42,14 @@ const FormCreateUser = () => {
       direccion: "",
       telefono: "",
       pais: "",
+      departamento: "",
+      municipio: "",
       rol: "",
     },
   });
+
+  const paisId = watch("pais");
+  const departamentoId = watch("departamento");
 
   const { data } = useQuery({
     queryKey: ["paises"],
@@ -51,17 +58,44 @@ const FormCreateUser = () => {
     retry: 0,
   });
 
+  const { data: departamentos, isLoading: loadingDeptos } = useQuery({
+    queryKey: ["departamentos", paisId],
+    queryFn: () => obtenerDeptosPaisById(paisId),
+    staleTime: 60 * 100 * 5,
+    retry: 0,
+    enabled: !!paisId,
+  });
+
+  const { data: municipios, isLoading: loadingMunicipios } = useQuery({
+    queryKey: ["municipios", departamentoId],
+    queryFn: () => obtenerMunicipiosDeptoById(departamentoId),
+    staleTime: 60 * 100 * 5,
+    retry: 0,
+    enabled: !!departamentoId,
+  });
+
   const countryItems =
     data?.data.map((pais) => ({
       label: pais.nombre,
       value: pais.id.toString(),
     })) || [];
 
-  const rolesItems =
-    Roles.map((rol) => ({
-      label: rol.rol,
-      value: rol.rol.toString(),
+  const departmentItems =
+    departamentos?.data.departamentos.map((depto) => ({
+      label: depto.nombre,
+      value: depto.id.toString(),
     })) || [];
+
+  const municipalityItems =
+    municipios?.data.municipios.map((mun) => ({
+      label: mun.nombre,
+      value: mun.id.toString(),
+    })) || [];
+
+  const rolesItems = Roles.map((rol) => ({
+    label: rol.rol,
+    value: rol.rol.toString(),
+  }));
 
   const mutation = useMutation({
     mutationFn: CreateUser,
@@ -99,6 +133,17 @@ const FormCreateUser = () => {
       }
     },
   });
+
+  const handleCountryChange = (value: string) => {
+    setValue("pais", value);
+    resetField("departamento");
+    resetField("municipio");
+  };
+
+  const handleDepartmentChange = (value: string) => {
+    setValue("departamento", value);
+    resetField("municipio");
+  };
 
   const onSubmit = (data: CrearUsuario) => {
     mutation.mutate(data);
@@ -153,10 +198,41 @@ const FormCreateUser = () => {
             icon="earth-outline"
             items={countryItems}
             selectedValue={watch("pais")}
-            onValueChange={(value) => setValue("pais", value)}
+            onValueChange={handleCountryChange}
             placeholder="Selecciona un país"
             error={errors.pais?.message}
           />
+
+          {paisId && (
+            <ThemedPicker
+              icon="map-outline"
+              items={departmentItems}
+              selectedValue={watch("departamento")}
+              onValueChange={handleDepartmentChange}
+              placeholder={
+                loadingDeptos
+                  ? "Cargando departamentos..."
+                  : "Selecciona un departamento"
+              }
+              error={errors.departamento?.message}
+            />
+          )}
+
+          {departamentoId && (
+            <ThemedPicker
+              icon="location-outline"
+              items={municipalityItems}
+              selectedValue={watch("municipio")}
+              onValueChange={(value) => setValue("municipio", value)}
+              placeholder={
+                loadingMunicipios
+                  ? "Cargando municipios..."
+                  : "Selecciona un municipio"
+              }
+              error={errors.municipio?.message}
+            />
+          )}
+
           <ThemedPicker
             icon="people-circle-outline"
             items={rolesItems}
@@ -165,6 +241,7 @@ const FormCreateUser = () => {
             placeholder="Selecciona un rol"
             error={errors.rol?.message}
           />
+
           <ThemedTextInput
             placeholder="DNI (12345678-9)"
             icon="id-card-outline"
@@ -206,6 +283,7 @@ const FormCreateUser = () => {
   );
 };
 
+// Los estilos se mantienen igual
 const styles = StyleSheet.create({
   container: {
     flex: 1,

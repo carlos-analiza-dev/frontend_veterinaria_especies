@@ -1,6 +1,7 @@
 import { obtenerPaises } from "@/core/paises/accions/obtener-paises";
 import { FAB } from "@/presentation/components/FAB";
 import PaisesCard from "@/presentation/components/paises/PaisesCard";
+import ThemedButton from "@/presentation/theme/components/ThemedButton";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import { useTheme } from "@react-navigation/native";
@@ -68,12 +69,23 @@ const PaisesPage = () => {
       <FlatList
         data={allCountries}
         renderItem={({ item }) => (
-          <PaisesCard
-            pais={item}
-            onPress={() => {
-              navigation.navigate("PaisDetails", { paisId: item.id });
-            }}
-          />
+          <View style={styles.itemContainer}>
+            <PaisesCard
+              pais={item}
+              onPress={() => {
+                navigation.navigate("PaisDetails", { paisId: item.id });
+              }}
+            />
+
+            <View style={styles.buttonWrapper}>
+              <ThemedButton
+                title="Agregar Departamento"
+                onPress={() =>
+                  navigation.navigate("AgregarDeptoPais", { paisId: item.id })
+                }
+              />
+            </View>
+          </View>
         )}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
@@ -93,6 +105,7 @@ const PaisesPage = () => {
         ListFooterComponent={<View style={styles.footer} />}
         showsVerticalScrollIndicator={false}
       />
+
       <FAB
         iconName="add-outline"
         onPress={() => navigation.navigate("CrearPais")}
@@ -137,5 +150,23 @@ const styles = StyleSheet.create({
   },
   footer: {
     height: 40,
+  },
+  itemContainer: {
+    marginBottom: 12,
+  },
+  buttonWrapper: {
+    marginTop: 8,
+    marginHorizontal: 16,
+  },
+  cardHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  flagImage: {
+    width: 32,
+    height: 24,
+    marginRight: 10,
+    marginLeft: 16,
+    borderRadius: 4,
   },
 });

@@ -6,10 +6,19 @@ interface Props {
   color: string;
   size: number;
   style?: TextStyle;
+  onPress?: () => void;
 }
 
-const MyIcon = ({ name, color, size, style }: Props) => {
-  return <Ionicons style={style} name={name} color={color} size={size} />;
+const MyIcon = ({ name, color, size, style, onPress }: Props) => {
+  return (
+    <Ionicons
+      onPress={onPress}
+      style={style}
+      name={name}
+      color={color}
+      size={size}
+    />
+  );
 };
 
 export default MyIcon;

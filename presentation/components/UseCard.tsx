@@ -1,7 +1,8 @@
 import { User } from "@/core/users/interfaces/users-response.interface";
 import { FontAwesome } from "@expo/vector-icons";
 import React from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Avatar } from "react-native-paper";
 
 interface UserCardProps {
   user: User;
@@ -9,16 +10,12 @@ interface UserCardProps {
 }
 
 const UserCard: React.FC<UserCardProps> = ({ user, onPress }) => {
+  const avatarUrl =
+    "https://i.pravatar.cc/150?img=" + Math.floor(Math.random() * 70);
   return (
     <TouchableOpacity onPress={onPress} style={styles.card}>
       <View style={styles.avatarContainer}>
-        <Image
-          source={{
-            uri:
-              "https://i.pravatar.cc/150?img=" + Math.floor(Math.random() * 70),
-          }}
-          style={styles.avatar}
-        />
+        <Avatar.Image size={48} source={{ uri: avatarUrl }} />
       </View>
 
       <View style={styles.infoContainer}>

@@ -3,8 +3,10 @@ export type UsersStackParamList = {
   UserDetails: { userId: string };
   CrearUsuario: undefined;
   PaisDetails: { paisId: string };
+  AgregarDeptoPais: { paisId: string };
   PaisesPage: undefined;
   CrearPais: undefined;
+  PerfilAdmin: undefined;
 };
 
 declare global {

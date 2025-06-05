@@ -11,11 +11,13 @@ import CustomDrawerContent from "./components/CustomDrawerContent";
 import SettingsScreen from "./settings";
 
 import GoBack from "@/presentation/components/GoBack";
+import AgregarDepartamentoPais from "./agregar-departamento-pais";
 import CrearPaisPage from "./crea-pais";
 import CrearUsuarioScreen from "./crear-usuario";
 import DashboardAdminPage from "./dashboard";
 import PaisDetailsPage from "./paise-dateails";
 import PaisesPage from "./paises-page";
+import PerfilAdminPage from "./perfil-admin";
 import UsersDetailsScreen from "./user-details";
 import UsersScreenAdmin from "./users";
 
@@ -91,6 +93,16 @@ export default function AdminLayout() {
           }}
         />
         <UsersStack.Screen
+          name="AgregarDeptoPais"
+          component={AgregarDepartamentoPais}
+          options={{
+            headerShown: true,
+            headerTitle: "Agregar Departamento",
+            headerRight: () => <LogoutIconButton />,
+            headerLeft: () => <GoBack />,
+          }}
+        />
+        <UsersStack.Screen
           name="CrearPais"
           component={CrearPaisPage}
           options={{
@@ -129,6 +141,16 @@ export default function AdminLayout() {
         options={{
           headerShown: true,
           headerTitle: "Admin Settings",
+          headerRight: () => <LogoutIconButton />,
+          headerLeft: () => <DrawerToggleButton tintColor="black" />,
+        }}
+      />
+      <Drawer.Screen
+        name="perfil-admin"
+        component={PerfilAdminPage}
+        options={{
+          headerShown: true,
+          headerTitle: "Admin Perfil",
           headerRight: () => <LogoutIconButton />,
           headerLeft: () => <DrawerToggleButton tintColor="black" />,
         }}

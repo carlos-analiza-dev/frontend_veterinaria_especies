@@ -1,3 +1,5 @@
+import { obtenerDeptosPaisById } from "@/core/departamentos/accions/obtener-departamentosByPaid";
+import { obtenerMunicipiosDeptoById } from "@/core/municipios/accions/obtener-municipiosByDepto";
 import { obtenerPaises } from "@/core/paises/accions/obtener-paises";
 import { CreateUser } from "@/core/users/accions/crear-usuario";
 import { CrearUsuario } from "@/core/users/interfaces/create-user.interface";
@@ -38,20 +40,55 @@ const RegisterScreen = () => {
       direccion: "",
       telefono: "",
       pais: "",
+      departamento: "",
+      municipio: "",
     },
   });
 
-  const { data, isLoading, isError } = useQuery({
+  const paisId = watch("pais");
+  const departamentoId = watch("departamento");
+
+  const { data } = useQuery({
     queryKey: ["paises"],
     queryFn: obtenerPaises,
     staleTime: 60 * 100 * 5,
     retry: 0,
   });
 
+  const paisSeleccionado = data?.data.find((p) => p.id === paisId);
+
+  const { data: departamentos } = useQuery({
+    queryKey: ["departamentos", paisId],
+    queryFn: () => obtenerDeptosPaisById(paisId),
+    staleTime: 60 * 100 * 5,
+    retry: 0,
+    enabled: !!paisId,
+  });
+
+  const { data: municipios } = useQuery({
+    queryKey: ["municipios", departamentoId],
+    queryFn: () => obtenerMunicipiosDeptoById(departamentoId),
+    staleTime: 60 * 100 * 5,
+    retry: 0,
+    enabled: !!departamentoId,
+  });
+
   const countryItems =
     data?.data.map((pais) => ({
       label: pais.nombre,
       value: pais.id.toString(),
+    })) || [];
+
+  const departmentItems =
+    departamentos?.data.departamentos.map((depto) => ({
+      label: depto.nombre,
+      value: depto.id.toString(),
+    })) || [];
+
+  const municipalityItems =
+    municipios?.data.municipios.map((mun) => ({
+      label: mun.nombre,
+      value: mun.id.toString(),
     })) || [];
 
   const mutation = useMutation({
@@ -79,6 +116,17 @@ const RegisterScreen = () => {
       }
     },
   });
+
+  const handleCountryChange = (value: string) => {
+    setValue("pais", value);
+    setValue("departamento", "");
+    setValue("municipio", "");
+  };
+
+  const handleDepartmentChange = (value: string) => {
+    setValue("departamento", value);
+    setValue("municipio", "");
+  };
 
   const onSubmit = (data: CrearUsuario) => {
     mutation.mutate(data);
@@ -136,12 +184,43 @@ const RegisterScreen = () => {
             icon="earth-outline"
             items={countryItems}
             selectedValue={watch("pais")}
-            onValueChange={(value) => setValue("pais", value)}
+            onValueChange={handleCountryChange}
             placeholder="Selecciona un país"
             error={errors.pais?.message}
           />
+
+          {paisId && (
+            <ThemedPicker
+              icon="map-outline"
+              items={departmentItems}
+              selectedValue={watch("departamento")}
+              onValueChange={handleDepartmentChange}
+              placeholder="Selecciona un departamento"
+              error={errors.departamento?.message}
+            />
+          )}
+
+          {departamentoId && (
+            <ThemedPicker
+              icon="location-outline"
+              items={municipalityItems}
+              selectedValue={watch("municipio")}
+              onValueChange={(value) => setValue("municipio", value)}
+              placeholder="Selecciona un municipio"
+              error={errors.municipio?.message}
+            />
+          )}
+
           <ThemedTextInput
-            placeholder="DNI (12345678-9)"
+            placeholder={
+              paisSeleccionado?.nombre === "El Salvador"
+                ? "DUI (12345678-9)"
+                : paisSeleccionado?.nombre === "Honduras"
+                ? "DNI (1201-2000-99001)"
+                : paisSeleccionado?.nombre === "Guatemala"
+                ? "DPI (1234 56789 0101)"
+                : ""
+            }
             icon="id-card-outline"
             keyboardType="numeric"
             value={watch("identificacion")}

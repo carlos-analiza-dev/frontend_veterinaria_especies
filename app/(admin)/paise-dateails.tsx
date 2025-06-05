@@ -49,7 +49,7 @@ const PaisDetailsPage = ({ route }: DetailsPaisProps) => {
     reset,
     setValue,
     watch,
-    formState: { errors, isValid, isDirty },
+    formState: { errors, isDirty },
   } = useForm<Partial<CreatePais>>();
 
   useEffect(() => {
@@ -57,6 +57,10 @@ const PaisDetailsPage = ({ route }: DetailsPaisProps) => {
       reset({
         nombre: pais.data.nombre,
         code: pais.data.code,
+        code_phone: pais.data.code_phone,
+        nombre_documento: pais.data.nombre_documento,
+        nombre_moneda: pais.data.nombre_moneda,
+        simbolo_moneda: pais.data.simbolo_moneda,
         isActive: pais.data.isActive,
       });
     }
@@ -68,11 +72,12 @@ const PaisDetailsPage = ({ route }: DetailsPaisProps) => {
     onSuccess: () => {
       Toast.show({
         type: "success",
-        text1: "Pais actualizado exitosamente",
+        text1: "País actualizado exitosamente",
         position: "top",
       });
       queryClient.invalidateQueries({ queryKey: ["pais", paisId] });
       queryClient.invalidateQueries({ queryKey: ["paises"] });
+      setIsEditing(false);
     },
     onError: (error) => {
       if (isAxiosError(error)) {
@@ -96,6 +101,10 @@ const PaisDetailsPage = ({ route }: DetailsPaisProps) => {
       reset({
         nombre: pais?.data.nombre,
         code: pais?.data.code,
+        code_phone: pais?.data.code_phone,
+        nombre_documento: pais?.data.nombre_documento,
+        nombre_moneda: pais?.data.nombre_moneda,
+        simbolo_moneda: pais?.data.simbolo_moneda,
         isActive: pais?.data.isActive,
       });
     }
@@ -137,6 +146,7 @@ const PaisDetailsPage = ({ route }: DetailsPaisProps) => {
             rules={{ required: "Nombre es requerido" }}
             render={({ field: { onChange, onBlur, value } }) => (
               <ThemedTextInput
+                placeholder="Nombre del país"
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}
@@ -158,12 +168,85 @@ const PaisDetailsPage = ({ route }: DetailsPaisProps) => {
             }}
             render={({ field: { onChange, onBlur, value } }) => (
               <ThemedTextInput
+                placeholder="Código del país (ej. CO)"
                 value={value}
                 onChangeText={(text) => onChange(text.toUpperCase())}
                 onBlur={onBlur}
                 error={errors.code?.message}
                 editable={isEditing}
                 maxLength={5}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="code_phone"
+            rules={{
+              required: "Código telefónico es requerido",
+              pattern: {
+                value: /^\+?\d{1,4}$/,
+                message: "Código telefónico inválido (ej. +57)",
+              },
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <ThemedTextInput
+                placeholder="Código telefónico (ej. +57)"
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                error={errors.code_phone?.message}
+                editable={isEditing}
+                keyboardType="phone-pad"
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="nombre_documento"
+            rules={{ required: "Nombre del documento es requerido" }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <ThemedTextInput
+                placeholder="Nombre del documento (ej. DNI, Cédula)"
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                error={errors.nombre_documento?.message}
+                editable={isEditing}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="nombre_moneda"
+            rules={{ required: "Nombre de la moneda es requerido" }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <ThemedTextInput
+                placeholder="Nombre de la moneda (ej. Peso Colombiano)"
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                error={errors.nombre_moneda?.message}
+                editable={isEditing}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="simbolo_moneda"
+            rules={{ required: "Símbolo de la moneda es requerido" }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <ThemedTextInput
+                placeholder="Símbolo de la moneda (ej. $)"
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                error={errors.simbolo_moneda?.message}
+                editable={isEditing}
+                maxLength={3}
               />
             )}
           />
@@ -222,16 +305,11 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 16,
     marginBottom: 16,
+    gap: 16,
   },
   title: {
     marginBottom: 24,
     textAlign: "center",
-  },
-  statusContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    marginVertical: 16,
   },
   buttonContainer: {
     marginTop: 24,

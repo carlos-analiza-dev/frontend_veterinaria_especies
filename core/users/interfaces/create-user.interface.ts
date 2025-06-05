@@ -7,4 +7,6 @@ export interface CrearUsuario {
   telefono: string;
   rol?: string;
   pais: string;
+  departamento: string;
+  municipio: string;
 }

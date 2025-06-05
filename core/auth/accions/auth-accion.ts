@@ -1,4 +1,5 @@
 import { veterinariaAPI } from "@/core/api/veterinariaApi";
+import { Departamento, Municipio, Pais } from "../interfaces/user";
 
 export interface AuthResponse {
   id: string;
@@ -8,9 +9,12 @@ export interface AuthResponse {
   direccion: string;
   telefono: string;
   rol: string;
-  isActive: string;
-  isAuthorized: string;
+  isActive: boolean;
+  isAuthorized: boolean;
   createdAt: Date;
+  pais: Pais;
+  departamento: Departamento;
+  municipio: Municipio;
   token: string;
 }
 

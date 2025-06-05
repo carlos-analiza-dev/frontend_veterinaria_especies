@@ -43,6 +43,13 @@ const CustomDrawerContent = ({ navigation, logout }: Props) => {
         <MyIcon name="settings-outline" size={24} color="black" />
         <Text style={styles.itemText}>Configuración</Text>
       </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.drawerItem}
+        onPress={() => navigation.navigate("perfil-admin")}
+      >
+        <MyIcon name="person-outline" size={24} color="black" />
+        <Text style={styles.itemText}>Perfil</Text>
+      </TouchableOpacity>
 
       <TouchableOpacity
         style={[styles.drawerItem, styles.logoutButton]}
