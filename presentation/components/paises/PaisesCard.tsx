@@ -18,7 +18,6 @@ interface Props {
 const PaisesCard = ({ pais, onPress }: Props) => {
   const { height } = useWindowDimensions();
 
-  // Memoizar valores calculados
   const statusStyles = useMemo(
     () => ({
       backgroundColor: pais.isActive ? "#e6f7ee" : "#ffebee",

@@ -7,6 +7,10 @@ export type UsersStackParamList = {
   PaisesPage: undefined;
   CrearPais: undefined;
   PerfilAdmin: undefined;
+  ServiciosAdmin: undefined;
+  CrearServicio: undefined;
+  DetailsServicio: { servicioId: string };
+  AgregarPreciosServices: { servicioId: string };
 };
 
 declare global {

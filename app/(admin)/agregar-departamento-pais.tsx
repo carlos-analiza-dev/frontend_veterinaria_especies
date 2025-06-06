@@ -6,14 +6,15 @@ import { CrearMunicipio } from "@/core/municipios/accions/crear-municipio";
 import { obtenerMunicipiosDeptoById } from "@/core/municipios/accions/obtener-municipiosByDepto";
 import MyIcon from "@/presentation/auth/components/MyIcon";
 import { UsersStackParamList } from "@/presentation/navigation/types";
+import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import { RouteProp } from "@react-navigation/native";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import React, { useState } from "react";
-import { View } from "react-native";
-import { ActivityIndicator, Button, DataTable, Text } from "react-native-paper";
+import { ScrollView, View } from "react-native";
+import { ActivityIndicator, Avatar, Button, Card } from "react-native-paper";
 import Toast from "react-native-toast-message";
 import ModalAddDepto from "./components/Modals/ModalAddDepto";
 import ModalAddMunicipio from "./components/Modals/ModalAddMunicipio";
@@ -198,10 +199,6 @@ const AgregarDepartamentoPais = ({ route }: DetailsDeptoPaisProps) => {
 
   return (
     <ThemedView style={{ flex: 1 }}>
-      <View style={{ alignItems: "center", marginTop: 10 }}>
-        <Text variant="displaySmall">Departamentos</Text>
-      </View>
-
       <View style={{ alignItems: "flex-end", marginTop: 5, padding: 5 }}>
         <Button
           buttonColor={primary}
@@ -213,71 +210,107 @@ const AgregarDepartamentoPais = ({ route }: DetailsDeptoPaisProps) => {
         </Button>
       </View>
 
-      <View style={{ marginTop: 5, flex: 1 }}>
-        <DataTable>
-          <DataTable.Header>
-            <DataTable.Title style={{ justifyContent: "center" }}>
-              Departamento
-            </DataTable.Title>
-
-            <DataTable.Title style={{ justifyContent: "center" }}>
-              Estado
-            </DataTable.Title>
-            <DataTable.Title style={{ justifyContent: "center" }}>
-              Municipios
-            </DataTable.Title>
-            <DataTable.Title style={{ justifyContent: "center" }}>
-              Acciones
-            </DataTable.Title>
-          </DataTable.Header>
-
+      <View style={{ flex: 1, padding: 10 }}>
+        <ScrollView>
           {paginatedData.map((depto) => (
-            <DataTable.Row key={depto.id}>
-              <DataTable.Cell style={{ justifyContent: "center" }}>
-                {depto.nombre}
-              </DataTable.Cell>
-
-              <DataTable.Cell style={{ justifyContent: "center" }}>
-                {depto.isActive === true ? "Activo" : "Inactivo"}
-              </DataTable.Cell>
-              <DataTable.Cell style={{ justifyContent: "center" }}>
-                <Button
-                  mode="outlined"
-                  onPress={() => showMunicipiosModal(depto)}
-                  compact
+            <Card key={depto.id} style={{ marginBottom: 15, elevation: 3 }}>
+              <Card.Title
+                title={depto.nombre}
+                left={(props) => (
+                  <Avatar.Icon
+                    {...props}
+                    icon="map-marker"
+                    color={depto.isActive ? "#4CAF50" : "#F44336"}
+                  />
+                )}
+                right={(props) => (
+                  <View style={{ flexDirection: "row", marginRight: 10 }}>
+                    <MyIcon
+                      name="pencil-outline"
+                      color="black"
+                      size={24}
+                      onPress={() => handleEditDepto(depto.id)}
+                      style={{ marginRight: 15 }}
+                    />
+                    <MyIcon
+                      name={depto.isActive ? "toggle-outline" : "toggle-sharp"}
+                      color="black"
+                      size={24}
+                      onPress={() => showModalDelete(depto)}
+                    />
+                  </View>
+                )}
+              />
+              <Card.Content>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
                 >
-                  Ver
-                </Button>
-              </DataTable.Cell>
-              <DataTable.Cell style={{ justifyContent: "center" }}>
-                <View style={{ flexDirection: "row", gap: 8 }}>
-                  <MyIcon
-                    name="pencil-outline"
-                    color="black"
-                    size={24}
-                    onPress={() => handleEditDepto(depto.id)}
-                  />
-                  <MyIcon
-                    name="build"
-                    color="black"
-                    size={24}
-                    onPress={() => showModalDelete(depto)}
-                  />
-                </View>
-              </DataTable.Cell>
-            </DataTable.Row>
-          ))}
+                  <ThemedText
+                    type="default"
+                    style={{ color: depto.isActive ? "#4CAF50" : "#F44336" }}
+                  >
+                    {depto.isActive ? "Activo" : "Inactivo"}
+                  </ThemedText>
 
-          <DataTable.Pagination
-            page={page}
-            numberOfPages={Math.ceil(departamentos.length / ITEMS_PER_PAGE)}
-            onPageChange={(newPage) => setPage(newPage)}
-            label={`${from + 1}-${to} de ${departamentos.length}`}
-            numberOfItemsPerPage={ITEMS_PER_PAGE}
-            showFastPaginationControls
-            selectPageDropdownLabel={"Filas por página"}
-          />
-        </DataTable>
+                  <Button
+                    mode="outlined"
+                    onPress={() => showMunicipiosModal(depto)}
+                    icon="city"
+                    style={{ marginTop: 10 }}
+                  >
+                    Ver Municipios
+                  </Button>
+                </View>
+              </Card.Content>
+            </Card>
+          ))}
+        </ScrollView>
+
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: 10,
+            borderTopWidth: 1,
+            borderTopColor: "#eee",
+          }}
+        >
+          <Button
+            mode="outlined"
+            onPress={() => setPage(Math.max(0, page - 1))}
+            disabled={page === 0}
+            icon="chevron-left"
+          >
+            Anterior
+          </Button>
+
+          <ThemedText type="default">
+            {from + 1}-{to} de {departamentos.length}
+          </ThemedText>
+
+          <Button
+            mode="outlined"
+            onPress={() =>
+              setPage(
+                Math.min(
+                  page + 1,
+                  Math.ceil(departamentos.length / ITEMS_PER_PAGE) - 1
+                )
+              )
+            }
+            disabled={
+              page >= Math.ceil(departamentos.length / ITEMS_PER_PAGE) - 1
+            }
+            icon="chevron-right"
+          >
+            Siguiente
+          </Button>
+        </View>
       </View>
 
       <ModalAddMunicipio

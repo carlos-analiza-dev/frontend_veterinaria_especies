@@ -1,6 +1,7 @@
 import { obtenerPaisById } from "@/core/paises/accions/obtener-paisById";
 import { ActualizarPaises } from "@/core/paises/accions/update-pais";
 import { CreatePais } from "@/core/paises/interfaces/crear-pais.interface";
+import MessageError from "@/presentation/components/MessageError";
 import { UsersStackParamList } from "@/presentation/navigation/types";
 import ThemedButton from "@/presentation/theme/components/ThemedButton";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
@@ -121,11 +122,10 @@ const PaisDetailsPage = ({ route }: DetailsPaisProps) => {
 
   if (isError || !pais) {
     return (
-      <ThemedView style={styles.container}>
-        <ThemedText style={styles.errorText}>
-          Error al cargar los datos del país
-        </ThemedText>
-      </ThemedView>
+      <MessageError
+        titulo="Error al cargar los datos del pais"
+        descripcion=" No se encontraron datos del pais para este módulo. Por favor, verifica más tarde o vuelve a intentar."
+      />
     );
   }
 

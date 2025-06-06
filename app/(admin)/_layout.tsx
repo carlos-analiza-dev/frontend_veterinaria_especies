@@ -18,6 +18,10 @@ import DashboardAdminPage from "./dashboard";
 import PaisDetailsPage from "./paise-dateails";
 import PaisesPage from "./paises-page";
 import PerfilAdminPage from "./perfil-admin";
+import AddPriceServices from "./servicios/agregar-precio-services";
+import CrearServicioPage from "./servicios/crear-servicio";
+import DetailsServices from "./servicios/details-services";
+import ServicioPageAdmin from "./servicios/servicios-page";
 import UsersDetailsScreen from "./user-details";
 import UsersScreenAdmin from "./users";
 
@@ -116,6 +120,53 @@ export default function AdminLayout() {
     );
   };
 
+  const AdminStackScreenServicios = () => {
+    return (
+      <UsersStack.Navigator screenOptions={{ headerShown: false }}>
+        <UsersStack.Screen
+          name="ServiciosAdmin"
+          component={ServicioPageAdmin}
+          options={{
+            headerShown: true,
+            headerTitle: "Admin Servicios",
+            headerRight: () => <LogoutIconButton />,
+            headerLeft: () => <DrawerToggleButton tintColor="black" />,
+          }}
+        />
+        <UsersStack.Screen
+          name="DetailsServicio"
+          component={DetailsServices}
+          options={{
+            headerShown: true,
+            headerTitle: "Detalles Servicios",
+            headerRight: () => <LogoutIconButton />,
+            headerLeft: () => <GoBack />,
+          }}
+        />
+        <UsersStack.Screen
+          name="CrearServicio"
+          component={CrearServicioPage}
+          options={{
+            headerShown: true,
+            headerTitle: "Agregar Servicio",
+            headerRight: () => <LogoutIconButton />,
+            headerLeft: () => <GoBack />,
+          }}
+        />
+        <UsersStack.Screen
+          name="AgregarPreciosServices"
+          component={AddPriceServices}
+          options={{
+            headerShown: true,
+            headerTitle: "Agregar Precios",
+            headerRight: () => <LogoutIconButton />,
+            headerLeft: () => <GoBack />,
+          }}
+        />
+      </UsersStack.Navigator>
+    );
+  };
+
   return (
     <Drawer.Navigator
       drawerContent={(props) => (
@@ -144,6 +195,10 @@ export default function AdminLayout() {
           headerRight: () => <LogoutIconButton />,
           headerLeft: () => <DrawerToggleButton tintColor="black" />,
         }}
+      />
+      <Drawer.Screen
+        name="servicios-page"
+        component={AdminStackScreenServicios}
       />
       <Drawer.Screen
         name="perfil-admin"

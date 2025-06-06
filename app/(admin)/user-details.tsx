@@ -7,6 +7,7 @@ import {
   obtenerUsuarioById,
 } from "@/core/users/accions/get-user-byId";
 import { Roles } from "@/helpers/data/roles";
+import MessageError from "@/presentation/components/MessageError";
 import { UsersStackParamList } from "@/presentation/navigation/types";
 import ThemedButton from "@/presentation/theme/components/ThemedButton";
 import ThemedPicker from "@/presentation/theme/components/ThemedPicker";
@@ -226,11 +227,10 @@ const UsersDetailsScreen = ({ route }: UserDetailsScreenProps) => {
 
   if (isError || !user) {
     return (
-      <View style={styles.container}>
-        <ThemedText type="subtitle" style={styles.errorText}>
-          Error al cargar los datos del usuario
-        </ThemedText>
-      </View>
+      <MessageError
+        titulo="Error al cargar los datos del usuario"
+        descripcion=" No se encontraron datos del usuario en este módulo. Por favor, verifica más tarde o vuelve a intentar."
+      />
     );
   }
 

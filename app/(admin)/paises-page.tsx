@@ -1,5 +1,6 @@
 import { obtenerPaises } from "@/core/paises/accions/obtener-paises";
 import { FAB } from "@/presentation/components/FAB";
+import MessageError from "@/presentation/components/MessageError";
 import PaisesCard from "@/presentation/components/paises/PaisesCard";
 import ThemedButton from "@/presentation/theme/components/ThemedButton";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
@@ -44,11 +45,10 @@ const PaisesPage = () => {
 
   if (isError) {
     return (
-      <ThemedView style={styles.container}>
-        <ThemedText style={[styles.errorText, { color: colors.notification }]}>
-          Error al cargar los países
-        </ThemedText>
-      </ThemedView>
+      <MessageError
+        titulo="Error al cargar los paises"
+        descripcion=" No se encontraron datos de paises en este módulo. Por favor, verifica más tarde o vuelve a intentar."
+      />
     );
   }
 
