@@ -63,7 +63,7 @@ const ModalAgregarPrecios = ({
           style={{ marginBottom: 10 }}
         />
         <TextInput
-          label="Cantidad mínima"
+          label="Cantidad mínima animales"
           mode="outlined"
           value={formData.cantidadMin.toString()}
           onChangeText={(text) =>
@@ -73,7 +73,7 @@ const ModalAgregarPrecios = ({
           style={{ marginBottom: 10 }}
         />
         <TextInput
-          label="Cantidad máxima"
+          label="Cantidad máxima animales"
           mode="outlined"
           value={formData.cantidadMax.toString()}
           onChangeText={(text) =>

@@ -2,6 +2,7 @@ import { obtenerPaises } from "@/core/paises/accions/obtener-paises";
 import { AddServicioPrecio } from "@/core/servicios_precios/accions/crear-servicio-price";
 import { ObtenerServicioPricesId } from "@/core/servicios_precios/accions/get-precios-servicio";
 import { CrearServicePrecio } from "@/core/servicios_precios/interfaces/crear-servicio-precio.interface";
+import { ResponseServicioPrecio } from "@/core/servicios_precios/interfaces/response-servicio-precio.interface";
 import MessageError from "@/presentation/components/MessageError";
 import { UsersStackParamList } from "@/presentation/navigation/types";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
@@ -15,6 +16,7 @@ import { RefreshControl, ScrollView, View } from "react-native";
 import { ActivityIndicator, Avatar, Button, Card } from "react-native-paper";
 import Toast from "react-native-toast-message";
 import ModalAgregarPrecios from "./components/ModalAgregarPrecios";
+import ModalEditServicioPrecio from "./components/ModalEditServicioPrecio";
 
 type RouteServicioProps = RouteProp<
   UsersStackParamList,
@@ -31,6 +33,10 @@ const AddPriceServices = ({ route }: DetailsServicioProps) => {
   const primary = useThemeColor({}, "primary");
   const [visible, setVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [visibleEditModal, setVisibleEditModal] = useState(false);
+  const [editService, setEditService] = useState<ResponseServicioPrecio | null>(
+    null
+  );
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -131,6 +137,14 @@ const AddPriceServices = ({ route }: DetailsServicioProps) => {
     createPrice(dataToSend);
   };
 
+  const handleEditServicio = (servicioId: string) => {
+    const service = servicios?.data.find((s) => s.id === servicioId);
+    if (service) {
+      setEditService(service);
+      setVisibleEditModal(true);
+    }
+  };
+
   if (isLoading) {
     return (
       <View
@@ -204,7 +218,7 @@ const AddPriceServices = ({ route }: DetailsServicioProps) => {
               left={(props) => <Avatar.Icon {...props} icon="earth" />}
               right={(props) => (
                 <Button
-                  onPress={openModal}
+                  onPress={() => handleEditServicio(servicio.id)}
                   icon="pencil"
                   style={{ marginRight: 10 }}
                 >
@@ -278,6 +292,15 @@ const AddPriceServices = ({ route }: DetailsServicioProps) => {
         primary={primary}
         isCreating={isCreating}
         handleSubmit={handleSubmit}
+      />
+      <ModalEditServicioPrecio
+        visible={visibleEditModal}
+        onDismiss={() => setVisibleEditModal(false)}
+        servicio={editService}
+        onUpdateSuccess={() => {
+          queryClient.invalidateQueries({ queryKey: ["servicios-precio"] });
+          refetch();
+        }}
       />
     </ThemedView>
   );

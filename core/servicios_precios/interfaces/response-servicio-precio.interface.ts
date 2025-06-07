@@ -1,6 +1,6 @@
 export interface ResponseServicioPrecio {
   id: string;
-  precio: string;
+  precio: number;
   cantidadMin: number;
   cantidadMax: number;
   tiempo: number;

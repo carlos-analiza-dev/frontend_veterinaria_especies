@@ -9,11 +9,12 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import {
   ActivityIndicator,
   Button,
   HelperText,
+  Switch,
   TextInput,
 } from "react-native-paper";
 import Toast from "react-native-toast-message";
@@ -54,6 +55,7 @@ const DetailsServices = ({ route }: DetailsServicioProps) => {
     if (servicio) {
       setValue("nombre", servicio.nombre);
       setValue("descripcion", servicio.descripcion);
+      setValue("isActive", servicio.isActive);
     }
   }, [servicio, setValue]);
 
@@ -163,6 +165,20 @@ const DetailsServices = ({ route }: DetailsServicioProps) => {
         </HelperText>
       )}
 
+      <Controller
+        control={control}
+        name="isActive"
+        render={({ field: { onChange, value } }) => (
+          <View style={styles.switchContainer}>
+            <Text style={styles.switchLabel}>Estado:</Text>
+            <Switch value={value} onValueChange={onChange} color={primary} />
+            <Text style={styles.switchText}>
+              {value ? "Activo" : "Inactivo"}
+            </Text>
+          </View>
+        )}
+      />
+
       {mutation.isPending ? (
         <ActivityIndicator animating={true} style={styles.loader} />
       ) : (
@@ -208,6 +224,19 @@ const styles = StyleSheet.create({
   },
   loader: {
     marginTop: 20,
+  },
+  switchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 15,
+  },
+  switchLabel: {
+    marginRight: 10,
+    fontSize: 16,
+  },
+  switchText: {
+    marginLeft: 10,
+    fontSize: 16,
   },
 });
 
