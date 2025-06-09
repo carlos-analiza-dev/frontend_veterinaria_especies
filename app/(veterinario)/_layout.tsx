@@ -7,7 +7,7 @@ import { Redirect } from "expo-router";
 export default function VeterinarioLayout() {
   const { user } = useAuthStore();
 
-  if (user?.rol !== "Veterinario") {
+  if (user?.role.name !== "Veterinario") {
     return <Redirect href="/login" />;
   }
 

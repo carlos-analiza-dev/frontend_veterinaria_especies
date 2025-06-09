@@ -47,12 +47,19 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   login: async (email: string, password: string) => {
     try {
       const resp = await authLogin(email, password);
-      if (!resp) return null;
+
+      if (!resp) {
+        return null;
+      }
+
+      if (!resp.token || !resp.user) {
+        return null;
+      }
 
       const success = await get().changeStatus(resp.token, resp.user);
+
       return success ? resp : null;
     } catch (error) {
-      console.error("Login error:", error);
       return null;
     }
   },

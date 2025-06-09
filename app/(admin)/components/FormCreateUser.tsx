@@ -1,9 +1,9 @@
 import { obtenerDeptosPaisById } from "@/core/departamentos/accions/obtener-departamentosByPaid";
 import { obtenerMunicipiosDeptoById } from "@/core/municipios/accions/obtener-municipiosByDepto";
 import { obtenerPaises } from "@/core/paises/accions/obtener-paises";
+import { getRoles } from "@/core/roles/accions/all-roles";
 import { CreateUser } from "@/core/users/accions/crear-usuario";
 import { CrearUsuario } from "@/core/users/interfaces/create-user.interface";
-import { Roles } from "@/helpers/data/roles";
 import ThemedButton from "@/presentation/theme/components/ThemedButton";
 import ThemedPicker from "@/presentation/theme/components/ThemedPicker";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
@@ -44,7 +44,7 @@ const FormCreateUser = () => {
       pais: "",
       departamento: "",
       municipio: "",
-      rol: "",
+      role: "",
     },
   });
 
@@ -74,6 +74,13 @@ const FormCreateUser = () => {
     enabled: !!departamentoId,
   });
 
+  const { data: roles, isLoading: loadingRoles } = useQuery({
+    queryKey: ["roles"],
+    queryFn: () => getRoles(),
+    staleTime: 60 * 100 * 5,
+    retry: 0,
+  });
+
   const countryItems =
     data?.data.map((pais) => ({
       label: pais.nombre,
@@ -92,10 +99,11 @@ const FormCreateUser = () => {
       value: mun.id.toString(),
     })) || [];
 
-  const rolesItems = Roles.map((rol) => ({
-    label: rol.rol,
-    value: rol.rol.toString(),
-  }));
+  const rolesItems =
+    roles?.data.map((rol) => ({
+      label: rol.name,
+      value: rol.id.toString(),
+    })) || [];
 
   const mutation = useMutation({
     mutationFn: CreateUser,
@@ -236,10 +244,10 @@ const FormCreateUser = () => {
           <ThemedPicker
             icon="people-circle-outline"
             items={rolesItems}
-            selectedValue={watch("rol") ?? ""}
-            onValueChange={(value) => setValue("rol", value)}
+            selectedValue={watch("role") ?? ""}
+            onValueChange={(value) => setValue("role", value)}
             placeholder="Selecciona un rol"
-            error={errors.rol?.message}
+            error={errors.role?.message}
           />
 
           <ThemedTextInput

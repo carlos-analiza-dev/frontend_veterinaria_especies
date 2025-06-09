@@ -24,7 +24,7 @@ const UserCard: React.FC<UserCardProps> = ({ user, onPress }) => {
 
         <View style={styles.detailRow}>
           <FontAwesome name="user" size={14} color="#666" />
-          <Text style={styles.detailText}>{user.rol}</Text>
+          <Text style={styles.detailText}>{user.role.name}</Text>
         </View>
 
         <View style={styles.detailRow}>

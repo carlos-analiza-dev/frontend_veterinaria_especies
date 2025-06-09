@@ -1,28 +1,14 @@
-export interface User {
+export interface Municipio {
   id: string;
-  email: string;
-  name: string;
-  identificacion: string;
-  direccion: string;
-  telefono: string;
-  rol: string;
+  nombre: string;
   isActive: boolean;
-  isAuthorized: boolean;
-  createdAt: Date;
-  pais: Pais;
-  departamento: Departamento;
-  municipio: Municipio;
 }
 
 export interface Departamento {
   id: string;
   nombre: string;
-  municipios: Municipio[];
-}
-
-export interface Municipio {
-  id: string;
-  nombre: string;
+  isActive: boolean;
+  municipios?: Municipio[];
 }
 
 export interface Pais {
@@ -37,13 +23,36 @@ export interface Pais {
   departamentos: Departamento[];
 }
 
+export interface Role {
+  id: string;
+  name: string;
+  description: string;
+  isActive: boolean;
+}
+
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  identificacion: string;
+  direccion: string;
+  telefono: string;
+  isActive: boolean;
+  isAuthorized: boolean;
+  createdAt: string;
+  role: Role;
+  pais: Pais;
+  departamento: Departamento;
+  municipio: Municipio;
+}
+
 export type UserUpdateData = {
   email: string;
   name: string;
   identificacion: string;
   direccion: string;
   telefono: string;
-  rol: string;
+  role: string;
   pais: string;
   departamento: string;
   municipio: string;

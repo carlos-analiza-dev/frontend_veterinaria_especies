@@ -36,17 +36,18 @@ const LoginScreen = () => {
 
     setIsPosting(true);
     const authResponse = await login(email, password);
+
     setIsPosting(false);
 
     if (authResponse) {
-      const { user, token } = authResponse;
-      if (user.rol === "Administrador") {
+      const { user } = authResponse;
+      if (user.role.name === "Administrador") {
         router.replace("/(admin)/users");
-      } else if (user.rol === "User") {
+      } else if (user.role.name === "User") {
         router.replace("/(user)/home");
-      } else if (user.rol === "Secretario") {
+      } else if (user.role.name === "Secretario") {
         router.replace("/(secretario)/home");
-      } else if (user.rol === "Veterinario") {
+      } else if (user.role.name === "Veterinario") {
         router.replace("/(veterinario)/home");
       } else {
         Toast.show({
@@ -70,7 +71,9 @@ const LoginScreen = () => {
     <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
       <ScrollView style={{ paddingHorizontal: 40 }}>
         <View style={{ paddingTop: height * 0.35 }}>
-          <ThemedText type="title">Ingresar</ThemedText>
+          <ThemedText style={{ marginBottom: 5 }} type="title">
+            Ingresar
+          </ThemedText>
           <ThemedText style={{ color: "gray" }}>
             Por favor, ingrese para continuar
           </ThemedText>

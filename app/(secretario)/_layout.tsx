@@ -7,7 +7,7 @@ import { Redirect } from "expo-router";
 export default function SecretarioLayout() {
   const { user } = useAuthStore();
 
-  if (user?.rol !== "Secretario") {
+  if (user?.role.name !== "Secretario") {
     return <Redirect href="/login" />;
   }
 

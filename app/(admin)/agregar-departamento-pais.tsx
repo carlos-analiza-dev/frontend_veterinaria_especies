@@ -5,6 +5,7 @@ import { Departamento } from "@/core/departamentos/interfaces/response-departame
 import { CrearMunicipio } from "@/core/municipios/accions/crear-municipio";
 import { obtenerMunicipiosDeptoById } from "@/core/municipios/accions/obtener-municipiosByDepto";
 import MyIcon from "@/presentation/auth/components/MyIcon";
+import MessageError from "@/presentation/components/MessageError";
 import { UsersStackParamList } from "@/presentation/navigation/types";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
@@ -197,6 +198,35 @@ const AgregarDepartamentoPais = ({ route }: DetailsDeptoPaisProps) => {
     );
   }
 
+  if (isError || data?.data.departamentos.length === 0) {
+    return (
+      <ThemedView style={{ flex: 1 }}>
+        <View style={{ alignItems: "flex-end", marginTop: 5, padding: 5 }}>
+          <Button
+            buttonColor={primary}
+            icon="plus"
+            mode="contained"
+            onPress={showAddDeptoModal}
+          >
+            Agregar Departamento
+          </Button>
+        </View>
+        <MessageError
+          titulo="No se encontraron servicios"
+          descripcion=" No se encontraron datos de los departamentos en este módulo. Por favor, verifica más tarde o vuelve a intentar."
+        />
+        <ModalAddDepto
+          visibleAddDeptoModal={visibleAddDeptoModal}
+          hideAddDeptoModal={hideAddDeptoModal}
+          newDeptoNombre={newDeptoNombre}
+          setNewDeptoNombre={setNewDeptoNombre}
+          error={error}
+          handleAddDepartamento={handleAddDepartamento}
+        />
+      </ThemedView>
+    );
+  }
+
   return (
     <ThemedView style={{ flex: 1 }}>
       <View style={{ alignItems: "flex-end", marginTop: 5, padding: 5 }}>
@@ -270,7 +300,7 @@ const AgregarDepartamentoPais = ({ route }: DetailsDeptoPaisProps) => {
           ))}
         </ScrollView>
 
-        <View
+        {/* <View
           style={{
             flexDirection: "row",
             justifyContent: "space-between",
@@ -310,7 +340,7 @@ const AgregarDepartamentoPais = ({ route }: DetailsDeptoPaisProps) => {
           >
             Siguiente
           </Button>
-        </View>
+        </View> */}
       </View>
 
       <ModalAddMunicipio

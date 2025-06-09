@@ -2,11 +2,11 @@ import { UserUpdateData } from "@/core/auth/interfaces/user";
 import { obtenerDeptosPaisById } from "@/core/departamentos/accions/obtener-departamentosByPaid";
 import { obtenerMunicipiosDeptoById } from "@/core/municipios/accions/obtener-municipiosByDepto";
 import { obtenerPaises } from "@/core/paises/accions/obtener-paises";
+import { getRoles } from "@/core/roles/accions/all-roles";
 import {
   actualizarUsuario,
   obtenerUsuarioById,
 } from "@/core/users/accions/get-user-byId";
-import { Roles } from "@/helpers/data/roles";
 import MessageError from "@/presentation/components/MessageError";
 import { UsersStackParamList } from "@/presentation/navigation/types";
 import ThemedButton from "@/presentation/theme/components/ThemedButton";
@@ -88,6 +88,13 @@ const UsersDetailsScreen = ({ route }: UserDetailsScreenProps) => {
     enabled: !!departamentoId,
   });
 
+  const { data: roles } = useQuery({
+    queryKey: ["roles"],
+    queryFn: () => getRoles(),
+    staleTime: 60 * 100 * 5,
+    retry: 0,
+  });
+
   const countryItems =
     data?.data.map((pais) => ({
       label: pais.nombre,
@@ -106,6 +113,12 @@ const UsersDetailsScreen = ({ route }: UserDetailsScreenProps) => {
       value: mun.id.toString(),
     })) || [];
 
+  const rolesItems =
+    roles?.data.map((rol) => ({
+      label: rol.name,
+      value: rol.id.toString(),
+    })) || [];
+
   useEffect(() => {
     if (user) {
       reset({
@@ -114,7 +127,7 @@ const UsersDetailsScreen = ({ route }: UserDetailsScreenProps) => {
         identificacion: user.data.identificacion,
         direccion: user.data.direccion,
         telefono: user.data.telefono,
-        rol: user.data.rol,
+        role: user.data.role.id,
         pais: user.data.pais.id,
         departamento: user.data.departamento?.id || "",
         municipio: user.data.municipio?.id || "",
@@ -123,11 +136,6 @@ const UsersDetailsScreen = ({ route }: UserDetailsScreenProps) => {
       });
     }
   }, [user, reset]);
-
-  const rolesItems = Roles.map((rol) => ({
-    label: rol.rol,
-    value: rol.rol.toString(),
-  }));
 
   const handleCountryChange = (value: string) => {
     setValue("pais", value);
@@ -150,7 +158,7 @@ const UsersDetailsScreen = ({ route }: UserDetailsScreenProps) => {
         identificacion: updatedUser.identificacion,
         direccion: updatedUser.direccion,
         telefono: updatedUser.telefono,
-        rol: updatedUser.rol,
+        role: updatedUser.role.id,
         pais: updatedUser.pais.id,
         departamento: updatedUser.departamento?.id || "",
         municipio: updatedUser.municipio?.id || "",
@@ -206,7 +214,7 @@ const UsersDetailsScreen = ({ route }: UserDetailsScreenProps) => {
         identificacion: user?.data.identificacion || "",
         direccion: user?.data.direccion || "",
         telefono: user?.data.telefono || "",
-        rol: user?.data.rol || "",
+        role: user?.data.role.name || "",
         pais: user?.data.pais.id || "",
         departamento: user?.data.departamento?.id || "",
         municipio: user?.data.municipio?.id || "",
@@ -316,10 +324,10 @@ const UsersDetailsScreen = ({ route }: UserDetailsScreenProps) => {
           <ThemedPicker
             icon="people-circle-outline"
             items={rolesItems}
-            selectedValue={watch("rol") ?? ""}
-            onValueChange={(value) => setValue("rol", value)}
+            selectedValue={watch("role") ?? ""}
+            onValueChange={(value) => setValue("role", value)}
             placeholder="Selecciona un rol"
-            error={errors.rol?.message}
+            error={errors.role?.message}
             enabled={isEditing}
           />
 

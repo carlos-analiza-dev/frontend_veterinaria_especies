@@ -54,10 +54,16 @@ const ServicioPageAdmin = () => {
 
   if (isError || servicios?.data.servicios.length === 0) {
     return (
-      <MessageError
-        titulo="No se encontraron servicios"
-        descripcion=" No se encontraron datos de los servicios en este módulo. Por favor, verifica más tarde o vuelve a intentar."
-      />
+      <ThemedView style={styles.container}>
+        <MessageError
+          titulo="No se encontraron servicios"
+          descripcion=" No se encontraron datos de los servicios en este módulo. Por favor, verifica más tarde o vuelve a intentar."
+        />
+        <FAB
+          iconName="add-outline"
+          onPress={() => navigation.navigate("CrearServicio")}
+        />
+      </ThemedView>
     );
   }
 

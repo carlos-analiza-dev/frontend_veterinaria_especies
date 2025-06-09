@@ -18,6 +18,7 @@ import DashboardAdminPage from "./dashboard";
 import PaisDetailsPage from "./paise-dateails";
 import PaisesPage from "./paises-page";
 import PerfilAdminPage from "./perfil-admin";
+import RolesPageAdmin from "./roles/roles-page";
 import AddPriceServices from "./servicios/agregar-precio-services";
 import CrearServicioPage from "./servicios/crear-servicio";
 import DetailsServices from "./servicios/details-services";
@@ -30,7 +31,7 @@ const Drawer = createDrawerNavigator();
 export default function AdminLayout() {
   const { user, logout } = useAuthStore();
 
-  if (user?.rol !== "Administrador") {
+  if (user?.role.name !== "Administrador") {
     return <Redirect href="/login" />;
   }
 
@@ -186,6 +187,16 @@ export default function AdminLayout() {
       />
       <Drawer.Screen name="users" component={AdminStackScreen} />
       <Drawer.Screen name="paises-page" component={AdminStackScreenPaises} />
+      <Drawer.Screen
+        name="roles-page"
+        component={RolesPageAdmin}
+        options={{
+          headerShown: true,
+          headerTitle: "Admin Roles",
+          headerRight: () => <LogoutIconButton />,
+          headerLeft: () => <DrawerToggleButton tintColor="black" />,
+        }}
+      />
       <Drawer.Screen
         name="settings"
         component={SettingsScreen}

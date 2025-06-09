@@ -23,15 +23,15 @@ export default function Index() {
     return <Redirect href="/(auth)/login" />;
   }
 
-  if (user?.rol === "Administrador") {
+  if (user?.role.name === "Administrador") {
     return <Redirect href="/(admin)/users" />;
   }
 
-  if (user?.rol === "Secretario") {
+  if (user?.role.name === "Secretario") {
     return <Redirect href="/(secretario)/home" />;
   }
 
-  if (user?.rol === "Veterinario") {
+  if (user?.role.name === "Veterinario") {
     return <Redirect href="/(veterinario)/home" />;
   }
 

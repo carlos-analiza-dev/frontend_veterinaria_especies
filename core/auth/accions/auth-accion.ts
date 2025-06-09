@@ -1,5 +1,5 @@
 import { veterinariaAPI } from "@/core/api/veterinariaApi";
-import { Departamento, Municipio, Pais } from "../interfaces/user";
+import { Departamento, Municipio, Pais, Role } from "../interfaces/user";
 
 export interface AuthResponse {
   id: string;
@@ -8,10 +8,10 @@ export interface AuthResponse {
   identificacion: string;
   direccion: string;
   telefono: string;
-  rol: string;
+  role: Role;
   isActive: boolean;
   isAuthorized: boolean;
-  createdAt: Date;
+  createdAt: string;
   pais: Pais;
   departamento: Departamento;
   municipio: Municipio;
@@ -21,19 +21,34 @@ export interface AuthResponse {
 export const returnUserToken = (data: AuthResponse) => {
   const { token, ...user } = data;
 
-  return { user, token };
+  const adaptedUser = {
+    ...user,
+    name: user.name,
+  };
+
+  return { user: adaptedUser, token };
 };
 
 export const authLogin = async (email: string, password: string) => {
-  email.toLowerCase();
   try {
+    email = email.toLowerCase().trim();
+
     const { data } = await veterinariaAPI.post<AuthResponse>("/auth/login", {
       email,
       password,
     });
 
+    if (!data) {
+      return null;
+    }
+
     return returnUserToken(data);
-  } catch (error) {
+  } catch (error: any) {
+    console.error("Auth login error:", {
+      message: error.message,
+      response: error.response?.data,
+      stack: error.stack,
+    });
     return null;
   }
 };

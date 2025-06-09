@@ -1,8 +1,3 @@
-export interface ResponseUsers {
-  users: User[];
-  total: number;
-}
-
 export interface Municipio {
   id: string;
   nombre: string;
@@ -29,13 +24,13 @@ export interface Pais {
 }
 
 export interface Role {
-  id: number;
+  id: string;
   name: string;
   description: string;
   isActive: boolean;
 }
 
-export interface User {
+export interface ResponseLogin {
   id: string;
   email: string;
   name: string;
@@ -49,4 +44,5 @@ export interface User {
   pais: Pais;
   departamento: Departamento;
   municipio: Municipio;
+  token: string;
 }

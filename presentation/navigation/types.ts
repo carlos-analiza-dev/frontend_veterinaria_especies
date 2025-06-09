@@ -11,6 +11,7 @@ export type UsersStackParamList = {
   CrearServicio: undefined;
   DetailsServicio: { servicioId: string };
   AgregarPreciosServices: { servicioId: string };
+  RolesPage: undefined;
 };
 
 declare global {
