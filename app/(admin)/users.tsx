@@ -20,10 +20,22 @@ import {
 const UsersScreenAdmin = () => {
   const limit = 10;
   const colorPrimary = useThemeColor({}, "primary");
+  const backgroundColor = useThemeColor({}, "background");
+  const textColor = useThemeColor({}, "text");
+  const cardColor = useThemeColor({}, "card");
+  const placeholderColor = useThemeColor({}, "icon");
+  const emptyTextColor = useThemeColor({}, "icon");
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const navigation = useNavigation();
+
+  const styles = createStyles(
+    backgroundColor,
+    textColor,
+    cardColor,
+    emptyTextColor
+  );
 
   const {
     data,
@@ -171,71 +183,67 @@ const UsersScreenAdmin = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 10,
-    backgroundColor: "#f5f5f5",
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: "bold",
-    marginVertical: 15,
-    textAlign: "center",
-    color: "#333",
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  errorText: {
-    fontSize: 16,
-    color: "red",
-    marginBottom: 20,
-  },
-  listContent: {
-    paddingBottom: 20,
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  emptyText: {
-    fontSize: 16,
-    color: "#666",
-  },
-  footerLoader: {
-    marginVertical: 20,
-  },
-  filterContainer: {
-    marginBottom: 15,
-  },
-  searchInput: {
-    backgroundColor: "white",
-    padding: Platform.OS === "ios" ? 12 : 10,
-    borderRadius: 8,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: "#ddd",
-  },
-  roleFilterContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 10,
-  },
-  filterButton: {
-    flex: 1,
-    marginHorizontal: 4,
-  },
-});
+const createStyles = (
+  backgroundColor: string,
+  textColor: string,
+  cardColor: string,
+  emptyTextColor: string
+) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      padding: 10,
+      backgroundColor,
+    },
+    title: {
+      fontSize: 22,
+      fontWeight: "bold",
+      marginVertical: 15,
+      textAlign: "center",
+      color: textColor,
+    },
+    loadingContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    listContent: {
+      paddingBottom: 20,
+    },
+    emptyContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      padding: 20,
+    },
+    emptyText: {
+      fontSize: 16,
+      color: emptyTextColor,
+    },
+    footerLoader: {
+      marginVertical: 20,
+    },
+    filterContainer: {
+      marginBottom: 15,
+    },
+    searchInput: {
+      backgroundColor: cardColor,
+      padding: Platform.OS === "ios" ? 12 : 10,
+      borderRadius: 8,
+      marginBottom: 10,
+      borderWidth: 1,
+      borderColor: "#ddd",
+      color: textColor,
+    },
+    roleFilterContainer: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginBottom: 10,
+    },
+    filterButton: {
+      flex: 1,
+      marginHorizontal: 4,
+    },
+  });
 
 export default UsersScreenAdmin;

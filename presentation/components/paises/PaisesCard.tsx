@@ -1,14 +1,15 @@
 import { PaisesResponse } from "@/core/paises/interfaces/paises.response.interface";
 import MyIcon from "@/presentation/auth/components/MyIcon";
+import { ThemedText } from "@/presentation/theme/components/ThemedText";
+import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import React, { useMemo } from "react";
 import {
   Image,
   StyleSheet,
-  Text,
   TouchableOpacity,
   useWindowDimensions,
-  View,
 } from "react-native";
+import { useTheme } from "react-native-paper";
 
 interface Props {
   pais: PaisesResponse;
@@ -16,6 +17,7 @@ interface Props {
 }
 
 const PaisesCard = ({ pais, onPress }: Props) => {
+  const { colors } = useTheme();
   const { height } = useWindowDimensions();
 
   const statusStyles = useMemo(
@@ -35,13 +37,18 @@ const PaisesCard = ({ pais, onPress }: Props) => {
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.8}
-      style={[styles.card, { marginTop: height * 0.02 }]}
+      style={[
+        styles.card,
+        { marginTop: height * 0.02, backgroundColor: colors.background },
+      ]}
       accessibilityLabel={`País ${pais.nombre}, ${
         pais.isActive ? "Activo" : "Inactivo"
       }`}
       accessibilityRole="button"
     >
-      <View style={styles.flagContainer}>
+      <ThemedView
+        style={[styles.flagContainer, { backgroundColor: colors.background }]}
+      >
         <Image
           source={{
             uri: `https://flagcdn.com/w80/${pais.code.toLowerCase()}.png`,
@@ -54,18 +61,20 @@ const PaisesCard = ({ pais, onPress }: Props) => {
           }
           defaultSource={require("@/images/bandera-notfound.png")}
         />
-      </View>
+      </ThemedView>
 
-      <View style={styles.header}>
-        <Text
+      <ThemedView
+        style={[styles.header, { backgroundColor: colors.background }]}
+      >
+        <ThemedText
           style={styles.title}
           numberOfLines={1}
           ellipsizeMode="tail"
           accessibilityLabel={`Nombre del país: ${pais.nombre}`}
         >
           {pais.nombre}
-        </Text>
-        <View
+        </ThemedText>
+        <ThemedView
           style={[
             styles.statusBadge,
             { backgroundColor: statusStyles.backgroundColor },
@@ -79,79 +88,99 @@ const PaisesCard = ({ pais, onPress }: Props) => {
             color={statusStyles.color}
             size={16}
           />
-          <Text style={[styles.statusText, { color: statusStyles.color }]}>
+          <ThemedText
+            style={[styles.statusText, { color: statusStyles.color }]}
+          >
             {pais.isActive ? "Activo" : "Inactivo"}
-          </Text>
-        </View>
-      </View>
+          </ThemedText>
+        </ThemedView>
+      </ThemedView>
 
-      <View style={styles.infoContainer}>
-        <View style={styles.column}>
-          <View style={styles.infoRow}>
+      <ThemedView
+        style={[styles.infoContainer, { backgroundColor: colors.background }]}
+      >
+        <ThemedView
+          style={[styles.column, { backgroundColor: colors.background }]}
+        >
+          <ThemedView
+            style={[styles.infoRow, { backgroundColor: colors.background }]}
+          >
             <MyIcon name="code" color="#666" size={18} />
-            <Text
+            <ThemedText
               style={styles.infoText}
               accessibilityLabel={`Código: ${pais.code}`}
             >
               Código: {pais.code}
-            </Text>
-          </View>
-          <View style={styles.infoRow}>
+            </ThemedText>
+          </ThemedView>
+          <ThemedView
+            style={[styles.infoRow, { backgroundColor: colors.background }]}
+          >
             <MyIcon name="call" color="#666" size={18} />
-            <Text
+            <ThemedText
               style={styles.infoText}
               accessibilityLabel={`Prefijo telefónico: ${pais.code_phone}`}
             >
               Prefijo: {pais.code_phone}
-            </Text>
-          </View>
-          <View style={styles.infoRow}>
+            </ThemedText>
+          </ThemedView>
+          <ThemedView
+            style={[styles.infoRow, { backgroundColor: colors.background }]}
+          >
             <MyIcon name="document-text" color="#666" size={18} />
-            <Text
+            <ThemedText
               style={styles.infoText}
               numberOfLines={1}
               ellipsizeMode="tail"
               accessibilityLabel={`Documento: ${pais.nombre_documento}`}
             >
               Documento: {pais.nombre_documento}
-            </Text>
-          </View>
-        </View>
+            </ThemedText>
+          </ThemedView>
+        </ThemedView>
 
-        <View style={styles.column}>
-          <View style={styles.infoRow}>
+        <ThemedView
+          style={[styles.column, { backgroundColor: colors.background }]}
+        >
+          <ThemedView
+            style={[styles.infoRow, { backgroundColor: colors.background }]}
+          >
             <MyIcon name="cash" color="#666" size={18} />
-            <Text
+            <ThemedText
               style={styles.infoText}
               accessibilityLabel={`Moneda: ${pais.nombre_moneda}`}
             >
               Moneda: {pais.nombre_moneda}
-            </Text>
-          </View>
-          <View style={styles.infoRow}>
+            </ThemedText>
+          </ThemedView>
+          <ThemedView
+            style={[styles.infoRow, { backgroundColor: colors.background }]}
+          >
             <MyIcon name="pricetag" color="#666" size={18} />
-            <Text
+            <ThemedText
               style={styles.infoText}
               accessibilityLabel={`Símbolo monetario: ${pais.simbolo_moneda}`}
             >
               Símbolo: {pais.simbolo_moneda}
-            </Text>
-          </View>
-          <View style={styles.infoRow}>
+            </ThemedText>
+          </ThemedView>
+          <ThemedView
+            style={[styles.infoRow, { backgroundColor: colors.background }]}
+          >
             <MyIcon name="business" color="#666" size={18} />
-            <Text
+            <ThemedText
               style={styles.infoText}
               accessibilityLabel={`Número de departamentos: ${departamentosCount}`}
             >
               Departamentos: {departamentosCount}
-            </Text>
-          </View>
-        </View>
-      </View>
+            </ThemedText>
+          </ThemedView>
+        </ThemedView>
+      </ThemedView>
 
-      <View style={styles.arrowContainer}>
+      <ThemedView style={styles.arrowContainer}>
         <MyIcon name="chevron-forward" color="#999" size={20} />
-      </View>
+      </ThemedView>
     </TouchableOpacity>
   );
 };
@@ -160,7 +189,6 @@ export default React.memo(PaisesCard);
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#fff",
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
@@ -193,7 +221,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#333",
     flex: 1,
     marginRight: 8,
   },
@@ -225,7 +252,7 @@ const styles = StyleSheet.create({
   },
   infoText: {
     fontSize: 14,
-    color: "#666",
+
     flexShrink: 1,
   },
   arrowContainer: {

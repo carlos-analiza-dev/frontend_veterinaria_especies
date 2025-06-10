@@ -10,7 +10,6 @@ import {
   Alert,
   KeyboardAvoidingView,
   ScrollView,
-  Text,
   useWindowDimensions,
   View,
 } from "react-native";
@@ -84,7 +83,7 @@ const ChangePasswordPage = () => {
     <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
       <ScrollView style={{ paddingHorizontal: 40 }}>
         <View style={{ paddingTop: height * 0.3 }}>
-          <Text
+          <ThemedText
             style={{
               fontSize: 25,
               fontFamily: "KanitBold",
@@ -92,7 +91,7 @@ const ChangePasswordPage = () => {
             }}
           >
             Restablecer Contraseña
-          </Text>
+          </ThemedText>
           <ThemedText style={{ color: "gray" }}>
             Por favor, ingresa tus datos correctamente
           </ThemedText>

@@ -2,7 +2,14 @@ import { ActualizarDepto } from "@/core/departamentos/accions/update-depto";
 import { Departamento } from "@/core/departamentos/interfaces/response-departamentos.interface";
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
-import { Button, HelperText, Modal, Text, TextInput } from "react-native-paper";
+import {
+  Button,
+  HelperText,
+  Modal,
+  Text,
+  TextInput,
+  useTheme,
+} from "react-native-paper";
 import Toast from "react-native-toast-message";
 
 interface ModalEditDeptoProps {
@@ -18,6 +25,7 @@ const ModalEditDepto: React.FC<ModalEditDeptoProps> = ({
   departamento,
   onUpdateSuccess,
 }) => {
+  const { colors } = useTheme();
   const [nombre, setNombre] = useState(departamento?.nombre || "");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -62,10 +70,10 @@ const ModalEditDepto: React.FC<ModalEditDeptoProps> = ({
       visible={visible}
       onDismiss={onDismiss}
       contentContainerStyle={{
-        backgroundColor: "white",
         padding: 20,
         margin: 20,
         borderRadius: 8,
+        backgroundColor: colors.background,
       }}
     >
       <Text variant="titleLarge">Editar Departamento</Text>

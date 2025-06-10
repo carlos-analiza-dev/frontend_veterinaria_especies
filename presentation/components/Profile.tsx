@@ -1,6 +1,6 @@
 import { User } from "@/core/auth/interfaces/user";
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet } from "react-native";
 import { Avatar } from "react-native-paper";
 import MyIcon from "../auth/components/MyIcon";
 import { ThemedText } from "../theme/components/ThemedText";
@@ -17,23 +17,25 @@ const Profile = ({ user, height, primary }: Props) => {
     "https://i.pravatar.cc/150?img=" + Math.floor(Math.random() * 70);
   return (
     <ThemedView style={styles.container}>
-      <View style={[styles.header, { height: height * 0.2 }]}>
-        <View style={[styles.avatarWrapper, { bottom: -50 }]}>
+      <ThemedView style={[styles.header, { height: height * 0.2 }]}>
+        <ThemedView style={[styles.avatarWrapper, { bottom: -50 }]}>
           <Avatar.Image
             size={100}
             source={{ uri: avatarUrl }}
             style={styles.avatarImage}
           />
-        </View>
-      </View>
+        </ThemedView>
+      </ThemedView>
 
-      <View style={[styles.contentContainer, { marginTop: 60 }]}>
-        <View style={styles.userInfoHeader}>
-          <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
+      <ThemedView style={[styles.contentContainer, { marginTop: 60 }]}>
+        <ThemedView style={styles.userInfoHeader}>
+          <ThemedView
+            style={{ flexDirection: "row", gap: 8, alignItems: "center" }}
+          >
             <ThemedText style={{ fontWeight: "black", fontSize: 24 }}>
               {user?.name}
             </ThemedText>
-            <View
+            <ThemedView
               style={{ flexDirection: "row", gap: 3, alignItems: "center" }}
             >
               <MyIcon
@@ -41,41 +43,41 @@ const Profile = ({ user, height, primary }: Props) => {
                 name="checkmark-done-circle-outline"
                 size={25}
               />
-            </View>
-          </View>
+            </ThemedView>
+          </ThemedView>
 
           <ThemedText style={styles.username}>{user?.email}</ThemedText>
-        </View>
+        </ThemedView>
 
         <ThemedText style={styles.bio}>{user?.role.description}</ThemedText>
 
-        <View style={styles.detailsContainer}>
-          <View style={styles.detailItem}>
+        <ThemedView style={styles.detailsContainer}>
+          <ThemedView style={styles.detailItem}>
             <MyIcon name="location-outline" size={20} color={primary} />
             <ThemedText style={styles.detailText}>
               {user?.municipio.nombre}, {user?.departamento.nombre},{" "}
               {user?.pais.nombre}.
             </ThemedText>
-          </View>
+          </ThemedView>
 
-          <View style={styles.detailItem}>
+          <ThemedView style={styles.detailItem}>
             <MyIcon name="person-outline" size={20} color={primary} />
             <ThemedText style={styles.detailText}>{user?.role.name}</ThemedText>
-          </View>
+          </ThemedView>
 
-          <View style={styles.detailItem}>
+          <ThemedView style={styles.detailItem}>
             <MyIcon name="call-outline" size={20} color={primary} />
             <ThemedText style={styles.detailText}>{user?.telefono}</ThemedText>
-          </View>
+          </ThemedView>
 
-          <View style={styles.detailItem}>
+          <ThemedView style={styles.detailItem}>
             <MyIcon name="calendar-outline" size={20} color={primary} />
             <ThemedText style={styles.detailText}>
               Se unió en {new Date(user?.createdAt || "").toLocaleDateString()}
             </ThemedText>
-          </View>
-        </View>
-      </View>
+          </ThemedView>
+        </ThemedView>
+      </ThemedView>
     </ThemedView>
   );
 };

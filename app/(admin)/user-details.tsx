@@ -13,7 +13,8 @@ import ThemedButton from "@/presentation/theme/components/ThemedButton";
 import ThemedPicker from "@/presentation/theme/components/ThemedPicker";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import ThemedTextInput from "@/presentation/theme/components/ThemedTextInput";
-import { RouteProp } from "@react-navigation/native";
+import { ThemedView } from "@/presentation/theme/components/ThemedView";
+import { RouteProp, useTheme } from "@react-navigation/native";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import React, { useEffect } from "react";
@@ -37,6 +38,7 @@ interface UserDetailsScreenProps {
 }
 
 const UsersDetailsScreen = ({ route }: UserDetailsScreenProps) => {
+  const { colors } = useTheme();
   const { userId } = route.params;
   const { height } = useWindowDimensions();
   const queryClient = useQueryClient();
@@ -245,19 +247,26 @@ const UsersDetailsScreen = ({ route }: UserDetailsScreenProps) => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.container}
+      style={[styles.container, { backgroundColor: colors.background }]}
     >
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         keyboardShouldPersistTaps="handled"
       >
-        <View style={[styles.header, { marginTop: height * 0.05 }]}>
+        <ThemedView
+          style={[
+            styles.header,
+            { marginTop: height * 0.05, backgroundColor: colors.background },
+          ]}
+        >
           <ThemedText type="title" style={styles.title}>
             {isEditing ? "Editar Usuario" : "Detalles del Usuario"}
           </ThemedText>
-        </View>
+        </ThemedView>
 
-        <View style={styles.formContainer}>
+        <ThemedView
+          style={[styles.formContainer, { backgroundColor: colors.background }]}
+        >
           <ThemedTextInput
             placeholder="Correo electrónico"
             keyboardType="email-address"
@@ -360,28 +369,40 @@ const UsersDetailsScreen = ({ route }: UserDetailsScreenProps) => {
             editable={isEditing}
           />
 
-          <View style={styles.switchContainer}>
+          <ThemedView
+            style={[
+              styles.switchContainer,
+              { backgroundColor: colors.background },
+            ]}
+          >
             <ThemedText style={styles.switchLabel}>Activo:</ThemedText>
             <Switch
               value={watch("isActive")}
               onValueChange={(value) => setValue("isActive", value)}
               disabled={!isEditing}
               thumbColor={watch("isActive") ? "#4CAF50" : "#f44336"}
+              trackColor={{ false: "#ccc", true: "#ccc" }}
             />
-          </View>
+          </ThemedView>
 
-          <View style={styles.switchContainer}>
+          <ThemedView
+            style={[
+              styles.switchContainer,
+              { backgroundColor: colors.background },
+            ]}
+          >
             <ThemedText style={styles.switchLabel}>Autorizado:</ThemedText>
             <Switch
               value={watch("isAuthorized")}
               onValueChange={(value) => setValue("isAuthorized", value)}
               disabled={!isEditing}
               thumbColor={watch("isAuthorized") ? "#4CAF50" : "#f44336"}
+              trackColor={{ false: "#ccc", true: "#ccc" }}
             />
-          </View>
-        </View>
+          </ThemedView>
+        </ThemedView>
 
-        <View style={styles.buttonContainer}>
+        <ThemedView style={styles.buttonContainer}>
           {isEditing ? (
             <>
               <ThemedButton
@@ -408,7 +429,7 @@ const UsersDetailsScreen = ({ route }: UserDetailsScreenProps) => {
               icon="create-outline"
             />
           )}
-        </View>
+        </ThemedView>
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -417,7 +438,6 @@ const UsersDetailsScreen = ({ route }: UserDetailsScreenProps) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
   },
   scrollContainer: {
     flexGrow: 1,
@@ -440,7 +460,7 @@ const styles = StyleSheet.create({
   infoContainer: {
     marginBottom: 20,
     padding: 15,
-    backgroundColor: "#f9f9f9",
+
     borderRadius: 8,
   },
   infoLabel: {
@@ -472,6 +492,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+
     marginVertical: 10,
     paddingVertical: 8,
     borderBottomWidth: 1,

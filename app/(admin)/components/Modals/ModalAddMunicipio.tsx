@@ -15,6 +15,7 @@ import {
   Switch,
   Text,
   TextInput,
+  useTheme,
 } from "react-native-paper";
 import Toast from "react-native-toast-message";
 
@@ -44,6 +45,7 @@ const ModalAddMunicipio = ({
   municipios,
   cargando,
 }: Props) => {
+  const { colors } = useTheme();
   const primary = useThemeColor({}, "primary");
 
   const queryClient = useQueryClient();
@@ -81,11 +83,11 @@ const ModalAddMunicipio = ({
         visible={visibleMunicipiosModal}
         onDismiss={hideMunicipiosModal}
         contentContainerStyle={{
-          backgroundColor: "white",
           padding: 20,
           margin: 20,
           borderRadius: 8,
           maxHeight: "80%",
+          backgroundColor: colors.background,
         }}
       >
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>

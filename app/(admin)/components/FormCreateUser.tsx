@@ -8,6 +8,7 @@ import ThemedButton from "@/presentation/theme/components/ThemedButton";
 import ThemedPicker from "@/presentation/theme/components/ThemedPicker";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import ThemedTextInput from "@/presentation/theme/components/ThemedTextInput";
+import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { router } from "expo-router";
@@ -18,11 +19,12 @@ import {
   ScrollView,
   StyleSheet,
   useWindowDimensions,
-  View,
 } from "react-native";
+import { useTheme } from "react-native-paper";
 import Toast from "react-native-toast-message";
 
 const FormCreateUser = () => {
+  const { colors } = useTheme();
   const { height } = useWindowDimensions();
   const queryClient = useQueryClient();
 
@@ -160,19 +162,26 @@ const FormCreateUser = () => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.container}
+      style={[styles.container, { backgroundColor: colors.background }]}
     >
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         keyboardShouldPersistTaps="handled"
       >
-        <View style={[styles.header, { marginTop: height * 0.05 }]}>
+        <ThemedView
+          style={[
+            styles.header,
+            { marginTop: height * 0.05, backgroundColor: colors.background },
+          ]}
+        >
           <ThemedText type="title" style={styles.title}>
             Crear Usuario
           </ThemedText>
-        </View>
+        </ThemedView>
 
-        <View style={styles.formContainer}>
+        <ThemedView
+          style={[styles.formContainer, { backgroundColor: colors.background }]}
+        >
           <ThemedTextInput
             placeholder="Correo electrónico"
             keyboardType="email-address"
@@ -275,9 +284,9 @@ const FormCreateUser = () => {
             onChangeText={(text) => setValue("telefono", text)}
             error={errors.telefono?.message}
           />
-        </View>
+        </ThemedView>
 
-        <View style={styles.buttonContainer}>
+        <ThemedView style={styles.buttonContainer}>
           <ThemedButton
             title="Crear usuario"
             onPress={handleSubmit(onSubmit)}
@@ -285,17 +294,15 @@ const FormCreateUser = () => {
             icon="person-add-outline"
             loading={mutation.isPending}
           />
-        </View>
+        </ThemedView>
       </ScrollView>
     </KeyboardAvoidingView>
   );
 };
 
-// Los estilos se mantienen igual
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
   },
   scrollContainer: {
     flexGrow: 1,

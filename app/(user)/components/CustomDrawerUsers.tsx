@@ -2,7 +2,7 @@ import MyIcon from "@/presentation/auth/components/MyIcon";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import { DrawerContentComponentProps } from "@react-navigation/drawer";
-
+import React from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import { useTheme } from "react-native-paper";
 
@@ -10,7 +10,7 @@ type Props = DrawerContentComponentProps & {
   logout: () => void;
 };
 
-const CustomDrawerContent = ({ navigation, logout }: Props) => {
+const CustomDrawerUsers = ({ navigation, logout }: Props) => {
   const { colors } = useTheme();
 
   return (
@@ -25,63 +25,43 @@ const CustomDrawerContent = ({ navigation, logout }: Props) => {
           },
         ]}
       >
-        <ThemedText style={[styles.title]}>Menú Administrador</ThemedText>
+        <ThemedText style={[styles.title]}>Menú Ganadero</ThemedText>
       </ThemedView>
 
       <TouchableOpacity
         style={styles.drawerItem}
-        onPress={() => navigation.navigate("dashboard")}
+        onPress={() => navigation.navigate("home")}
       >
-        <MyIcon name="bar-chart-outline" size={24} color={colors.primary} />
-        <ThemedText style={[styles.itemText]}>Dashboard</ThemedText>
+        <MyIcon
+          name="calendar-number-outline"
+          size={24}
+          color={colors.primary}
+        />
+        <ThemedText style={[styles.itemText]}>Agendar Cita</ThemedText>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.drawerItem}
-        onPress={() => navigation.navigate("users")}
+        onPress={() => navigation.navigate("fincas-page")}
       >
-        <MyIcon name="people-outline" size={24} color={colors.primary} />
-        <ThemedText style={[styles.itemText]}>Usuarios</ThemedText>
+        <MyIcon name="podium-outline" size={24} color={colors.primary} />
+        <ThemedText style={[styles.itemText]}>Fincas</ThemedText>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.drawerItem}
-        onPress={() => navigation.navigate("paises-page")}
+        onPress={() => navigation.navigate("animales-page")}
       >
-        <MyIcon name="globe-outline" size={24} color={colors.primary} />
-        <ThemedText style={[styles.itemText]}>Paises</ThemedText>
+        <MyIcon name="paw-outline" size={24} color={colors.primary} />
+        <ThemedText style={[styles.itemText]}>Animales</ThemedText>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.drawerItem}
-        onPress={() => navigation.navigate("servicios-page")}
-      >
-        <MyIcon name="hammer-outline" size={24} color={colors.primary} />
-        <ThemedText style={[styles.itemText]}>Servicios</ThemedText>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.drawerItem}
-        onPress={() => navigation.navigate("roles-page")}
-      >
-        <MyIcon name="people-circle-sharp" size={24} color={colors.primary} />
-        <ThemedText style={[styles.itemText]}>Roles</ThemedText>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.drawerItem}
-        onPress={() => navigation.navigate("perfil-admin")}
+        onPress={() => navigation.navigate("profile")}
       >
         <MyIcon name="person-outline" size={24} color={colors.primary} />
         <ThemedText style={[styles.itemText]}>Perfil</ThemedText>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.drawerItem}
-        onPress={() => navigation.navigate("settings")}
-      >
-        <MyIcon name="settings-outline" size={24} color={colors.primary} />
-        <ThemedText style={[styles.itemText]}>Configuración</ThemedText>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -96,6 +76,8 @@ const CustomDrawerContent = ({ navigation, logout }: Props) => {
     </ThemedView>
   );
 };
+
+export default CustomDrawerUsers;
 
 const styles = StyleSheet.create({
   container: {
@@ -130,5 +112,3 @@ const styles = StyleSheet.create({
     color: "#ff4444",
   },
 });
-
-export default CustomDrawerContent;

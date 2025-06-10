@@ -1,11 +1,15 @@
-import React from "react";
-import { Text, View } from "react-native";
+import { ThemedText } from "@/presentation/theme/components/ThemedText";
+import { ThemedView } from "@/presentation/theme/components/ThemedView";
+import { useTheme } from "react-native-paper";
 
 const HomeUser = () => {
+  const { colors } = useTheme();
   return (
-    <View>
-      <Text>HomeUser</Text>
-    </View>
+    <ThemedView style={{ flex: 1, backgroundColor: colors.background }}>
+      <ThemedView style={{ marginTop: 8, justifyContent: "center" }}>
+        <ThemedText type="subtitle">Agendar Cita</ThemedText>
+      </ThemedView>
+    </ThemedView>
   );
 };
 

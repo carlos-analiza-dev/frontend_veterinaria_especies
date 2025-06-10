@@ -1,43 +1,74 @@
 import { Colors } from "@/constants/Colors";
 import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useCallback, useState } from "react";
+import {
+  ActivityIndicator,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { useAuthStore } from "../store/useAuthStore";
 
 const LogoutIconButton = () => {
-  const primaryColor = useThemeColor({}, "primary");
-  const textColor = useThemeColor({}, "text");
-  const backgroundColor = useThemeColor({}, "background");
-  const cardColor =
-    useThemeColor({}, "card") ||
-    (Colors.dark.background === backgroundColor ? "#2A3A5A" : "#FFFFFF");
-  const dangerColor = useThemeColor({}, "danger") || "#FF4444";
-  const cancelButtonColor = useThemeColor({}, "tabIconDefault") || "#9BA1A6";
+  const themeColors = {
+    primary: useThemeColor({}, "primary"),
+    text: useThemeColor({}, "text"),
+    background: useThemeColor({}, "background"),
+    card:
+      useThemeColor({}, "card") ||
+      (Colors.dark.background === useThemeColor({}, "background")
+        ? "#2A3A5A"
+        : "#FFFFFF"),
+    danger: useThemeColor({}, "danger") || "#FF4444",
+    tabIconDefault: useThemeColor({}, "tabIconDefault") || "#9BA1A6",
+  };
 
   const { logout } = useAuthStore();
   const [showModal, setShowModal] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(async () => {
+    setIsLoggingOut(true);
     setShowModal(false);
-    logout();
-  };
+
+    try {
+      await logout();
+    } catch (error) {
+      console.error("Logout error:", error);
+      setIsLoggingOut(false);
+    }
+  }, [logout]);
+
+  const openModal = useCallback(() => setShowModal(true), []);
+  const closeModal = useCallback(() => setShowModal(false), []);
 
   return (
     <>
       <TouchableOpacity
-        onPress={() => setShowModal(true)}
+        onPress={openModal}
         style={{ marginRight: 8 }}
         testID="logout-button"
+        disabled={isLoggingOut}
       >
-        <Ionicons name="log-out-outline" size={24} color={primaryColor} />
+        {isLoggingOut ? (
+          <ActivityIndicator size="small" color={themeColors.primary} />
+        ) : (
+          <Ionicons
+            name="log-out-outline"
+            size={24}
+            color={themeColors.primary}
+          />
+        )}
       </TouchableOpacity>
 
       <Modal
         visible={showModal}
         transparent={true}
         animationType="fade"
-        onRequestClose={() => setShowModal(false)}
+        onRequestClose={closeModal}
       >
         <View
           style={[
@@ -45,35 +76,49 @@ const LogoutIconButton = () => {
             { backgroundColor: "rgba(0, 0, 0, 0.6)" },
           ]}
         >
-          <View style={[styles.modalContainer, { backgroundColor: cardColor }]}>
+          <View
+            style={[
+              styles.modalContainer,
+              { backgroundColor: themeColors.card },
+            ]}
+          >
             <Ionicons
               name="warning-outline"
               size={40}
-              color={dangerColor}
+              color={themeColors.danger}
               style={styles.warningIcon}
             />
-            <Text style={[styles.modalTitle, { color: textColor }]}>
+            <Text style={[styles.modalTitle, { color: themeColors.text }]}>
               ¿Cerrar sesión?
             </Text>
-            <Text style={[styles.modalText, { color: textColor }]}>
+            <Text style={[styles.modalText, { color: themeColors.text }]}>
               ¿Estás seguro que deseas salir de tu cuenta?
             </Text>
 
             <View style={styles.buttonsContainer}>
               <TouchableOpacity
-                style={[styles.button, { backgroundColor: cancelButtonColor }]}
-                onPress={() => setShowModal(false)}
+                style={[
+                  styles.button,
+                  { backgroundColor: themeColors.tabIconDefault },
+                ]}
+                onPress={closeModal}
+                disabled={isLoggingOut}
                 testID="cancel-button"
               >
                 <Text style={styles.buttonText}>Cancelar</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.button, { backgroundColor: dangerColor }]}
+                style={[styles.button, { backgroundColor: themeColors.danger }]}
                 onPress={handleLogout}
+                disabled={isLoggingOut}
                 testID="confirm-button"
               >
-                <Text style={styles.buttonText}>Salir</Text>
+                {isLoggingOut ? (
+                  <ActivityIndicator color="#FFFFFF" />
+                ) : (
+                  <Text style={styles.buttonText}>Salir</Text>
+                )}
               </TouchableOpacity>
             </View>
           </View>

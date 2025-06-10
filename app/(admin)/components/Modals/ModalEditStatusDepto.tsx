@@ -1,7 +1,7 @@
 import { Departamento } from "@/core/departamentos/interfaces/response-departamentos.interface";
 import React from "react";
 import { View } from "react-native";
-import { Button, Modal, Portal, Text } from "react-native-paper";
+import { Button, Modal, Portal, Text, useTheme } from "react-native-paper";
 
 interface Props {
   visibleModalDelete: boolean;
@@ -16,16 +16,17 @@ const ModalDeleteDepto = ({
   hiddenModalDelete,
   visibleModalDelete,
 }: Props) => {
+  const { colors } = useTheme();
   return (
     <Portal>
       <Modal
         visible={visibleModalDelete}
         onDismiss={hiddenModalDelete}
         contentContainerStyle={{
-          backgroundColor: "white",
           padding: 20,
           margin: 20,
           borderRadius: 8,
+          backgroundColor: colors.background,
         }}
       >
         <Text variant="titleLarge">Confirmar actualizacion</Text>

@@ -12,6 +12,11 @@ export type UsersStackParamList = {
   DetailsServicio: { servicioId: string };
   AgregarPreciosServices: { servicioId: string };
   RolesPage: undefined;
+  home: undefined;
+  FincasPage: undefined;
+  AnimalesPage: undefined;
+  CrearFincaPage: undefined;
+  ProfileGanadero: undefined;
 };
 
 declare global {

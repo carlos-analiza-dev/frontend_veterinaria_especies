@@ -3,7 +3,7 @@ import { CrearServicePrecio } from "@/core/servicios_precios/interfaces/crear-se
 import { ResponseServicioPrecio } from "@/core/servicios_precios/interfaces/response-servicio-precio.interface";
 import ThemedPicker from "@/presentation/theme/components/ThemedPicker";
 import React from "react";
-import { Button, Modal, Portal, TextInput } from "react-native-paper";
+import { Button, Modal, Portal, TextInput, useTheme } from "react-native-paper";
 
 interface Props {
   visible: boolean;
@@ -27,13 +27,28 @@ const ModalAgregarPrecios = ({
   closeModal,
   setFormData,
 }: Props) => {
+  const { colors } = useTheme();
+
+  const handleNumericChange = (
+    text: string,
+    field: keyof CrearServicePrecio
+  ) => {
+    const cleanedText = text.replace(/[^0-9.]/g, "");
+
+    if (cleanedText === "" || isNaN(Number(cleanedText))) {
+      setFormData({ ...formData, [field]: 0 });
+    } else {
+      setFormData({ ...formData, [field]: Number(cleanedText) });
+    }
+  };
+
   return (
     <Portal>
       <Modal
         visible={visible}
         onDismiss={closeModal}
         contentContainerStyle={{
-          backgroundColor: "white",
+          backgroundColor: colors.background,
           padding: 20,
           margin: 20,
           borderRadius: 10,
@@ -55,40 +70,37 @@ const ModalAgregarPrecios = ({
         <TextInput
           label="Precio"
           mode="outlined"
-          value={formData.precio.toString()}
-          onChangeText={(text) =>
-            setFormData({ ...formData, precio: text ? Number(text) : 0 })
-          }
+          value={formData.precio === 0 ? "" : formData.precio.toString()}
+          onChangeText={(text) => handleNumericChange(text, "precio")}
           keyboardType="numeric"
           style={{ marginBottom: 10 }}
         />
         <TextInput
           label="Cantidad mínima animales"
           mode="outlined"
-          value={formData.cantidadMin.toString()}
-          onChangeText={(text) =>
-            setFormData({ ...formData, cantidadMin: text ? Number(text) : 0 })
+          value={
+            formData.cantidadMin === 0 ? "" : formData.cantidadMin.toString()
           }
+          onChangeText={(text) => handleNumericChange(text, "cantidadMin")}
           keyboardType="numeric"
           style={{ marginBottom: 10 }}
         />
         <TextInput
           label="Cantidad máxima animales"
           mode="outlined"
-          value={formData.cantidadMax.toString()}
-          onChangeText={(text) =>
-            setFormData({ ...formData, cantidadMax: text ? Number(text) : 0 })
+          value={
+            formData.cantidadMax === 0 ? "" : formData.cantidadMax.toString()
           }
+          onChangeText={(text) => handleNumericChange(text, "cantidadMax")}
           keyboardType="numeric"
           style={{ marginBottom: 10 }}
         />
         <TextInput
           label="Tiempo maximo"
           mode="outlined"
-          value={formData.tiempo.toString()}
-          onChangeText={(text) =>
-            setFormData({ ...formData, tiempo: text ? Number(text) : 0 })
-          }
+          value={formData.tiempo === 0 ? "" : formData.tiempo.toString()}
+          onChangeText={(text) => handleNumericChange(text, "tiempo")}
+          keyboardType="numeric"
           style={{ marginBottom: 10 }}
         />
         <Button

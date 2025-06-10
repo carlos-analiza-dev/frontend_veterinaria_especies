@@ -13,7 +13,10 @@ export const Colors = {
     card: "#FFFFFF",
     danger: "#FF4444",
     warning: "#FF9500",
+    success: "#28A745",
+    info: "#17A2B8",
     error: "red",
+    textSecondary: "#687076",
   },
   dark: {
     text: "#ECEDEE",
@@ -23,9 +26,12 @@ export const Colors = {
     tabIconDefault: "#9BA1A6",
     tabIconSelected: tintColorDark,
     primary: "#3D64F4",
+    textSecondary: "#9BA1A6",
     card: "#2A3A5A",
     danger: "#FF6B6B",
     warning: "#FFAA5C",
+    success: "#48C774",
+    info: "#3298DC",
     error: "red",
   },
 };

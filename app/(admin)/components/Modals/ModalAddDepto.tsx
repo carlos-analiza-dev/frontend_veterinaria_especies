@@ -8,6 +8,7 @@ import {
   Portal,
   Text,
   TextInput,
+  useTheme,
 } from "react-native-paper";
 
 interface Props {
@@ -27,6 +28,7 @@ const ModalAddDepto = ({
   visibleAddDeptoModal,
   handleAddDepartamento,
 }: Props) => {
+  const { colors } = useTheme();
   const primary = useThemeColor({}, "primary");
   return (
     <Portal>
@@ -34,10 +36,10 @@ const ModalAddDepto = ({
         visible={visibleAddDeptoModal}
         onDismiss={hideAddDeptoModal}
         contentContainerStyle={{
-          backgroundColor: "white",
           padding: 20,
           margin: 20,
           borderRadius: 8,
+          backgroundColor: colors.background,
         }}
       >
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>

@@ -11,6 +11,7 @@ import CustomDrawerContent from "./components/CustomDrawerContent";
 import SettingsScreen from "./settings";
 
 import GoBack from "@/presentation/components/GoBack";
+import { useColorScheme } from "@/presentation/theme/hooks/useColorScheme.web";
 import AgregarDepartamentoPais from "./agregar-departamento-pais";
 import CrearPaisPage from "./crea-pais";
 import CrearUsuarioScreen from "./crear-usuario";
@@ -30,6 +31,8 @@ const Drawer = createDrawerNavigator();
 
 export default function AdminLayout() {
   const { user, logout } = useAuthStore();
+  const colorScheme = useColorScheme();
+  const iconColor = colorScheme === "dark" ? "white" : "black";
 
   if (user?.role.name !== "Administrador") {
     return <Redirect href="/login" />;
@@ -47,7 +50,7 @@ export default function AdminLayout() {
             headerShown: true,
             headerTitle: "Admin Panel",
             headerRight: () => <LogoutIconButton />,
-            headerLeft: () => <DrawerToggleButton tintColor="black" />,
+            headerLeft: () => <DrawerToggleButton tintColor={iconColor} />,
           }}
         />
         <UsersStack.Screen
@@ -84,7 +87,7 @@ export default function AdminLayout() {
             headerShown: true,
             headerTitle: "Admin Paises",
             headerRight: () => <LogoutIconButton />,
-            headerLeft: () => <DrawerToggleButton tintColor="black" />,
+            headerLeft: () => <DrawerToggleButton tintColor={iconColor} />,
           }}
         />
         <UsersStack.Screen
@@ -131,7 +134,7 @@ export default function AdminLayout() {
             headerShown: true,
             headerTitle: "Admin Servicios",
             headerRight: () => <LogoutIconButton />,
-            headerLeft: () => <DrawerToggleButton tintColor="black" />,
+            headerLeft: () => <DrawerToggleButton tintColor={iconColor} />,
           }}
         />
         <UsersStack.Screen
@@ -182,7 +185,7 @@ export default function AdminLayout() {
           headerShown: true,
           headerTitle: "Admin Dashboard",
           headerRight: () => <LogoutIconButton />,
-          headerLeft: () => <DrawerToggleButton tintColor="black" />,
+          headerLeft: () => <DrawerToggleButton tintColor={iconColor} />,
         }}
       />
       <Drawer.Screen name="users" component={AdminStackScreen} />
@@ -194,7 +197,7 @@ export default function AdminLayout() {
           headerShown: true,
           headerTitle: "Admin Roles",
           headerRight: () => <LogoutIconButton />,
-          headerLeft: () => <DrawerToggleButton tintColor="black" />,
+          headerLeft: () => <DrawerToggleButton tintColor={iconColor} />,
         }}
       />
       <Drawer.Screen
@@ -204,7 +207,7 @@ export default function AdminLayout() {
           headerShown: true,
           headerTitle: "Admin Settings",
           headerRight: () => <LogoutIconButton />,
-          headerLeft: () => <DrawerToggleButton tintColor="black" />,
+          headerLeft: () => <DrawerToggleButton tintColor={iconColor} />,
         }}
       />
       <Drawer.Screen
@@ -218,7 +221,7 @@ export default function AdminLayout() {
           headerShown: true,
           headerTitle: "Admin Perfil",
           headerRight: () => <LogoutIconButton />,
-          headerLeft: () => <DrawerToggleButton tintColor="black" />,
+          headerLeft: () => <DrawerToggleButton tintColor={iconColor} />,
         }}
       />
     </Drawer.Navigator>

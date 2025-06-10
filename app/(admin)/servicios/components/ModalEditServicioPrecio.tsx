@@ -11,6 +11,7 @@ import {
   Portal,
   Text,
   TextInput,
+  useTheme,
 } from "react-native-paper";
 import Toast from "react-native-toast-message";
 
@@ -27,6 +28,7 @@ const ModalEditServicioPrecio = ({
   servicio,
   visible,
 }: Props) => {
+  const { colors } = useTheme();
   const primary = useThemeColor({}, "primary");
   const [precio, setPrecio] = useState<number>(servicio?.precio || 0);
   const [cantidadMax, setCantidadMax] = useState<number>(
@@ -106,7 +108,7 @@ const ModalEditServicioPrecio = ({
         visible={visible}
         onDismiss={onDismiss}
         contentContainerStyle={{
-          backgroundColor: "white",
+          backgroundColor: colors.background,
           padding: 20,
           margin: 20,
           borderRadius: 8,
