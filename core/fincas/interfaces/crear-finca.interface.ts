@@ -8,7 +8,7 @@ export interface CrearFinca {
   tamaño_total: string;
   area_ganaderia: string;
   tipo_explotacion: string;
-  especies_maneja: string[];
+  especies_maneja: { especie: string; cantidad: number }[];
   propietario_id: string;
   pais_id: string;
 }

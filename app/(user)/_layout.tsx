@@ -12,8 +12,10 @@ import { Redirect } from "expo-router";
 
 import GoBack from "@/presentation/components/GoBack";
 import AnimalesPageGanadero from "./animales/animales-page";
+import CrearAnimal from "./animales/crear-animal";
 import CustomDrawerUsers from "./components/CustomDrawerUsers";
 import CrearFincaPage from "./finca/crear-finca";
+import FincaDetailsPage from "./finca/finca-details";
 import FincasPageGanaderos from "./finca/fincas-page";
 import HomeUser from "./home";
 import ProfileUser from "./profile";
@@ -71,6 +73,16 @@ export default function UserLayout() {
             headerLeft: () => <GoBack />,
           }}
         />
+        <UsersStack.Screen
+          name="FincaDetailsPage"
+          component={FincaDetailsPage}
+          options={{
+            headerShown: true,
+            headerTitle: "Detalles Finca",
+            headerRight: () => <LogoutIconButton />,
+            headerLeft: () => <GoBack />,
+          }}
+        />
       </UsersStack.Navigator>
     );
   };
@@ -86,6 +98,17 @@ export default function UserLayout() {
             headerTitle: "Animales",
             headerRight: () => <LogoutIconButton />,
             headerLeft: () => <DrawerToggleButton tintColor={iconColor} />,
+          }}
+        />
+
+        <UsersStack.Screen
+          name="CrearAnimal"
+          component={CrearAnimal}
+          options={{
+            headerShown: true,
+            headerTitle: "Agregar Animal",
+            headerRight: () => <LogoutIconButton />,
+            headerLeft: () => <GoBack />,
           }}
         />
       </UsersStack.Navigator>

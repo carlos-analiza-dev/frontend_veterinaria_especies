@@ -17,6 +17,8 @@ export type UsersStackParamList = {
   AnimalesPage: undefined;
   CrearFincaPage: undefined;
   ProfileGanadero: undefined;
+  CrearAnimal: undefined;
+  FincaDetailsPage: { fincaId: string };
 };
 
 declare global {

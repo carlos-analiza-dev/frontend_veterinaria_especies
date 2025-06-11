@@ -44,11 +44,6 @@ export const authLogin = async (email: string, password: string) => {
 
     return returnUserToken(data);
   } catch (error: any) {
-    console.error("Auth login error:", {
-      message: error.message,
-      response: error.response?.data,
-      stack: error.stack,
-    });
     return null;
   }
 };

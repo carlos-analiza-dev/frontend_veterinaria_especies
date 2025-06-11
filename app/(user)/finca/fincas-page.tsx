@@ -67,7 +67,13 @@ const FincasPageGanaderos = () => {
         <ThemedText style={styles.title}>Mis Fincas</ThemedText>
 
         {fincas.data.fincas.map((finca) => (
-          <CardFincas key={finca.id} finca={finca} />
+          <CardFincas
+            key={finca.id}
+            finca={finca}
+            onPress={() =>
+              navigation.navigate("FincaDetailsPage", { fincaId: finca.id })
+            }
+          />
         ))}
       </ScrollView>
 

@@ -56,9 +56,6 @@ const PaisesCard = ({ pais, onPress }: Props) => {
           style={styles.flagImage}
           resizeMode="cover"
           accessibilityIgnoresInvertColors
-          onError={(e) =>
-            console.log("Error loading flag:", e.nativeEvent.error)
-          }
           defaultSource={require("@/images/bandera-notfound.png")}
         />
       </ThemedView>

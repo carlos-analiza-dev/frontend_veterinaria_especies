@@ -12,6 +12,7 @@ export interface Finca {
   tamaño_total: string;
   area_ganaderia: string;
   tipo_explotacion: string;
+  especies_maneja: EspeciesManeja[];
   fecha_registro: Date;
   isActive: boolean;
   departamento: Departamento;
@@ -26,10 +27,14 @@ export interface Departamento {
   municipios?: Departamento[];
 }
 
+export interface EspeciesManeja {
+  especie: string;
+  cantidad: number;
+}
+
 export interface Propietario {
   id: string;
   email: string;
-  password: string;
   name: string;
   identificacion: string;
   direccion: string;
