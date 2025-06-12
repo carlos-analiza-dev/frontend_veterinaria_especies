@@ -5,6 +5,7 @@ const usePaisesActives = () => {
   return useQuery({
     queryKey: ["paises-activos"],
     queryFn: obtenerPaises,
+    staleTime: 60 * 100 * 5,
     retry: 0,
   });
 };

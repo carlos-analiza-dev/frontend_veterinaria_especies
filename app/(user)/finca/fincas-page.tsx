@@ -5,7 +5,7 @@ import React, { useCallback } from "react";
 import { RefreshControl, ScrollView, StyleSheet } from "react-native";
 import { ActivityIndicator, useTheme } from "react-native-paper";
 
-import { useFincasPropietarios } from "@/hooks/useFincasPropietarios";
+import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
 import { useAuthStore } from "@/presentation/auth/store/useAuthStore";
 import MessageError from "@/presentation/components/MessageError";
 import { useNavigation } from "expo-router";

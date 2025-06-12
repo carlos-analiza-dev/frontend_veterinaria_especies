@@ -11,6 +11,7 @@ import {
 import { Redirect } from "expo-router";
 
 import GoBack from "@/presentation/components/GoBack";
+import AnimalDetailsPage from "./animales/animal-details";
 import AnimalesPageGanadero from "./animales/animales-page";
 import CrearAnimal from "./animales/crear-animal";
 import CustomDrawerUsers from "./components/CustomDrawerUsers";
@@ -107,6 +108,17 @@ export default function UserLayout() {
           options={{
             headerShown: true,
             headerTitle: "Agregar Animal",
+            headerRight: () => <LogoutIconButton />,
+            headerLeft: () => <GoBack />,
+          }}
+        />
+
+        <UsersStack.Screen
+          name="AnimalDetails"
+          component={AnimalDetailsPage}
+          options={{
+            headerShown: true,
+            headerTitle: "Detalles Animal",
             headerRight: () => <LogoutIconButton />,
             headerLeft: () => <GoBack />,
           }}

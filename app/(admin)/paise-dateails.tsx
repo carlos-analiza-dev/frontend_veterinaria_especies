@@ -1,6 +1,6 @@
-import { obtenerPaisById } from "@/core/paises/accions/obtener-paisById";
 import { ActualizarPaises } from "@/core/paises/accions/update-pais";
 import { CreatePais } from "@/core/paises/interfaces/crear-pais.interface";
+import usePaisesById from "@/hooks/paises/usePaisesById";
 import MessageError from "@/presentation/components/MessageError";
 import { UsersStackParamList } from "@/presentation/navigation/types";
 import ThemedButton from "@/presentation/theme/components/ThemedButton";
@@ -8,7 +8,7 @@ import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import ThemedTextInput from "@/presentation/theme/components/ThemedTextInput";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import { RouteProp } from "@react-navigation/native";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -34,16 +34,7 @@ const PaisDetailsPage = ({ route }: DetailsPaisProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const queryClient = useQueryClient();
 
-  const {
-    data: pais,
-    isLoading: cargando,
-    isError,
-  } = useQuery({
-    queryKey: ["pais-id", paisId],
-    queryFn: () => obtenerPaisById(paisId),
-    retry: 0,
-  });
-
+  const { data: pais, isLoading: cargando, isError } = usePaisesById(paisId);
   const {
     control,
     handleSubmit,

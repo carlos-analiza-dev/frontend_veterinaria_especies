@@ -9,8 +9,8 @@ export interface Finca {
   cantidad_animales: number;
   ubicacion: string;
   abreviatura: string;
-  tamaño_total: string;
-  area_ganaderia: string;
+  tamaño_total_hectarea: string;
+  area_ganaderia_hectarea: string;
   tipo_explotacion: string;
   especies_maneja: EspeciesManeja[];
   fecha_registro: Date;

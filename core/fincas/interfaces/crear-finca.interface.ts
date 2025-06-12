@@ -5,8 +5,8 @@ export interface CrearFinca {
   abreviatura: string;
   departamentoId: string;
   municipioId: string;
-  tamaño_total: string;
-  area_ganaderia: string;
+  tamaño_total_hectarea: string;
+  area_ganaderia_hectarea: string;
   tipo_explotacion: string;
   especies_maneja: { especie: string; cantidad: number }[];
   propietario_id: string;

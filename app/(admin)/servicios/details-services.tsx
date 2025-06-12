@@ -1,11 +1,11 @@
 import { EditarServicio } from "@/core/servicios/accions/editar-servicio";
-import { ObtenerServicioId } from "@/core/servicios/accions/obtener-serviciobyId";
 import { CrearServicio } from "@/core/servicios/interfaces/crear-servicio.interface";
+import useServicioById from "@/hooks/servicios/useServicioById";
 import MessageError from "@/presentation/components/MessageError";
 import { UsersStackParamList } from "@/presentation/navigation/types";
 import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import { RouteProp } from "@react-navigation/native";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -42,12 +42,7 @@ const DetailsServices = ({ route }: DetailsServicioProps) => {
     data: servicioResponse,
     isLoading,
     isError,
-  } = useQuery({
-    queryKey: ["servicio-id", servicioId],
-    queryFn: () => ObtenerServicioId(servicioId),
-    retry: 0,
-    staleTime: 60 * 100 * 5,
-  });
+  } = useServicioById(servicioId);
 
   const servicio = servicioResponse?.data;
 

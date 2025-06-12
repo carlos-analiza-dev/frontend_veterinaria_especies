@@ -1,11 +1,11 @@
-import { getRolesFilters } from "@/core/roles/accions/all-roles";
 import { AddRol } from "@/core/roles/accions/create-rol";
 import { CreateRolI } from "@/core/roles/interfaces/crear-rol.interface";
 import { ResponseRoles } from "@/core/roles/interfaces/response-roles.interface";
+import useGetRolesFilters from "@/hooks/roles/useGetRolesFilters";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import React, { useCallback, useState } from "react";
 import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
 import { ActivityIndicator, Button } from "react-native-paper";
@@ -33,12 +33,7 @@ const RolesPageAdmin = () => {
     isLoading,
     refetch,
     isRefetching,
-  } = useQuery({
-    queryKey: ["roles", limit, offset],
-    queryFn: () => getRolesFilters(limit, offset),
-    staleTime: 30 * 60 * 1000,
-    retry: 2,
-  });
+  } = useGetRolesFilters(limit, offset);
 
   const mutation = useMutation({
     mutationFn: AddRol,

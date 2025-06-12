@@ -7,12 +7,12 @@ import { useMutation } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import React, { useState } from "react";
 import {
-  Alert,
   KeyboardAvoidingView,
   ScrollView,
   useWindowDimensions,
   View,
 } from "react-native";
+import Toast from "react-native-toast-message";
 
 interface ChangePasswordData {
   email: string;
@@ -38,7 +38,11 @@ const ChangePasswordPage = () => {
       });
     },
     onSuccess: () => {
-      Alert.alert("Éxito", "Contraseña actualizada correctamente");
+      Toast.show({
+        type: "success",
+        text1: "Exito",
+        text2: "Contraseña actualizada correctamente",
+      });
 
       setForm({ email: "", nuevaContrasena: "", confirmPassword: "" });
     },
@@ -47,29 +51,47 @@ const ChangePasswordPage = () => {
         const messages = error.response?.data?.message;
 
         if (Array.isArray(messages)) {
-          Alert.alert("Errores de validación", messages.join("\n"));
+          Toast.show({
+            type: "error",
+            text1: "Error",
+            text2: messages.join("\n"),
+          });
         } else if (typeof messages === "string") {
-          Alert.alert("Error", messages);
+          Toast.show({ type: "error", text1: "Error", text2: messages });
         } else {
-          Alert.alert(
-            "Error",
-            "Hubo un error al momento de actualizar la contraseña. Inténtalo de nuevo."
-          );
+          Toast.show({
+            type: "error",
+            text1: "Error",
+            text2:
+              "Hubo un error al momento de actualizar la contraseña. Inténtalo de nuevo.",
+          });
         }
       } else {
-        Alert.alert("Error", "Error inesperado, contacte con el administrador");
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "Error inesperado, contacte con el administrador",
+        });
       }
     },
   });
 
   const handleUpdate = async () => {
     if (!form.email || !form.nuevaContrasena || !form.confirmPassword) {
-      Alert.alert("Error", "Todos los campos son requeridos");
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Todos los campos son requeridos",
+      });
       return;
     }
 
     if (form.nuevaContrasena !== form.confirmPassword) {
-      Alert.alert("Error", "Las contraseñas no coinciden");
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Las contraseñas no coinciden",
+      });
       return;
     }
 

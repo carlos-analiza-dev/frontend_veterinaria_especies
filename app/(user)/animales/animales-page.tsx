@@ -1,5 +1,5 @@
 import useAnimalesByPropietario from "@/hooks/animales/useAnimalesByPropietario";
-import { useFincasPropietarios } from "@/hooks/useFincasPropietarios";
+import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
 import { useAuthStore } from "@/presentation/auth/store/useAuthStore";
 import MessageError from "@/presentation/components/MessageError";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
@@ -125,7 +125,13 @@ const AnimalesPageGanadero = () => {
           />
         ) : (
           animales?.data.map((animal) => (
-            <AnimalCard animal={animal} key={animal.id} />
+            <AnimalCard
+              animal={animal}
+              key={animal.id}
+              onPress={() =>
+                navigation.navigate("AnimalDetails", { animalId: animal.id })
+              }
+            />
           ))
         )}
       </ScrollView>

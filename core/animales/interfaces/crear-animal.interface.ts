@@ -5,7 +5,7 @@ export interface CrearAnimalByFinca {
   identificador: string;
   raza: string;
   edad_promedio: string;
-  fecha_nacimiento: Date;
+  fecha_nacimiento: string;
   observaciones: string;
   propietarioId: string;
   fincaId: string;

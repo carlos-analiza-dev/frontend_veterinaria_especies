@@ -1,9 +1,9 @@
 import { CrearDepto } from "@/core/departamentos/accions/crear-departamento";
-import { obtenerDeptosPaisById } from "@/core/departamentos/accions/obtener-departamentosByPaid";
 import { ActualizarDepto } from "@/core/departamentos/accions/update-depto";
 import { Departamento } from "@/core/departamentos/interfaces/response-departamentos.interface";
 import { CrearMunicipio } from "@/core/municipios/accions/crear-municipio";
-import { obtenerMunicipiosDeptoById } from "@/core/municipios/accions/obtener-municipiosByDepto";
+import useGetDepartamentosByPais from "@/hooks/departamentos/useGetDepartamentosByPais";
+import useGetMunicipiosByDepto from "@/hooks/municipios/useGetMunicipiosByDepto";
 import MyIcon from "@/presentation/auth/components/MyIcon";
 import MessageError from "@/presentation/components/MessageError";
 import { UsersStackParamList } from "@/presentation/navigation/types";
@@ -11,7 +11,7 @@ import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import { RouteProp } from "@react-navigation/native";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import React, { useState } from "react";
 import { ScrollView, View } from "react-native";
@@ -47,19 +47,11 @@ const AgregarDepartamentoPais = ({ route }: DetailsDeptoPaisProps) => {
   const [newMunicipio, setNewMunicipio] = useState("");
   const [error, setError] = useState("");
 
-  const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ["departamentos-pais", paisId],
-    queryFn: () => obtenerDeptosPaisById(paisId),
-    retry: 0,
-    staleTime: 60 * 100 * 5,
-  });
+  const { data, isLoading, isError, refetch } =
+    useGetDepartamentosByPais(paisId);
 
-  const { data: municipios, isLoading: cargando } = useQuery({
-    queryKey: ["municipios-depto", deptoId],
-    queryFn: () => obtenerMunicipiosDeptoById(deptoId),
-    retry: 0,
-    staleTime: 60 * 100 * 5,
-  });
+  const { data: municipios, isLoading: cargando } =
+    useGetMunicipiosByDepto(deptoId);
 
   const departamentos = data?.data.departamentos || [];
 
@@ -299,48 +291,6 @@ const AgregarDepartamentoPais = ({ route }: DetailsDeptoPaisProps) => {
             </Card>
           ))}
         </ScrollView>
-
-        {/* <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            padding: 10,
-            borderTopWidth: 1,
-            borderTopColor: "#eee",
-          }}
-        >
-          <Button
-            mode="outlined"
-            onPress={() => setPage(Math.max(0, page - 1))}
-            disabled={page === 0}
-            icon="chevron-left"
-          >
-            Anterior
-          </Button>
-
-          <ThemedText type="default">
-            {from + 1}-{to} de {departamentos.length}
-          </ThemedText>
-
-          <Button
-            mode="outlined"
-            onPress={() =>
-              setPage(
-                Math.min(
-                  page + 1,
-                  Math.ceil(departamentos.length / ITEMS_PER_PAGE) - 1
-                )
-              )
-            }
-            disabled={
-              page >= Math.ceil(departamentos.length / ITEMS_PER_PAGE) - 1
-            }
-            icon="chevron-right"
-          >
-            Siguiente
-          </Button>
-        </View> */}
       </View>
 
       <ModalAddMunicipio

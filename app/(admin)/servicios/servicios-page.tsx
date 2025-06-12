@@ -1,11 +1,10 @@
-import { ObtenerServicio } from "@/core/servicios/accions/obtener-servicios";
+import useGetServiciosAdmin from "@/hooks/servicios/useGetServiciosAdmin";
 import { FAB } from "@/presentation/components/FAB";
 import MessageError from "@/presentation/components/MessageError";
 import ThemedButton from "@/presentation/theme/components/ThemedButton";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
-import { useQuery } from "@tanstack/react-query";
 import { useNavigation } from "expo-router";
 import React, { useState } from "react";
 import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
@@ -24,12 +23,7 @@ const ServicioPageAdmin = () => {
     isError,
     isLoading,
     refetch,
-  } = useQuery({
-    queryKey: ["servicios-admin", limit, offset],
-    queryFn: () => ObtenerServicio(limit, offset),
-    retry: 0,
-    staleTime: 60 * 100 * 5,
-  });
+  } = useGetServiciosAdmin(limit, offset);
 
   const onRefresh = async () => {
     setRefreshing(true);

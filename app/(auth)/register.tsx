@@ -14,7 +14,6 @@ import { router } from "expo-router";
 import React from "react";
 import { useForm } from "react-hook-form";
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -22,6 +21,7 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
+import Toast from "react-native-toast-message";
 
 const RegisterScreen = () => {
   const { height } = useWindowDimensions();
@@ -94,7 +94,11 @@ const RegisterScreen = () => {
   const mutation = useMutation({
     mutationFn: CreateUser,
     onSuccess: () => {
-      Alert.alert("Éxito", "Usuario creado correctamente");
+      Toast.show({
+        type: "success",
+        text1: "Éxito",
+        text2: "Usuario creado correctamente",
+      });
       router.push("/(auth)/login");
     },
     onError: (error) => {
@@ -102,17 +106,27 @@ const RegisterScreen = () => {
         const messages = error.response?.data?.message;
 
         if (Array.isArray(messages)) {
-          Alert.alert("Errores de validación", messages.join("\n"));
+          Toast.show({
+            type: "error",
+            text1: "Error",
+            text2: messages.join("\n"),
+          });
         } else if (typeof messages === "string") {
-          Alert.alert("Error", messages);
+          Toast.show({ type: "error", text1: "Error", text2: messages });
         } else {
-          Alert.alert(
-            "Error",
-            "Hubo un error al momento de crear el usuario. Inténtalo de nuevo."
-          );
+          Toast.show({
+            type: "error",
+            text1: "Error",
+            text2:
+              "Hubo un error al momento de crear el usuario. Inténtalo de nuevo.",
+          });
         }
       } else {
-        Alert.alert("Error", "Error inesperado, contacte con el administrador");
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "Error inesperado, contacte con el administrador",
+        });
       }
     },
   });

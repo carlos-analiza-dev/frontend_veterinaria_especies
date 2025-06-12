@@ -1,4 +1,4 @@
-import { obtenerPaises } from "@/core/paises/accions/obtener-paises";
+import usePaisesActives from "@/hooks/paises/usePaises";
 import { FAB } from "@/presentation/components/FAB";
 import MessageError from "@/presentation/components/MessageError";
 import PaisesCard from "@/presentation/components/paises/PaisesCard";
@@ -6,7 +6,6 @@ import ThemedButton from "@/presentation/theme/components/ThemedButton";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import { useTheme } from "@react-navigation/native";
-import { useQuery } from "@tanstack/react-query";
 import { useNavigation } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -23,11 +22,7 @@ const PaisesPage = () => {
 
   const [refreshing, setRefreshing] = useState(false);
 
-  const { data, isError, isLoading, refetch } = useQuery({
-    queryKey: ["paises"],
-    queryFn: obtenerPaises,
-    retry: 0,
-  });
+  const { data, isError, isLoading, refetch } = usePaisesActives();
 
   const onRefresh = async () => {
     setRefreshing(true);

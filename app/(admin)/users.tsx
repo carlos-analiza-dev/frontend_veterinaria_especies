@@ -1,9 +1,8 @@
-import { obtenerUsuarios } from "@/core/users/accions/obtener-usuarios";
+import useGetUsersInfinityScroll from "@/hooks/users/useGetUsersInfinityScroll";
 import { FAB } from "@/presentation/components/FAB";
 import UserCard from "@/presentation/components/UseCard";
 import ButtonFilter from "@/presentation/theme/components/ui/ButtonFilter";
 import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
-import { useInfiniteQuery } from "@tanstack/react-query";
 import { useNavigation } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import {
@@ -23,7 +22,6 @@ const UsersScreenAdmin = () => {
   const backgroundColor = useThemeColor({}, "background");
   const textColor = useThemeColor({}, "text");
   const cardColor = useThemeColor({}, "card");
-  const placeholderColor = useThemeColor({}, "icon");
   const emptyTextColor = useThemeColor({}, "icon");
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
@@ -45,24 +43,7 @@ const UsersScreenAdmin = () => {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useInfiniteQuery({
-    queryKey: ["usuarios-admin", debouncedSearchTerm, roleFilter],
-    queryFn: ({ pageParam = 0 }) =>
-      obtenerUsuarios(
-        limit,
-        pageParam * limit,
-        debouncedSearchTerm,
-        roleFilter
-      ),
-    retry: 0,
-    getNextPageParam: (lastPage, allPages) => {
-      const totalItems = lastPage.data.total || 0;
-      const loadedItems = allPages.length * limit;
-
-      return loadedItems < totalItems ? allPages.length : undefined;
-    },
-    initialPageParam: 0,
-  });
+  } = useGetUsersInfinityScroll(debouncedSearchTerm, roleFilter, limit);
 
   useEffect(() => {
     const timer = setTimeout(() => {

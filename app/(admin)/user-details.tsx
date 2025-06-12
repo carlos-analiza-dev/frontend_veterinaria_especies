@@ -1,12 +1,10 @@
 import { UserUpdateData } from "@/core/auth/interfaces/user";
-import { obtenerDeptosPaisById } from "@/core/departamentos/accions/obtener-departamentosByPaid";
-import { obtenerMunicipiosDeptoById } from "@/core/municipios/accions/obtener-municipiosByDepto";
-import { obtenerPaises } from "@/core/paises/accions/obtener-paises";
-import { getRoles } from "@/core/roles/accions/all-roles";
-import {
-  actualizarUsuario,
-  obtenerUsuarioById,
-} from "@/core/users/accions/get-user-byId";
+import { actualizarUsuario } from "@/core/users/accions/get-user-byId";
+import useGetDepartamentosByPais from "@/hooks/departamentos/useGetDepartamentosByPais";
+import useGetMunicipiosByDepto from "@/hooks/municipios/useGetMunicipiosByDepto";
+import usePaisesActives from "@/hooks/paises/usePaises";
+import useGetRoles from "@/hooks/roles/useGetRoles";
+import userById from "@/hooks/users/userById";
 import MessageError from "@/presentation/components/MessageError";
 import { UsersStackParamList } from "@/presentation/navigation/types";
 import ThemedButton from "@/presentation/theme/components/ThemedButton";
@@ -15,7 +13,7 @@ import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import ThemedTextInput from "@/presentation/theme/components/ThemedTextInput";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import { RouteProp, useTheme } from "@react-navigation/native";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -44,15 +42,7 @@ const UsersDetailsScreen = ({ route }: UserDetailsScreenProps) => {
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = React.useState(false);
 
-  const {
-    data: user,
-    isError,
-    isLoading,
-  } = useQuery({
-    queryKey: ["usuario", userId],
-    queryFn: () => obtenerUsuarioById(userId),
-    retry: 0,
-  });
+  const { data: user, isError, isLoading } = userById(userId);
 
   const {
     control,
@@ -67,35 +57,15 @@ const UsersDetailsScreen = ({ route }: UserDetailsScreenProps) => {
   const paisId = watch("pais");
   const departamentoId = watch("departamento");
 
-  const { data } = useQuery({
-    queryKey: ["paises"],
-    queryFn: obtenerPaises,
-    staleTime: 60 * 100 * 5,
-    retry: 0,
-  });
+  const { data } = usePaisesActives();
 
-  const { data: departamentos, isLoading: loadingDeptos } = useQuery({
-    queryKey: ["departamentos", paisId],
-    queryFn: () => obtenerDeptosPaisById(paisId),
-    staleTime: 60 * 100 * 5,
-    retry: 0,
-    enabled: !!paisId,
-  });
+  const { data: departamentos, isLoading: loadingDeptos } =
+    useGetDepartamentosByPais(paisId);
 
-  const { data: municipios, isLoading: loadingMunicipios } = useQuery({
-    queryKey: ["municipios", departamentoId],
-    queryFn: () => obtenerMunicipiosDeptoById(departamentoId),
-    staleTime: 60 * 100 * 5,
-    retry: 0,
-    enabled: !!departamentoId,
-  });
+  const { data: municipios, isLoading: loadingMunicipios } =
+    useGetMunicipiosByDepto(departamentoId);
 
-  const { data: roles } = useQuery({
-    queryKey: ["roles"],
-    queryFn: () => getRoles(),
-    staleTime: 60 * 100 * 5,
-    retry: 0,
-  });
+  const { data: roles } = useGetRoles();
 
   const countryItems =
     data?.data.map((pais) => ({
