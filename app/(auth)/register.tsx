@@ -1,8 +1,9 @@
 import { obtenerDeptosPaisById } from "@/core/departamentos/accions/obtener-departamentosByPaid";
 import { obtenerMunicipiosDeptoById } from "@/core/municipios/accions/obtener-municipiosByDepto";
-import { obtenerPaises } from "@/core/paises/accions/obtener-paises";
 import { CreateUser } from "@/core/users/accions/crear-usuario";
 import { CrearUsuario } from "@/core/users/interfaces/create-user.interface";
+import usePaisesActives from "@/hooks/paises/usePaises";
+import usePaisesById from "@/hooks/paises/usePaisesById";
 import ThemedButton from "@/presentation/theme/components/ThemedButton";
 import ThemedLink from "@/presentation/theme/components/ThemedLink";
 import ThemedPicker from "@/presentation/theme/components/ThemedPicker";
@@ -11,8 +12,8 @@ import ThemedTextInput from "@/presentation/theme/components/ThemedTextInput";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { router } from "expo-router";
-import React from "react";
-import { useForm } from "react-hook-form";
+import React, { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -25,12 +26,38 @@ import Toast from "react-native-toast-message";
 
 const RegisterScreen = () => {
   const { height } = useWindowDimensions();
+  const [codigoPais, setCodigoPais] = useState("");
+  const [prefijoNumber, setPrefijoNumber] = useState("");
+
+  const ID_REGEX = {
+    HN: {
+      regex: /^\d{4}-\d{4}-\d{5}$/,
+      message: "Formato inválido. Use: xxxx-xxxx-xxxxx",
+      example: "Ejemplo: 0801-1999-01234",
+    },
+    SV: {
+      regex: /^\d{8}-\d{1}$/,
+      message: "Formato inválido. Use: xxxxxxxx-x",
+      example: "Ejemplo: 04210000-5",
+    },
+    GT: {
+      regex: /^\d{4}-\d{5}-\d{4}$/,
+      message: "Formato inválido. Use: xxxx-xxxxx-xxxx",
+      example: "Ejemplo: 1234-56789-0123",
+    },
+    PASSPORT: {
+      regex: /^[A-Za-z0-9]{6,20}$/,
+      message: "Formato inválido. Use 6-20 caracteres alfanuméricos",
+      example: "Ejemplo: AB123456",
+    },
+  };
   const {
     control,
     handleSubmit,
     formState: { errors },
     setValue,
     watch,
+    trigger,
   } = useForm<CrearUsuario>({
     defaultValues: {
       email: "",
@@ -48,14 +75,17 @@ const RegisterScreen = () => {
   const paisId = watch("pais");
   const departamentoId = watch("departamento");
 
-  const { data } = useQuery({
-    queryKey: ["paises"],
-    queryFn: obtenerPaises,
-    staleTime: 60 * 100 * 5,
-    retry: 0,
-  });
+  const { data } = usePaisesActives();
 
-  const paisSeleccionado = data?.data.find((p) => p.id === paisId);
+  const { data: pais } = usePaisesById(paisId);
+
+  useEffect(() => {
+    if (pais?.data) {
+      setCodigoPais(pais.data.code);
+      setPrefijoNumber(pais.data.code_phone);
+      trigger("identificacion");
+    }
+  }, [pais, trigger]);
 
   const { data: departamentos } = useQuery({
     queryKey: ["departamentos", paisId],
@@ -90,6 +120,21 @@ const RegisterScreen = () => {
       label: mun.nombre,
       value: mun.id.toString(),
     })) || [];
+
+  const validateIdentification = (value: string, codigoPais: string) => {
+    if (!value) return "La identificación es requerida";
+
+    switch (codigoPais) {
+      case "HN":
+        return ID_REGEX.HN.regex.test(value) || ID_REGEX.HN.message;
+      case "SV":
+        return ID_REGEX.SV.regex.test(value) || ID_REGEX.SV.message;
+      case "GT":
+        return ID_REGEX.GT.regex.test(value) || ID_REGEX.GT.message;
+      default:
+        return true;
+    }
+  };
 
   const mutation = useMutation({
     mutationFn: CreateUser,
@@ -143,7 +188,14 @@ const RegisterScreen = () => {
   };
 
   const onSubmit = (data: CrearUsuario) => {
-    mutation.mutate(data);
+    const telefonoConPrefijo = `${prefijoNumber} ${data.telefono}`;
+
+    const payload: CrearUsuario = {
+      ...data,
+      telefono: telefonoConPrefijo,
+    };
+
+    mutation.mutate(payload);
   };
 
   return (
@@ -225,21 +277,72 @@ const RegisterScreen = () => {
             />
           )}
 
-          <ThemedTextInput
-            placeholder={
-              paisSeleccionado?.nombre === "El Salvador"
-                ? "DUI (12345678-9)"
-                : paisSeleccionado?.nombre === "Honduras"
-                ? "DNI (1201-2000-99001)"
-                : paisSeleccionado?.nombre === "Guatemala"
-                ? "DPI (1234 56789 0101)"
-                : ""
-            }
-            icon="id-card-outline"
-            keyboardType="numeric"
-            value={watch("identificacion")}
-            onChangeText={(text) => setValue("identificacion", text)}
-            error={errors.identificacion?.message}
+          <Controller
+            control={control}
+            name="identificacion"
+            rules={{
+              validate: (value) => {
+                if (codigoPais) {
+                  return validateIdentification(value, codigoPais);
+                }
+
+                return true;
+              },
+            }}
+            render={({ field: { onChange, value }, fieldState: { error } }) => (
+              <ThemedTextInput
+                placeholder={
+                  codigoPais === "HN"
+                    ? "DNI (xxxx-xxxx-xxxxx)"
+                    : codigoPais === "SV"
+                    ? "DUI (xxxxxxxx-x)"
+                    : codigoPais === "GT"
+                    ? "DPI (xxxx-xxxxx-xxxx)"
+                    : "Identificación"
+                }
+                icon="id-card-outline"
+                value={value}
+                onChangeText={(text) => {
+                  let formattedText = text;
+                  switch (codigoPais) {
+                    case "HN":
+                      formattedText = text
+                        .replace(/[^\d]/g, "")
+                        .replace(/^(\d{4})/, "$1-")
+                        .replace(/^(\d{4}-\d{4})/, "$1-")
+                        .substring(0, 15);
+                      break;
+                    case "SV":
+                      formattedText = text
+                        .replace(/[^\d]/g, "")
+                        .replace(/^(\d{8})/, "$1-")
+                        .substring(0, 10);
+                      break;
+                    case "GT":
+                      formattedText = text
+                        .replace(/[^\d]/g, "")
+                        .replace(/^(\d{4})/, "$1-")
+                        .replace(/^(\d{4}-\d{5})/, "$1-")
+                        .substring(0, 15);
+                      break;
+                    default:
+                      formattedText = text;
+                  }
+
+                  onChange(formattedText);
+                }}
+                error={error?.message}
+                maxLength={
+                  codigoPais === "HN"
+                    ? 15
+                    : codigoPais === "SV"
+                    ? 10
+                    : codigoPais === "GT"
+                    ? 15
+                    : 20
+                }
+              />
+            )}
           />
 
           <ThemedTextInput
@@ -250,13 +353,43 @@ const RegisterScreen = () => {
             error={errors.direccion?.message}
           />
 
-          <ThemedTextInput
-            placeholder="Teléfono (912345678)"
-            icon="call-outline"
-            keyboardType="phone-pad"
-            value={watch("telefono")}
-            onChangeText={(text) => setValue("telefono", text)}
-            error={errors.telefono?.message}
+          <Controller
+            control={control}
+            name="telefono"
+            rules={{
+              required: "El teléfono es requerido",
+              validate: (value) => {
+                const phoneRegex = /^\d{4}-\d{4}$/;
+                return (
+                  phoneRegex.test(value) || "Formato inválido. Use: xxxx-xxxx"
+                );
+              },
+            }}
+            render={({ field: { onChange, value }, fieldState: { error } }) => (
+              <ThemedTextInput
+                placeholder="Teléfono (xxxx-xxxx)"
+                icon="call-outline"
+                keyboardType="phone-pad"
+                value={value}
+                onChangeText={(text) => {
+                  const cleanedText = text.replace(/[^\d]/g, "");
+
+                  let formattedText = cleanedText;
+                  if (cleanedText.length > 4) {
+                    formattedText = `${cleanedText.slice(
+                      0,
+                      4
+                    )}-${cleanedText.slice(4, 8)}`;
+                  }
+
+                  formattedText = formattedText.substring(0, 9);
+
+                  onChange(formattedText);
+                }}
+                error={error?.message}
+                maxLength={9}
+              />
+            )}
           />
         </View>
 

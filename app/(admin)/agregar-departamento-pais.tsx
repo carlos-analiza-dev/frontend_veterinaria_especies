@@ -4,10 +4,8 @@ import { Departamento } from "@/core/departamentos/interfaces/response-departame
 import { CrearMunicipio } from "@/core/municipios/accions/crear-municipio";
 import useGetDepartamentosByPais from "@/hooks/departamentos/useGetDepartamentosByPais";
 import useGetMunicipiosByDepto from "@/hooks/municipios/useGetMunicipiosByDepto";
-import MyIcon from "@/presentation/auth/components/MyIcon";
 import MessageError from "@/presentation/components/MessageError";
 import { UsersStackParamList } from "@/presentation/navigation/types";
-import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import { RouteProp } from "@react-navigation/native";
@@ -15,12 +13,13 @@ import { useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import React, { useState } from "react";
 import { ScrollView, View } from "react-native";
-import { ActivityIndicator, Avatar, Button, Card } from "react-native-paper";
+import { ActivityIndicator, Button } from "react-native-paper";
 import Toast from "react-native-toast-message";
 import ModalAddDepto from "./components/Modals/ModalAddDepto";
 import ModalAddMunicipio from "./components/Modals/ModalAddMunicipio";
 import ModalEditDepto from "./components/Modals/ModalEditDepto";
 import ModalDeleteDepto from "./components/Modals/ModalEditStatusDepto";
+import CardDepartamentos from "./components/departamentos/CardDepartamentos";
 
 type RoutePaisProps = RouteProp<UsersStackParamList, "AgregarDeptoPais">;
 
@@ -235,60 +234,13 @@ const AgregarDepartamentoPais = ({ route }: DetailsDeptoPaisProps) => {
       <View style={{ flex: 1, padding: 10 }}>
         <ScrollView>
           {paginatedData.map((depto) => (
-            <Card key={depto.id} style={{ marginBottom: 15, elevation: 3 }}>
-              <Card.Title
-                title={depto.nombre}
-                left={(props) => (
-                  <Avatar.Icon
-                    {...props}
-                    icon="map-marker"
-                    color={depto.isActive ? "#4CAF50" : "#F44336"}
-                  />
-                )}
-                right={(props) => (
-                  <View style={{ flexDirection: "row", marginRight: 10 }}>
-                    <MyIcon
-                      name="pencil-outline"
-                      color="black"
-                      size={24}
-                      onPress={() => handleEditDepto(depto.id)}
-                      style={{ marginRight: 15 }}
-                    />
-                    <MyIcon
-                      name={depto.isActive ? "toggle-outline" : "toggle-sharp"}
-                      color="black"
-                      size={24}
-                      onPress={() => showModalDelete(depto)}
-                    />
-                  </View>
-                )}
-              />
-              <Card.Content>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
-                >
-                  <ThemedText
-                    type="default"
-                    style={{ color: depto.isActive ? "#4CAF50" : "#F44336" }}
-                  >
-                    {depto.isActive ? "Activo" : "Inactivo"}
-                  </ThemedText>
-
-                  <Button
-                    mode="outlined"
-                    onPress={() => showMunicipiosModal(depto)}
-                    icon="city"
-                    style={{ marginTop: 10 }}
-                  >
-                    Ver Municipios
-                  </Button>
-                </View>
-              </Card.Content>
-            </Card>
+            <CardDepartamentos
+              key={depto.id}
+              depto={depto}
+              handleEditDepto={handleEditDepto}
+              showModalDelete={showModalDelete}
+              showMunicipiosModal={showMunicipiosModal}
+            />
           ))}
         </ScrollView>
       </View>

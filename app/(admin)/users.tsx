@@ -1,3 +1,4 @@
+import useGetRoles from "@/hooks/roles/useGetRoles";
 import useGetUsersInfinityScroll from "@/hooks/users/useGetUsersInfinityScroll";
 import { FAB } from "@/presentation/components/FAB";
 import UserCard from "@/presentation/components/UseCard";
@@ -8,13 +9,12 @@ import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
-  Platform,
   RefreshControl,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from "react-native";
+import { Searchbar } from "react-native-paper";
 
 const UsersScreenAdmin = () => {
   const limit = 10;
@@ -66,6 +66,8 @@ const UsersScreenAdmin = () => {
     setRoleFilter(role);
   };
 
+  const { data: roles } = useGetRoles();
+
   if (isLoading && !data) {
     return (
       <View style={styles.loadingContainer}>
@@ -80,15 +82,13 @@ const UsersScreenAdmin = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Gestión de Usuarios </Text>
       <View style={styles.filterContainer}>
-        <TextInput
+        <Searchbar
           style={styles.searchInput}
           placeholder="Buscar por nombre..."
-          placeholderTextColor="#999"
-          value={searchTerm}
           onChangeText={setSearchTerm}
-          returnKeyType="search"
-          clearButtonMode="while-editing"
+          value={searchTerm}
         />
+
         <View style={styles.roleFilterContainer}>
           <ButtonFilter
             title="Todos"
@@ -96,24 +96,18 @@ const UsersScreenAdmin = () => {
             variant={!roleFilter ? "primary" : "outline"}
             style={styles.filterButton}
           />
-          <ButtonFilter
-            title="Veterinarios"
-            onPress={() => handleRoleFilter("Veterinario")}
-            variant={roleFilter === "Veterinario" ? "primary" : "outline"}
-            style={styles.filterButton}
-          />
-          <ButtonFilter
-            title="Secretario"
-            onPress={() => handleRoleFilter("Secretario")}
-            variant={roleFilter === "Secretario" ? "primary" : "outline"}
-            style={styles.filterButton}
-          />
-          <ButtonFilter
-            title="Usuarios"
-            onPress={() => handleRoleFilter("User")}
-            variant={roleFilter === "User" ? "primary" : "outline"}
-            style={styles.filterButton}
-          />
+          {roles?.data.map((rol) => (
+            <ButtonFilter
+              key={rol.id}
+              title={
+                rol.name.charAt(0).toUpperCase() +
+                rol.name.slice(1).toLowerCase()
+              }
+              onPress={() => handleRoleFilter(rol.name)}
+              variant={roleFilter === rol.name ? "primary" : "outline"}
+              style={styles.filterButton}
+            />
+          ))}
         </View>
       </View>
 
@@ -209,8 +203,6 @@ const createStyles = (
     },
     searchInput: {
       backgroundColor: cardColor,
-      padding: Platform.OS === "ios" ? 12 : 10,
-      borderRadius: 8,
       marginBottom: 10,
       borderWidth: 1,
       borderColor: "#ddd",
@@ -218,12 +210,14 @@ const createStyles = (
     },
     roleFilterContainer: {
       flexDirection: "row",
-      justifyContent: "space-between",
+      flexWrap: "wrap",
+      gap: 6,
       marginBottom: 10,
     },
+
     filterButton: {
-      flex: 1,
-      marginHorizontal: 4,
+      width: "32%",
+      marginBottom: 10,
     },
   });
 

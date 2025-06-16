@@ -37,7 +37,6 @@ const LogoutIconButton = () => {
     try {
       await logout();
     } catch (error) {
-      console.error("Logout error:", error);
       setIsLoggingOut(false);
     }
   }, [logout]);

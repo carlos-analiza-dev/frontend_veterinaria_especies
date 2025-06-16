@@ -75,7 +75,6 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
       await get().changeStatus(resp.token, resp.user);
       return resp;
     } catch (error) {
-      console.error("Check status error:", error);
       return null;
     }
   },

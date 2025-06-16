@@ -1,7 +1,6 @@
 import { CrearPaises } from "@/core/paises/accions/crear-pais";
 import { CreatePais } from "@/core/paises/interfaces/crear-pais.interface";
 import ThemedButton from "@/presentation/theme/components/ThemedButton";
-import ThemedPicker from "@/presentation/theme/components/ThemedPicker";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import ThemedTextInput from "@/presentation/theme/components/ThemedTextInput";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
@@ -261,14 +260,16 @@ const CrearPaisPage = () => {
             rules={{
               required: "El tipo de documento es requerido",
             }}
-            render={({ field: { onChange, value } }) => (
-              <ThemedPicker
+            render={({ field: { onChange, value, onBlur } }) => (
+              <ThemedTextInput
+                placeholder="Documento ejm: (DNI,DUI,DPI)"
                 icon="document-text-outline"
-                items={documentOptions}
-                selectedValue={value}
-                onValueChange={onChange}
-                placeholder="Seleccione el tipo de documento"
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
                 error={errors.nombre_documento?.message}
+                maxLength={3}
+                returnKeyType="next"
               />
             )}
           />
