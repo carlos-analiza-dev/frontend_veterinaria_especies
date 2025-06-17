@@ -364,52 +364,42 @@ const CrearFincaPage = () => {
               </ThemedView>
             </ThemedView>
 
-            <ThemedView
-              style={[styles.row, { backgroundColor: colors.background }]}
-            >
-              <ThemedView
-                style={[styles.column, { backgroundColor: colors.background }]}
-              >
-                <ThemedTextInput
-                  placeholder={`Tamaño (${unidadMedida})`}
-                  icon="map-outline"
-                  value={watch("tamaño_total_hectarea")}
-                  onChangeText={(text) =>
-                    setValue("tamaño_total_hectarea", text)
-                  }
-                  keyboardType="numeric"
-                />
-                <ThemedText style={styles.conversionText}>
-                  {watch("tamaño_total_hectarea") &&
-                    !isNaN(parseFloat(watch("tamaño_total_hectarea"))) &&
-                    `${convertirAHectareas(
-                      watch("tamaño_total_hectarea"),
-                      unidadMedida
-                    )} ha`}
-                </ThemedText>
-              </ThemedView>
+            <ThemedTextInput
+              placeholder={`Tamaño total (${unidadMedida})`}
+              icon="map-outline"
+              value={watch("tamaño_total_hectarea")}
+              onChangeText={(text) => setValue("tamaño_total_hectarea", text)}
+              keyboardType="numeric"
+            />
+            <ThemedText style={styles.conversionText}>
+              {watch("tamaño_total_hectarea") &&
+                !isNaN(parseFloat(watch("tamaño_total_hectarea"))) &&
+                `${convertirAHectareas(
+                  watch("tamaño_total_hectarea"),
+                  unidadMedida
+                )} ha`}
+            </ThemedText>
 
-              <ThemedView
-                style={[styles.column, { backgroundColor: colors.background }]}
-              >
-                <ThemedTextInput
-                  placeholder={`Área ganadería (${unidadMedida})`}
-                  icon="layers-outline"
-                  value={watch("area_ganaderia_hectarea")}
-                  onChangeText={(text) =>
-                    setValue("area_ganaderia_hectarea", text)
-                  }
-                  keyboardType="numeric"
-                />
-                <ThemedText style={styles.conversionText}>
-                  {watch("area_ganaderia_hectarea") &&
-                    !isNaN(parseFloat(watch("area_ganaderia_hectarea"))) &&
-                    `${convertirAHectareas(
-                      watch("area_ganaderia_hectarea"),
-                      unidadMedida
-                    )} ha`}
-                </ThemedText>
-              </ThemedView>
+            <ThemedView
+              style={[styles.column, { backgroundColor: colors.background }]}
+            >
+              <ThemedTextInput
+                placeholder={`Área ganadería (${unidadMedida})`}
+                icon="layers-outline"
+                value={watch("area_ganaderia_hectarea")}
+                onChangeText={(text) =>
+                  setValue("area_ganaderia_hectarea", text)
+                }
+                keyboardType="numeric"
+              />
+              <ThemedText style={styles.conversionText}>
+                {watch("area_ganaderia_hectarea") &&
+                  !isNaN(parseFloat(watch("area_ganaderia_hectarea"))) &&
+                  `${convertirAHectareas(
+                    watch("area_ganaderia_hectarea"),
+                    unidadMedida
+                  )} ha`}
+              </ThemedText>
             </ThemedView>
 
             <ThemedPicker

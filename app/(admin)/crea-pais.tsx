@@ -17,12 +17,13 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
+import { useTheme } from "react-native-paper";
 import Toast from "react-native-toast-message";
 
 const CrearPaisPage = () => {
   const { height } = useWindowDimensions();
   const queryClient = useQueryClient();
-
+  const { colors } = useTheme();
   const {
     control,
     handleSubmit,
@@ -81,14 +82,6 @@ const CrearPaisPage = () => {
     mutation.mutate(data);
   };
 
-  const documentOptions = [
-    { label: "DUI (El Salvador)", value: "DUI" },
-    { label: "DPI (Guatemala)", value: "DPI" },
-    { label: "DNI (Honduras)", value: "DNI" },
-    { label: "Cédula", value: "Cédula" },
-    { label: "Pasaporte", value: "Pasaporte" },
-  ];
-
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -101,7 +94,9 @@ const CrearPaisPage = () => {
         ]}
         keyboardShouldPersistTaps="handled"
       >
-        <ThemedView style={styles.formContainer}>
+        <ThemedView
+          style={[styles.formContainer, { backgroundColor: colors.background }]}
+        >
           <ThemedText type="title" style={styles.title}>
             Crear Nuevo País
           </ThemedText>

@@ -22,6 +22,18 @@ interface ChangePasswordData {
 
 const ChangePasswordPage = () => {
   const { height } = useWindowDimensions();
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPasswor2, setShowPasswor2] = useState(false);
+
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleShowPasswordTwo = () => {
+    setShowPasswor2(!showPasswor2);
+  };
+
   const [form, setForm] = useState({
     email: "",
     nuevaContrasena: "",
@@ -132,9 +144,11 @@ const ChangePasswordPage = () => {
 
             <ThemedTextInput
               placeholder="Contraseña"
-              secureTextEntry
+              secureTextEntry={!showPassword}
               autoCapitalize="none"
               icon="lock-closed-outline"
+              rightIcon={showPassword ? "eye-off-outline" : "eye-outline"}
+              onRightIconPress={toggleShowPassword}
               value={form.nuevaContrasena}
               onChangeText={(value) =>
                 setForm({ ...form, nuevaContrasena: value })
@@ -142,9 +156,11 @@ const ChangePasswordPage = () => {
             />
             <ThemedTextInput
               placeholder="Confirmar Contraseña"
-              secureTextEntry
+              secureTextEntry={!showPasswor2}
               autoCapitalize="none"
               icon="lock-closed-outline"
+              rightIcon={showPasswor2 ? "eye-off-outline" : "eye-outline"}
+              onRightIconPress={toggleShowPasswordTwo}
               value={form.confirmPassword}
               onChangeText={(value) =>
                 setForm({ ...form, confirmPassword: value })

@@ -28,6 +28,11 @@ const RegisterScreen = () => {
   const { height } = useWindowDimensions();
   const [codigoPais, setCodigoPais] = useState("");
   const [prefijoNumber, setPrefijoNumber] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
 
   const ID_REGEX = {
     HN: {
@@ -229,9 +234,11 @@ const RegisterScreen = () => {
 
           <ThemedTextInput
             placeholder="Contraseña"
-            secureTextEntry
+            secureTextEntry={!showPassword}
             autoCapitalize="none"
             icon="lock-closed-outline"
+            rightIcon={showPassword ? "eye-off-outline" : "eye-outline"}
+            onRightIconPress={toggleShowPassword}
             value={watch("password")}
             onChangeText={(text) => setValue("password", text)}
             error={errors.password?.message}

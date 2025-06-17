@@ -6,6 +6,7 @@ const useGetRazasByEspecie = (especieId: string) => {
     queryKey: ["razas-especie", especieId],
     queryFn: () => ObtenerRazasByEspecie(especieId),
     retry: 0,
+    enabled: !!especieId,
   });
 };
 

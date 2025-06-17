@@ -40,27 +40,28 @@ const PaisesPage = () => {
 
   if (isError) {
     return (
-      <MessageError
-        titulo="Error al cargar los paises"
-        descripcion=" No se encontraron datos de paises en este módulo. Por favor, verifica más tarde o vuelve a intentar."
-      />
-    );
-  }
+      <ThemedView
+        style={[styles.container, { backgroundColor: colors.background }]}
+      >
+        <MessageError
+          titulo="Error al cargar los paises"
+          descripcion=" No se encontraron datos de paises en este módulo. Por favor, verifica más tarde o vuelve a intentar."
+        />
 
-  if (!data?.data || data.data.length === 0) {
-    return (
-      <ThemedView style={styles.emptyContainer}>
-        <ThemedText type="subtitle" style={styles.emptyText}>
-          No hay países registrados
-        </ThemedText>
+        <FAB
+          iconName="add-outline"
+          onPress={() => navigation.navigate("CrearPais")}
+        />
       </ThemedView>
     );
   }
 
-  const allCountries = data.data;
+  const allCountries = data?.data;
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <FlatList
         data={allCountries}
         renderItem={({ item }) => (

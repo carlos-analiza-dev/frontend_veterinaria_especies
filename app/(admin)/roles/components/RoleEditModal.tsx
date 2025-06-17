@@ -4,7 +4,14 @@ import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { Button, Modal, Portal, Switch, TextInput } from "react-native-paper";
+import {
+  Button,
+  Modal,
+  Portal,
+  Switch,
+  TextInput,
+  useTheme,
+} from "react-native-paper";
 import Toast from "react-native-toast-message";
 
 interface Props {
@@ -22,6 +29,7 @@ const RoleEditModal = ({
   roles,
   primaryColor,
 }: Props) => {
+  const { colors } = useTheme();
   const [rolName, setRolName] = useState("");
   const [rolDescription, setRolDescription] = useState("");
   const [activo, setActivo] = useState(false);
@@ -80,7 +88,9 @@ const RoleEditModal = ({
         onDismiss={onDismiss}
         contentContainerStyle={styles.modalContainer}
       >
-        <ThemedView style={styles.modalContent}>
+        <ThemedView
+          style={[styles.modalContent, { backgroundColor: colors.background }]}
+        >
           <ThemedText type="title" style={styles.modalTitle}>
             Editar Rol
           </ThemedText>

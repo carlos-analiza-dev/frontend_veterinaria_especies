@@ -3,7 +3,7 @@ import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import { Button, Modal, Portal, TextInput } from "react-native-paper";
+import { Button, Modal, Portal, TextInput, useTheme } from "react-native-paper";
 
 interface Props {
   visible: boolean;
@@ -24,6 +24,7 @@ const RoleCreationModal = ({
   role,
   visible,
 }: Props) => {
+  const { colors } = useTheme();
   return (
     <Portal>
       <Modal
@@ -31,7 +32,9 @@ const RoleCreationModal = ({
         onDismiss={onDismiss}
         contentContainerStyle={styles.modalContainer}
       >
-        <ThemedView style={styles.modalContent}>
+        <ThemedView
+          style={[styles.modalContent, { backgroundColor: colors.background }]}
+        >
           <ThemedText type="title" style={styles.modalTitle}>
             Nuevo Rol
           </ThemedText>

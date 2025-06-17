@@ -17,7 +17,6 @@ const AnimalesPageGanadero = () => {
   const { user } = useAuthStore();
   const { colors } = useTheme();
   const textColor = useThemeColor({}, "text");
-  const cardColor = useThemeColor({}, "card");
   const [fincaId, setFincaId] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
@@ -56,13 +55,15 @@ const AnimalesPageGanadero = () => {
 
   if (isError) {
     return (
-      <ThemedView style={styles.centered}>
+      <ThemedView
+        style={[styles.centered, { backgroundColor: colors.background }]}
+      >
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <View style={styles.filterContainer}>
             <Searchbar
               style={[
                 styles.searchInput,
-                { backgroundColor: cardColor, color: textColor },
+                { backgroundColor: colors.background, color: textColor },
               ]}
               placeholder="Buscar por identificador..."
               onChangeText={setSearchTerm}
@@ -120,7 +121,7 @@ const AnimalesPageGanadero = () => {
           <Searchbar
             style={[
               styles.searchInput,
-              { backgroundColor: cardColor, color: textColor },
+              { backgroundColor: colors.background, color: textColor },
             ]}
             placeholder="Buscar por identificador..."
             onChangeText={setSearchTerm}

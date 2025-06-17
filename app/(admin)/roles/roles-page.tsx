@@ -8,7 +8,7 @@ import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import React, { useCallback, useState } from "react";
 import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
-import { ActivityIndicator, Button } from "react-native-paper";
+import { ActivityIndicator, Button, useTheme } from "react-native-paper";
 import Toast from "react-native-toast-message";
 import CardRoles from "./components/CardRoles";
 import RoleCreationModal from "./components/RoleCreationModal";
@@ -17,6 +17,7 @@ import RoleEditModal from "./components/RoleEditModal";
 const RolesPageAdmin = () => {
   const queryClient = useQueryClient();
   const primary = useThemeColor({}, "primary");
+  const { colors } = useTheme();
   const [modalVisible, setModalVisible] = useState(false);
   const [visibleEditModal, setVisibleEditModal] = useState(false);
   const limit = 10;
@@ -132,7 +133,9 @@ const RolesPageAdmin = () => {
   }
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <View style={styles.addButtonContainer}>
         <AddRoleButton onPress={() => setModalVisible(true)} color={primary} />
       </View>

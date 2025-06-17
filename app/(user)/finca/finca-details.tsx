@@ -167,7 +167,12 @@ const FincaDetailsPage = ({ route }: DetailsFincaProps) => {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <ThemedView style={{ flex: 1, backgroundColor: colors.background }}>
           <ScrollView contentContainerStyle={styles.scrollContainer}>
-            <ThemedView style={styles.formContainer}>
+            <ThemedView
+              style={[
+                styles.formContainer,
+                { backgroundColor: colors.background },
+              ]}
+            >
               <ThemedTextInput
                 placeholder="Nombre finca"
                 icon="home-outline"
@@ -199,17 +204,32 @@ const FincaDetailsPage = ({ route }: DetailsFincaProps) => {
                 }
               />
 
-              <ThemedView style={styles.unidadesContainer}>
+              <ThemedView
+                style={[
+                  styles.unidadesContainer,
+                  { backgroundColor: colors.background },
+                ]}
+              >
                 <ThemedText style={styles.unidadLabel}>
                   Unidad de medida:
                 </ThemedText>
-                <ThemedView style={styles.checkboxGroup}>
+                <ThemedView
+                  style={[
+                    styles.checkboxGroup,
+                    { backgroundColor: colors.background },
+                  ]}
+                >
                   {(["ha", "mz", "m2", "ac"] as const).map((unidad) => (
                     <TouchableWithoutFeedback
                       key={unidad}
                       onPress={() => setUnidadMedida(unidad)}
                     >
-                      <ThemedView style={styles.checkboxContainer}>
+                      <ThemedView
+                        style={[
+                          styles.checkboxContainer,
+                          { backgroundColor: colors.background },
+                        ]}
+                      >
                         <Checkbox
                           status={
                             unidadMedida === unidad ? "checked" : "unchecked"
@@ -265,7 +285,7 @@ const FincaDetailsPage = ({ route }: DetailsFincaProps) => {
 
               <ThemedView style={styles.buttonGroup}>
                 <ThemedButton
-                  title="editar Finca"
+                  title="Editar Finca"
                   onPress={handleSubmit(onSubmit)}
                   style={styles.submitButton}
                 />

@@ -1,6 +1,7 @@
 import useGetRoles from "@/hooks/roles/useGetRoles";
 import useGetUsersInfinityScroll from "@/hooks/users/useGetUsersInfinityScroll";
 import { FAB } from "@/presentation/components/FAB";
+import MessageError from "@/presentation/components/MessageError";
 import UserCard from "@/presentation/components/UseCard";
 import ButtonFilter from "@/presentation/theme/components/ui/ButtonFilter";
 import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
@@ -14,26 +15,20 @@ import {
   Text,
   View,
 } from "react-native";
-import { Searchbar } from "react-native-paper";
+import { Searchbar, useTheme } from "react-native-paper";
 
 const UsersScreenAdmin = () => {
   const limit = 10;
   const colorPrimary = useThemeColor({}, "primary");
-  const backgroundColor = useThemeColor({}, "background");
   const textColor = useThemeColor({}, "text");
-  const cardColor = useThemeColor({}, "card");
+  const { colors } = useTheme();
   const emptyTextColor = useThemeColor({}, "icon");
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const navigation = useNavigation();
 
-  const styles = createStyles(
-    backgroundColor,
-    textColor,
-    cardColor,
-    emptyTextColor
-  );
+  const styles = createStyles(textColor, emptyTextColor);
 
   const {
     data,
@@ -83,7 +78,10 @@ const UsersScreenAdmin = () => {
       <Text style={styles.title}>Gestión de Usuarios </Text>
       <View style={styles.filterContainer}>
         <Searchbar
-          style={styles.searchInput}
+          style={[
+            styles.searchInput,
+            { backgroundColor: colors.background, color: textColor },
+          ]}
           placeholder="Buscar por nombre..."
           onChangeText={setSearchTerm}
           value={searchTerm}
@@ -144,9 +142,10 @@ const UsersScreenAdmin = () => {
         }
         ListEmptyComponent={
           !isLoading ? (
-            <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>No hay usuarios registrados</Text>
-            </View>
+            <MessageError
+              titulo="No se encontraron usuarios"
+              descripcion="No se encontraron usuarios para este modulo en este momento."
+            />
           ) : null
         }
       />
@@ -159,16 +158,14 @@ const UsersScreenAdmin = () => {
 };
 
 const createStyles = (
-  backgroundColor: string,
   textColor: string,
-  cardColor: string,
+
   emptyTextColor: string
 ) =>
   StyleSheet.create({
     container: {
       flex: 1,
       padding: 10,
-      backgroundColor,
     },
     title: {
       fontSize: 22,
@@ -202,11 +199,9 @@ const createStyles = (
       marginBottom: 15,
     },
     searchInput: {
-      backgroundColor: cardColor,
       marginBottom: 10,
       borderWidth: 1,
       borderColor: "#ddd",
-      color: textColor,
     },
     roleFilterContainer: {
       flexDirection: "row",

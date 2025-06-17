@@ -8,8 +8,9 @@ import {
   Easing,
   StyleSheet,
   TouchableWithoutFeedback,
+  View,
 } from "react-native";
-import { Avatar, Card, Divider, useTheme } from "react-native-paper";
+import { Avatar, Card, Chip, Divider, useTheme } from "react-native-paper";
 
 interface Props {
   animal: ResponseAnimalesByPropietario;
@@ -55,6 +56,19 @@ const AnimalCard = ({ animal, onPress }: Props) => {
     });
   };
 
+  const getIconName = () => {
+    switch (animal.especie.nombre) {
+      case "Bovino":
+        return "cow";
+      case "Porcino":
+        return "pig";
+      case "Equino":
+        return "horse";
+      default:
+        return "paw";
+    }
+  };
+
   return (
     <TouchableWithoutFeedback
       onPressIn={handlePressIn}
@@ -73,11 +87,11 @@ const AnimalCard = ({ animal, onPress }: Props) => {
         <Card style={[styles.card, { backgroundColor: colors.surface }]}>
           <Card.Title
             title={animal.identificador}
-            subtitle={`${animal.raza} - ${animal.sexo}`}
+            subtitle={`${animal.especie.nombre} - ${animal.raza.nombre} - ${animal.sexo}`}
             left={(props) => (
               <Avatar.Icon
                 {...props}
-                icon={animal.especie === "Bovino" ? "cow" : "paw"}
+                icon={getIconName()}
                 color={colors.primary}
                 style={{ backgroundColor: colors.surfaceVariant }}
               />
@@ -99,6 +113,21 @@ const AnimalCard = ({ animal, onPress }: Props) => {
               >
                 Nacimiento:{" "}
                 {new Date(animal.fecha_nacimiento).toLocaleDateString()}
+              </ThemedText>
+            </ThemedView>
+
+            <ThemedView
+              style={[styles.infoRow, { backgroundColor: colors.background }]}
+            >
+              <MaterialCommunityIcons
+                name="calendar-clock"
+                size={20}
+                color={colors.onSurfaceVariant}
+              />
+              <ThemedText
+                style={[styles.infoText, { color: colors.onSurface }]}
+              >
+                Registro: {new Date(animal.fecha_registro).toLocaleDateString()}
               </ThemedText>
             </ThemedView>
 
@@ -128,8 +157,75 @@ const AnimalCard = ({ animal, onPress }: Props) => {
               <ThemedText
                 style={[styles.infoText, { color: colors.onSurface }]}
               >
-                Edad: {animal.edad_promedio}
+                Edad: {animal.edad_promedio} años
               </ThemedText>
+            </ThemedView>
+
+            {animal.tipo_alimentacion.length > 0 && (
+              <ThemedView
+                style={[styles.infoRow, { backgroundColor: colors.background }]}
+              >
+                <MaterialCommunityIcons
+                  name="food"
+                  size={20}
+                  color={colors.onSurfaceVariant}
+                  style={styles.icon}
+                />
+                <View style={styles.chipsContainer}>
+                  {animal.tipo_alimentacion.map((alimento, index) => (
+                    <Chip
+                      key={`${alimento.alimento}-${index}`}
+                      style={[
+                        styles.smallChip,
+                        {
+                          backgroundColor: colors.secondaryContainer,
+                          marginRight: 4,
+                          marginBottom: 4,
+                        },
+                      ]}
+                      textStyle={{
+                        color: colors.onSecondaryContainer,
+                        fontSize: 12,
+                      }}
+                    >
+                      {alimento.alimento}
+                    </Chip>
+                  ))}
+                </View>
+              </ThemedView>
+            )}
+
+            <ThemedView
+              style={[styles.infoRow, { backgroundColor: colors.background }]}
+            >
+              <ThemedText>Castrado:</ThemedText>
+              <View style={styles.chipsContainer}>
+                <Chip
+                  style={[
+                    styles.smallChip,
+                    { backgroundColor: colors.secondaryContainer },
+                  ]}
+                  textStyle={{ color: colors.onSecondaryContainer }}
+                >
+                  {animal.castrado === true ? "Si" : "No"}
+                </Chip>
+              </View>
+            </ThemedView>
+            <ThemedView
+              style={[styles.infoRow, { backgroundColor: colors.background }]}
+            >
+              <ThemedText>Esterilizado:</ThemedText>
+              <View style={styles.chipsContainer}>
+                <Chip
+                  style={[
+                    styles.smallChip,
+                    { backgroundColor: colors.secondaryContainer },
+                  ]}
+                  textStyle={{ color: colors.onSecondaryContainer }}
+                >
+                  {animal.esterelizado === true ? "Si" : "No"}
+                </Chip>
+              </View>
             </ThemedView>
 
             <Divider
@@ -148,6 +244,21 @@ const AnimalCard = ({ animal, onPress }: Props) => {
                 style={[styles.infoText, { color: colors.onSurface }]}
               >
                 Finca: {animal.finca.nombre_finca} ({animal.finca.abreviatura})
+              </ThemedText>
+            </ThemedView>
+
+            <ThemedView
+              style={[styles.infoRow, { backgroundColor: colors.background }]}
+            >
+              <MaterialCommunityIcons
+                name="account"
+                size={20}
+                color={colors.onSurfaceVariant}
+              />
+              <ThemedText
+                style={[styles.infoText, { color: colors.onSurface }]}
+              >
+                Propietario: {animal.propietario.name}
               </ThemedText>
             </ThemedView>
 
@@ -189,7 +300,7 @@ const styles = StyleSheet.create({
   },
   infoRow: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
     marginVertical: 4,
     padding: 4,
     borderRadius: 6,
@@ -207,6 +318,29 @@ const styles = StyleSheet.create({
   divider: {
     height: 1,
     marginVertical: 8,
+  },
+  statusContainer: {
+    flexDirection: "row",
+    marginRight: 8,
+  },
+  chip: {
+    marginHorizontal: 2,
+    height: 24,
+  },
+  smallChip: {
+    marginVertical: 2,
+    height: 32,
+    borderRadius: 16,
+  },
+  chipsContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    flex: 1,
+    marginLeft: 8,
+    gap: 4,
+  },
+  icon: {
+    marginTop: 4,
   },
 });
 

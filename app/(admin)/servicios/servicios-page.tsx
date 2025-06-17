@@ -8,12 +8,13 @@ import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import { useNavigation } from "expo-router";
 import React, { useState } from "react";
 import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
-import { ActivityIndicator } from "react-native-paper";
+import { ActivityIndicator, useTheme } from "react-native-paper";
 import CardService from "./components/CardService";
 
 const ServicioPageAdmin = () => {
   const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
+  const { colors } = useTheme();
   const [offset, setOffset] = useState(0);
   const limit = 10;
   const primary = useThemeColor({}, "primary");
@@ -48,7 +49,9 @@ const ServicioPageAdmin = () => {
 
   if (isError || servicios?.data.servicios.length === 0) {
     return (
-      <ThemedView style={styles.container}>
+      <ThemedView
+        style={[styles.container, { backgroundColor: colors.background }]}
+      >
         <MessageError
           titulo="No se encontraron servicios"
           descripcion=" No se encontraron datos de los servicios en este módulo. Por favor, verifica más tarde o vuelve a intentar."
@@ -62,7 +65,9 @@ const ServicioPageAdmin = () => {
   }
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <FlatList
         data={servicios?.data.servicios}
         renderItem={({ item }) => (

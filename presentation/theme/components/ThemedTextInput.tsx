@@ -5,16 +5,25 @@ import {
   Text,
   TextInput,
   TextInputProps,
+  TouchableOpacity,
   View,
 } from "react-native";
 import { useThemeColor } from "../hooks/useThemeColor";
 
 interface Props extends TextInputProps {
   icon?: keyof typeof Ionicons.glyphMap;
+  rightIcon?: keyof typeof Ionicons.glyphMap;
+  onRightIconPress?: () => void;
   error?: string;
 }
 
-const ThemedTextInput = ({ icon, error, ...rest }: Props) => {
+const ThemedTextInput = ({
+  icon,
+  error,
+  rightIcon,
+  onRightIconPress,
+  ...rest
+}: Props) => {
   const [isActive, setIsActive] = useState(false);
   const InputRef = useRef<TextInput>(null);
   const primaryColor = useThemeColor({}, "primary");
@@ -47,9 +56,19 @@ const ThemedTextInput = ({ icon, error, ...rest }: Props) => {
           style={{
             flex: 1,
             color: textColor,
-            marginRight: 10,
+            paddingRight: rightIcon ? 10 : 0,
           }}
         />
+        {rightIcon && (
+          <TouchableOpacity onPress={onRightIconPress}>
+            <Ionicons
+              name={rightIcon}
+              size={24}
+              color={error ? errorColor : isActive ? primaryColor : textColor}
+              style={{ marginLeft: 10 }}
+            />
+          </TouchableOpacity>
+        )}
       </View>
       {error && (
         <Text style={[styles.errorText, { color: errorColor }]}>{error}</Text>
@@ -65,7 +84,7 @@ const styles = StyleSheet.create({
   border: {
     borderWidth: 1,
     borderRadius: 5,
-    padding: 5,
+    padding: 10,
     flexDirection: "row",
     alignItems: "center",
   },

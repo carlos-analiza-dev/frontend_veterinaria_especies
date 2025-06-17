@@ -1,10 +1,13 @@
-import { ObtenerAnimalesByPropietario } from "@/core/animales/accions/crear-animal";
+import { CreateAnimal } from "@/core/animales/accions/crear-animal";
 import { CrearAnimalByFinca } from "@/core/animales/interfaces/crear-animal.interface";
-import { especiesOptions } from "@/helpers/data/especies";
+import { alimentosOptions } from "@/helpers/data/alimentos";
 import { sexoOptions } from "@/helpers/data/sexo_animales";
+import useGetEspecies from "@/hooks/especies/useGetEspecies";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
+import useGetRazasByEspecie from "@/hooks/razas/useGetRazasByEspecie";
 import { useAuthStore } from "@/presentation/auth/store/useAuthStore";
 import ThemedButton from "@/presentation/theme/components/ThemedButton";
+import ThemedCheckbox from "@/presentation/theme/components/ThemedCheckbox";
 import ThemedPicker from "@/presentation/theme/components/ThemedPicker";
 import ThemedTextInput from "@/presentation/theme/components/ThemedTextInput";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
@@ -19,11 +22,12 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
+  Text,
   TouchableWithoutFeedback,
   useWindowDimensions,
   View,
 } from "react-native";
-import { useTheme } from "react-native-paper";
+import { Switch, useTheme } from "react-native-paper";
 import Toast from "react-native-toast-message";
 
 const CrearAnimal = () => {
@@ -32,6 +36,9 @@ const CrearAnimal = () => {
   const { height, width } = useWindowDimensions();
   const queryClient = useQueryClient();
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [alimentosSeleccionados, setAlimentosSeleccionados] = useState<
+    string[]
+  >([]);
 
   const {
     handleSubmit,
@@ -40,6 +47,10 @@ const CrearAnimal = () => {
     formState: { errors },
     reset,
   } = useForm<CrearAnimalByFinca>();
+
+  const { data: especies } = useGetEspecies();
+  const especieId = watch("especie");
+  const { data: razas } = useGetRazasByEspecie(especieId);
 
   const handleDateChange = (event: any, selectedDate?: Date) => {
     setShowDatePicker(Platform.OS === "ios");
@@ -50,10 +61,11 @@ const CrearAnimal = () => {
 
   const { data: fincas } = useFincasPropietarios(user?.id ?? "");
 
-  const especiesItmes = especiesOptions.map((especie) => ({
-    label: especie.label,
-    value: especie.value,
-  }));
+  const especiesItmes =
+    especies?.data.map((especie) => ({
+      label: especie.nombre,
+      value: especie.id,
+    })) || [];
 
   const sexoItems = sexoOptions.map((sexo) => ({
     label: sexo.label,
@@ -66,9 +78,23 @@ const CrearAnimal = () => {
       value: finca.id,
     })) || [];
 
+  const handleAlimentoChange = (alimento: string) => {
+    const nuevosAlimentos = [...alimentosSeleccionados];
+    if (nuevosAlimentos.includes(alimento)) {
+      const index = nuevosAlimentos.indexOf(alimento);
+      nuevosAlimentos.splice(index, 1);
+    } else {
+      nuevosAlimentos.push(alimento);
+    }
+    setAlimentosSeleccionados(nuevosAlimentos);
+    setValue(
+      "tipo_alimentacion",
+      nuevosAlimentos.map((a) => ({ alimento: a }))
+    );
+  };
+
   const mutation = useMutation({
-    mutationFn: (data: CrearAnimalByFinca) =>
-      ObtenerAnimalesByPropietario(data),
+    mutationFn: (data: CrearAnimalByFinca) => CreateAnimal(data),
     onSuccess: () => {
       Toast.show({
         type: "success",
@@ -77,6 +103,7 @@ const CrearAnimal = () => {
       });
       queryClient.invalidateQueries({ queryKey: ["animales-propietario"] });
       reset();
+      setAlimentosSeleccionados([]);
     },
     onError: (error) => {
       if (isAxiosError(error)) {
@@ -161,7 +188,7 @@ const CrearAnimal = () => {
               />
 
               <ThemedTextInput
-                placeholder="Identificador (ej: BO-1998)"
+                placeholder="Identificador (ej: BOSE2-000001)"
                 icon="alert-outline"
                 value={watch("identificador")}
                 onChangeText={(text) => setValue("identificador", text)}
@@ -169,20 +196,28 @@ const CrearAnimal = () => {
                 style={styles.input}
               />
 
-              <ThemedTextInput
-                placeholder="Raza del animal"
+              <ThemedPicker
+                items={
+                  razas?.data.map((raza) => ({
+                    label: raza.nombre,
+                    value: raza.id,
+                  })) || []
+                }
+                onValueChange={(value) => setValue("raza", value)}
+                selectedValue={watch("raza")}
+                placeholder="Selecciona una raza"
                 icon="bug-outline"
-                value={watch("raza")}
-                onChangeText={(text) => setValue("raza", text)}
                 error={errors.raza?.message}
-                style={styles.input}
               />
 
               <ThemedTextInput
                 placeholder="Edad promedio (años)"
                 icon="calendar-number-outline"
                 value={watch("edad_promedio")?.toString()}
-                onChangeText={(text) => setValue("edad_promedio", text)}
+                onChangeText={(text) => {
+                  const num = parseInt(text, 10);
+                  setValue("edad_promedio", num);
+                }}
                 keyboardType="numeric"
                 error={errors.edad_promedio?.message}
                 style={styles.input}
@@ -210,6 +245,42 @@ const CrearAnimal = () => {
                   onChange={handleDateChange}
                 />
               )}
+
+              <View style={styles.sectionContainer}>
+                <Text style={styles.sectionTitle}>Tipo de alimentación</Text>
+                {alimentosOptions.map((alimento) => (
+                  <ThemedCheckbox
+                    key={alimento.value}
+                    label={alimento.label}
+                    value={alimento.value}
+                    onPress={handleAlimentoChange}
+                    isSelected={alimentosSeleccionados.includes(alimento.value)}
+                  />
+                ))}
+                {errors.tipo_alimentacion?.message && (
+                  <Text style={styles.errorText}>
+                    {errors.tipo_alimentacion.message}
+                  </Text>
+                )}
+              </View>
+
+              <View style={styles.switchContainer}>
+                <Text style={styles.switchLabel}>Castrado</Text>
+                <Switch
+                  value={watch("castrado") || false}
+                  onValueChange={(value) => setValue("castrado", value)}
+                  color={colors.primary}
+                />
+              </View>
+
+              <View style={styles.switchContainer}>
+                <Text style={styles.switchLabel}>Esterilizado</Text>
+                <Switch
+                  value={watch("esterelizado") || false}
+                  onValueChange={(value) => setValue("esterelizado", value)}
+                  color={colors.primary}
+                />
+              </View>
 
               <ThemedTextInput
                 placeholder="Observaciones"
@@ -272,13 +343,35 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 8,
   },
-  submitButtonText: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
   datePicker: {
     width: "100%",
     marginBottom: 15,
+  },
+  sectionContainer: {
+    marginBottom: 15,
+    width: "100%",
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 10,
+    color: "#333",
+  },
+  switchContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 15,
+    width: "100%",
+  },
+  switchLabel: {
+    fontSize: 16,
+    color: "#333",
+  },
+  errorText: {
+    color: "red",
+    fontSize: 12,
+    marginTop: 5,
   },
 });
 

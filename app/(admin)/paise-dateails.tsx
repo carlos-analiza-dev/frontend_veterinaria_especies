@@ -21,6 +21,7 @@ import {
   Switch,
   View,
 } from "react-native";
+import { useTheme } from "react-native-paper";
 import Toast from "react-native-toast-message";
 
 type RoutePaisProps = RouteProp<UsersStackParamList, "PaisDetails">;
@@ -33,7 +34,7 @@ const PaisDetailsPage = ({ route }: DetailsPaisProps) => {
   const { paisId } = route.params;
   const [isEditing, setIsEditing] = useState(false);
   const queryClient = useQueryClient();
-
+  const { colors } = useTheme();
   const { data: pais, isLoading: cargando, isError } = usePaisesById(paisId);
   const {
     control,
@@ -126,7 +127,9 @@ const PaisDetailsPage = ({ route }: DetailsPaisProps) => {
       style={styles.container}
     >
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <ThemedView style={styles.card}>
+        <ThemedView
+          style={[styles.card, { backgroundColor: colors.background }]}
+        >
           <ThemedText type="title" style={styles.title}>
             {isEditing ? "Editar País" : "Detalles del País"}
           </ThemedText>

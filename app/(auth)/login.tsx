@@ -6,8 +6,10 @@ import ThemedTextInput from "@/presentation/theme/components/ThemedTextInput";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
+  ImageBackground,
   KeyboardAvoidingView,
   ScrollView,
+  StyleSheet,
   useWindowDimensions,
   View,
 } from "react-native";
@@ -21,6 +23,11 @@ const LoginScreen = () => {
     password: "",
   });
   const [isPosting, setIsPosting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
 
   const handleLogin = async () => {
     const { email, password } = form;
@@ -43,7 +50,7 @@ const LoginScreen = () => {
       const { user } = authResponse;
       if (user.role.name === "Administrador") {
         router.replace("/(admin)/users");
-      } else if (user.role.name === "User") {
+      } else if (user.role.name === "Ganadero") {
         router.replace("/(user)/home");
       } else if (user.role.name === "Secretario") {
         router.replace("/(secretario)/home");
@@ -68,76 +75,143 @@ const LoginScreen = () => {
   };
 
   return (
-    <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
-      <ScrollView style={{ paddingHorizontal: 40 }}>
-        <View style={{ paddingTop: height * 0.35 }}>
-          <ThemedText style={{ marginBottom: 5 }} type="title">
-            Ingresar
-          </ThemedText>
-          <ThemedText style={{ color: "gray" }}>
-            Por favor, ingrese para continuar
-          </ThemedText>
-        </View>
+    <ImageBackground
+      source={require("@/images/Ganaderia.png")}
+      style={styles.backgroundImage}
+      resizeMode="cover"
+    >
+      <View style={styles.overlay} />
 
-        <View>
-          <View style={{ marginTop: 20 }}>
-            <ThemedTextInput
-              placeholder="correo electronico"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              icon="mail-outline"
-              value={form.email}
-              onChangeText={(value) => setForm({ ...form, email: value })}
-            />
+      <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={[styles.loginContainer, { paddingTop: height * 0.1 }]}>
+            <View style={styles.formContainer}>
+              <ThemedText style={styles.title} type="title">
+                Ingresar
+              </ThemedText>
+              <ThemedText style={styles.subtitle}>
+                Por favor, ingrese para continuar
+              </ThemedText>
 
-            <ThemedTextInput
-              placeholder="Contraseña"
-              secureTextEntry
-              autoCapitalize="none"
-              icon="lock-closed-outline"
-              value={form.password}
-              onChangeText={(value) => setForm({ ...form, password: value })}
-            />
+              <View style={styles.inputsContainer}>
+                <ThemedTextInput
+                  placeholder="Correo electrónico"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  icon="mail-outline"
+                  value={form.email}
+                  onChangeText={(value) => setForm({ ...form, email: value })}
+                />
+
+                <ThemedTextInput
+                  placeholder="Contraseña"
+                  secureTextEntry={!showPassword}
+                  autoCapitalize="none"
+                  icon="lock-closed-outline"
+                  rightIcon={showPassword ? "eye-off-outline" : "eye-outline"}
+                  onRightIconPress={toggleShowPassword}
+                  value={form.password}
+                  onChangeText={(value) =>
+                    setForm({ ...form, password: value })
+                  }
+                />
+              </View>
+
+              <ThemedButton
+                title="Ingresar"
+                onPress={handleLogin}
+                disabled={isPosting}
+                variant="primary"
+                icon="log-in-outline"
+                loading={isPosting}
+                style={styles.loginButton}
+              />
+
+              <View style={styles.linksContainer}>
+                <View style={styles.linkRow}>
+                  <ThemedText>¿No tienes cuenta?</ThemedText>
+                  <ThemedLink href="/(auth)/register" style={styles.link}>
+                    Crear Cuenta
+                  </ThemedLink>
+                </View>
+                <View style={styles.linkRow}>
+                  <ThemedText>¿Olvidaste tu contraseña?</ThemedText>
+                  <ThemedLink
+                    href="/(auth)/change-password"
+                    style={styles.link}
+                  >
+                    Cambiar
+                  </ThemedLink>
+                </View>
+              </View>
+            </View>
           </View>
-        </View>
-        <View>
-          <ThemedButton
-            title="Ingresar"
-            onPress={handleLogin}
-            disabled={isPosting}
-            variant="primary"
-            icon="log-in-outline"
-            loading={false}
-            style={{ marginTop: 20 }}
-          />
-        </View>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <ThemedText>¿No tienes cuenta?</ThemedText>
-          <ThemedLink href="/(auth)/register" style={{ marginLeft: 5 }}>
-            Crear Cuenta
-          </ThemedLink>
-        </View>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <ThemedText>¿Olvidaste tu contraseña?</ThemedText>
-          <ThemedLink href="/(auth)/change-password" style={{ marginLeft: 5 }}>
-            Cambiar
-          </ThemedLink>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </ImageBackground>
   );
 };
+
+const styles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  scrollContainer: {
+    flexGrow: 1,
+  },
+  loginContainer: {
+    flex: 1,
+    justifyContent: "center",
+    paddingHorizontal: 40,
+  },
+  formContainer: {
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    borderRadius: 10,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  title: {
+    marginBottom: 5,
+    textAlign: "center",
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  subtitle: {
+    color: "gray",
+    textAlign: "center",
+    marginBottom: 20,
+  },
+  inputsContainer: {
+    marginBottom: 15,
+  },
+  loginButton: {
+    marginTop: 15,
+  },
+  linksContainer: {
+    marginTop: 20,
+  },
+  linkRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  link: {
+    marginLeft: 5,
+  },
+});
 
 export default LoginScreen;

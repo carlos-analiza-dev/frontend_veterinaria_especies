@@ -1,3 +1,4 @@
+import { CustomToast } from "@/presentation/theme/components/CustomToast";
 import { useColorScheme } from "@/presentation/theme/hooks/useColorScheme.web";
 import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import { AuthProvider } from "@/providers/AuthProvider";
@@ -43,7 +44,13 @@ export default function RootLayout() {
                   headerShown: false,
                 }}
               ></Stack>
-              <Toast />
+              <Toast
+                config={{
+                  success: (props) => <CustomToast {...props} />,
+                  error: (props) => <CustomToast {...props} />,
+                  info: (props) => <CustomToast {...props} />,
+                }}
+              />
               <StatusBar style="auto" />
             </ThemeProvider>
           </PaperProvider>

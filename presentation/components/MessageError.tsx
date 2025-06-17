@@ -1,4 +1,5 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useTheme } from "react-native-paper";
 import { ThemedText } from "../theme/components/ThemedText";
 import { ThemedView } from "../theme/components/ThemedView";
 
@@ -8,6 +9,7 @@ interface Props {
 }
 
 const MessageError = ({ titulo, descripcion }: Props) => {
+  const { colors } = useTheme();
   return (
     <ThemedView
       style={{
@@ -15,6 +17,7 @@ const MessageError = ({ titulo, descripcion }: Props) => {
         justifyContent: "center",
         alignItems: "center",
         paddingHorizontal: 20,
+        backgroundColor: colors.background,
       }}
     >
       <MaterialCommunityIcons

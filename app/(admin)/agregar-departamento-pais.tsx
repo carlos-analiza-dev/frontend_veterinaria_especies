@@ -13,7 +13,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import React, { useState } from "react";
 import { ScrollView, View } from "react-native";
-import { ActivityIndicator, Button } from "react-native-paper";
+import { ActivityIndicator, Button, useTheme } from "react-native-paper";
 import Toast from "react-native-toast-message";
 import ModalAddDepto from "./components/Modals/ModalAddDepto";
 import ModalAddMunicipio from "./components/Modals/ModalAddMunicipio";
@@ -31,6 +31,7 @@ const ITEMS_PER_PAGE = 10;
 
 const AgregarDepartamentoPais = ({ route }: DetailsDeptoPaisProps) => {
   const primary = useThemeColor({}, "primary");
+  const { colors } = useTheme();
   const queryClient = useQueryClient();
   const { paisId } = route.params;
   const [page, setPage] = useState(0);
@@ -191,7 +192,7 @@ const AgregarDepartamentoPais = ({ route }: DetailsDeptoPaisProps) => {
 
   if (isError || data?.data.departamentos.length === 0) {
     return (
-      <ThemedView style={{ flex: 1 }}>
+      <ThemedView style={{ flex: 1, backgroundColor: colors.background }}>
         <View style={{ alignItems: "flex-end", marginTop: 5, padding: 5 }}>
           <Button
             buttonColor={primary}
@@ -219,7 +220,7 @@ const AgregarDepartamentoPais = ({ route }: DetailsDeptoPaisProps) => {
   }
 
   return (
-    <ThemedView style={{ flex: 1 }}>
+    <ThemedView style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={{ alignItems: "flex-end", marginTop: 5, padding: 5 }}>
         <Button
           buttonColor={primary}

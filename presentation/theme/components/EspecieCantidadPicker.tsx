@@ -1,4 +1,4 @@
-import { especiesOptions } from "@/helpers/data/especies";
+import useGetEspecies from "@/hooks/especies/useGetEspecies";
 import { Picker } from "@react-native-picker/picker";
 import React from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
@@ -11,6 +11,10 @@ interface Props {
 }
 
 const EspecieCantidadPicker = ({ value, onChange, cantidadTotal }: Props) => {
+  const { data: especies } = useGetEspecies();
+
+  const especiesData = especies?.data || [];
+
   const calcularSumaActual = () => {
     return value.reduce((sum, item) => sum + (item.cantidad || 0), 0);
   };
@@ -61,7 +65,9 @@ const EspecieCantidadPicker = ({ value, onChange, cantidadTotal }: Props) => {
   };
 
   const handleAdd = () => {
-    if (value.length >= especiesOptions.length) {
+    const especiesDisponibles = especies?.data || [];
+
+    if (value.length >= especiesDisponibles.length) {
       Toast.show({
         type: "error",
         text1: "No puedes añadir más especies",
@@ -89,10 +95,10 @@ const EspecieCantidadPicker = ({ value, onChange, cantidadTotal }: Props) => {
 
   const getOpcionesDisponibles = (currentIndex: number) => {
     const especiesSeleccionadas = getEspeciesSeleccionadas(currentIndex);
-    return especiesOptions.filter(
+    return (especies?.data || []).filter(
       (opt) =>
-        !especiesSeleccionadas.includes(opt.value) ||
-        value[currentIndex]?.especie === opt.value
+        !especiesSeleccionadas.includes(opt.nombre) ||
+        value[currentIndex]?.especie === opt.nombre
     );
   };
 
@@ -106,13 +112,9 @@ const EspecieCantidadPicker = ({ value, onChange, cantidadTotal }: Props) => {
             style={styles.picker}
           >
             <Picker.Item label="Seleccione especie" value="" />
-            {getOpcionesDisponibles(index).map((opt) => (
-              <Picker.Item
-                key={opt.value}
-                label={opt.label}
-                value={opt.value}
-              />
-            ))}
+            {getOpcionesDisponibles(index)?.map((opt) => (
+              <Picker.Item key={opt.id} label={opt.nombre} value={opt.nombre} />
+            )) || []}
           </Picker>
           <TextInput
             style={styles.input}
