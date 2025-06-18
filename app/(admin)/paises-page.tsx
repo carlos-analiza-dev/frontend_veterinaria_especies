@@ -1,4 +1,4 @@
-import usePaisesActives from "@/hooks/paises/usePaises";
+import usePaises from "@/hooks/paises/usePaises";
 import { FAB } from "@/presentation/components/FAB";
 import MessageError from "@/presentation/components/MessageError";
 import PaisesCard from "@/presentation/components/paises/PaisesCard";
@@ -22,7 +22,7 @@ const PaisesPage = () => {
 
   const [refreshing, setRefreshing] = useState(false);
 
-  const { data, isError, isLoading, refetch } = usePaisesActives();
+  const { data, isError, isLoading, refetch } = usePaises();
 
   const onRefresh = async () => {
     setRefreshing(true);

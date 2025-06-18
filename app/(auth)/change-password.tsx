@@ -7,8 +7,10 @@ import { useMutation } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import React, { useState } from "react";
 import {
+  ImageBackground,
   KeyboardAvoidingView,
   ScrollView,
+  StyleSheet,
   useWindowDimensions,
   View,
 } from "react-native";
@@ -114,98 +116,147 @@ const ChangePasswordPage = () => {
   };
 
   return (
-    <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
-      <ScrollView style={{ paddingHorizontal: 40 }}>
-        <View style={{ paddingTop: height * 0.3 }}>
-          <ThemedText
-            style={{
-              fontSize: 25,
-              fontFamily: "KanitBold",
-              fontWeight: "bold",
-            }}
-          >
-            Restablecer Contraseña
-          </ThemedText>
-          <ThemedText style={{ color: "gray" }}>
-            Por favor, ingresa tus datos correctamente
-          </ThemedText>
-        </View>
+    <ImageBackground
+      source={require("@/images/Ganaderia.png")}
+      style={styles.backgroundImage}
+      resizeMode="cover"
+    >
+      <View style={styles.overlay} />
 
-        <View>
-          <View style={{ marginTop: 20 }}>
-            <ThemedTextInput
-              placeholder="correo electronico"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              icon="mail-outline"
-              value={form.email}
-              onChangeText={(value) => setForm({ ...form, email: value })}
+      <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={[styles.formContainer, { marginTop: height * 0.1 }]}>
+            <ThemedText
+              style={{
+                fontSize: 22,
+                fontFamily: "KanitBold",
+                fontWeight: "bold",
+                textAlign: "center",
+                marginBottom: 5,
+              }}
+            >
+              Restablecer Contraseña
+            </ThemedText>
+            <ThemedText
+              style={{ color: "gray", textAlign: "center", marginBottom: 20 }}
+            >
+              Por favor, ingresa tus datos correctamente
+            </ThemedText>
+
+            <View style={styles.inputsContainer}>
+              <ThemedTextInput
+                placeholder="Correo electrónico"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                icon="mail-outline"
+                value={form.email}
+                onChangeText={(value) => setForm({ ...form, email: value })}
+              />
+
+              <ThemedTextInput
+                placeholder="Contraseña"
+                secureTextEntry={!showPassword}
+                autoCapitalize="none"
+                icon="lock-closed-outline"
+                rightIcon={showPassword ? "eye-off-outline" : "eye-outline"}
+                onRightIconPress={toggleShowPassword}
+                value={form.nuevaContrasena}
+                onChangeText={(value) =>
+                  setForm({ ...form, nuevaContrasena: value })
+                }
+              />
+
+              <ThemedTextInput
+                placeholder="Confirmar Contraseña"
+                secureTextEntry={!showPasswor2}
+                autoCapitalize="none"
+                icon="lock-closed-outline"
+                rightIcon={showPasswor2 ? "eye-off-outline" : "eye-outline"}
+                onRightIconPress={toggleShowPasswordTwo}
+                value={form.confirmPassword}
+                onChangeText={(value) =>
+                  setForm({ ...form, confirmPassword: value })
+                }
+              />
+            </View>
+
+            <ThemedButton
+              title="Actualizar"
+              onPress={handleUpdate}
+              disabled={changePasswordMutation.isPending}
+              variant="primary"
+              icon="reload-outline"
+              loading={changePasswordMutation.isPending}
+              style={styles.loginButton}
             />
 
-            <ThemedTextInput
-              placeholder="Contraseña"
-              secureTextEntry={!showPassword}
-              autoCapitalize="none"
-              icon="lock-closed-outline"
-              rightIcon={showPassword ? "eye-off-outline" : "eye-outline"}
-              onRightIconPress={toggleShowPassword}
-              value={form.nuevaContrasena}
-              onChangeText={(value) =>
-                setForm({ ...form, nuevaContrasena: value })
-              }
-            />
-            <ThemedTextInput
-              placeholder="Confirmar Contraseña"
-              secureTextEntry={!showPasswor2}
-              autoCapitalize="none"
-              icon="lock-closed-outline"
-              rightIcon={showPasswor2 ? "eye-off-outline" : "eye-outline"}
-              onRightIconPress={toggleShowPasswordTwo}
-              value={form.confirmPassword}
-              onChangeText={(value) =>
-                setForm({ ...form, confirmPassword: value })
-              }
-            />
+            <View style={styles.linksContainer}>
+              <View style={styles.linkRow}>
+                <ThemedText>¿No tienes cuenta?</ThemedText>
+                <ThemedLink href="/(auth)/register" style={styles.link}>
+                  Crear Cuenta
+                </ThemedLink>
+              </View>
+              <View style={styles.linkRow}>
+                <ThemedText>¿Ya tienes una cuenta?</ThemedText>
+                <ThemedLink href="/(auth)/login" style={styles.link}>
+                  Inicia Sesión
+                </ThemedLink>
+              </View>
+            </View>
           </View>
-        </View>
-        <View>
-          <ThemedButton
-            title="Actualizar"
-            onPress={handleUpdate}
-            disabled={changePasswordMutation.isPending}
-            variant="primary"
-            icon="reload-outline"
-            loading={false}
-            style={{ marginTop: 20 }}
-          />
-        </View>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <ThemedText>¿No tienes cuenta?</ThemedText>
-          <ThemedLink href="/(auth)/register" style={{ marginLeft: 5 }}>
-            Crear Cuenta
-          </ThemedLink>
-        </View>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <ThemedText>¿Ya tienes una cuenta?</ThemedText>
-          <ThemedLink href="/(auth)/login" style={{ marginLeft: 5 }}>
-            Inicia Sesion
-          </ThemedLink>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </ImageBackground>
   );
 };
+
+const styles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    paddingHorizontal: 40,
+  },
+  formContainer: {
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    borderRadius: 10,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    marginBottom: 20,
+  },
+  inputsContainer: {
+    marginBottom: 15,
+  },
+  loginButton: {
+    marginTop: 15,
+  },
+  linksContainer: {
+    marginTop: 20,
+  },
+  linkRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  link: {
+    marginLeft: 5,
+  },
+});
 
 export default ChangePasswordPage;

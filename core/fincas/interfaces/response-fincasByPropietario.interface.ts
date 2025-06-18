@@ -13,7 +13,7 @@ export interface Finca {
   area_ganaderia_hectarea: string;
   tipo_explotacion: string;
   especies_maneja: EspeciesManeja[];
-  fecha_registro: Date;
+  fecha_registro: string;
   isActive: boolean;
   departamento: Departamento;
   municipio: Departamento;

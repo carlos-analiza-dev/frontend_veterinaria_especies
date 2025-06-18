@@ -55,6 +55,19 @@ const CardFincas = ({ finca, onPress }: Props) => {
     });
   };
 
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("es-HN", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
+  const getStatusText = (isActive: boolean) => {
+    return isActive ? "Activa" : "Inactiva";
+  };
+
   type AllowedIcons = "cow" | "horse" | "pig" | "bird" | "sheep" | "paw";
 
   const getSpeciesIcon = (especie: string): AllowedIcons => {
@@ -172,6 +185,38 @@ const CardFincas = ({ finca, onPress }: Props) => {
                   ))}
                 </View>
               </View>
+            </View>
+            <View style={styles.infoRow}>
+              <MaterialCommunityIcons
+                name="calendar"
+                size={20}
+                color={colors.onSurfaceVariant}
+              />
+              <ThemedText style={styles.infoText}>
+                Registrada: {formatDate(finca.fecha_registro)}
+              </ThemedText>
+            </View>
+
+            <View style={styles.infoRow}>
+              <MaterialCommunityIcons
+                name={finca.isActive ? "check-circle" : "close-circle"}
+                size={20}
+                color={finca.isActive ? colors.primary : colors.error}
+              />
+              <ThemedText style={styles.infoText}>
+                Estado: {getStatusText(finca.isActive)}
+              </ThemedText>
+            </View>
+
+            <View style={styles.infoRow}>
+              <MaterialCommunityIcons
+                name="map-marker-radius"
+                size={20}
+                color={colors.onSurfaceVariant}
+              />
+              <ThemedText style={styles.infoText}>
+                Ubicación exacta: {finca.ubicacion}
+              </ThemedText>
             </View>
           </Card.Content>
         </Card>

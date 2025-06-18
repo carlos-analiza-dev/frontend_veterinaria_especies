@@ -1,8 +1,8 @@
 import { UserUpdateData } from "@/core/auth/interfaces/user";
 import { actualizarUsuario } from "@/core/users/accions/get-user-byId";
-import useGetDepartamentosByPais from "@/hooks/departamentos/useGetDepartamentosByPais";
-import useGetMunicipiosByDepto from "@/hooks/municipios/useGetMunicipiosByDepto";
-import usePaisesActives from "@/hooks/paises/usePaises";
+import useGetDeptosActivesByPais from "@/hooks/departamentos/useGetDeptosActivesByPais";
+import useGetMunicipiosActivosByDepto from "@/hooks/municipios/useGetMunicipiosActivosByDepto";
+import useGetPaisesActivos from "@/hooks/paises/useGetPaisesActivos";
 import useGetRoles from "@/hooks/roles/useGetRoles";
 import userById from "@/hooks/users/userById";
 import MessageError from "@/presentation/components/MessageError";
@@ -57,13 +57,13 @@ const UsersDetailsScreen = ({ route }: UserDetailsScreenProps) => {
   const paisId = watch("pais");
   const departamentoId = watch("departamento");
 
-  const { data } = usePaisesActives();
+  const { data } = useGetPaisesActivos();
 
   const { data: departamentos, isLoading: loadingDeptos } =
-    useGetDepartamentosByPais(paisId);
+    useGetDeptosActivesByPais(paisId);
 
   const { data: municipios, isLoading: loadingMunicipios } =
-    useGetMunicipiosByDepto(departamentoId);
+    useGetMunicipiosActivosByDepto(departamentoId);
 
   const { data: roles } = useGetRoles();
 
@@ -74,13 +74,13 @@ const UsersDetailsScreen = ({ route }: UserDetailsScreenProps) => {
     })) || [];
 
   const departmentItems =
-    departamentos?.data.departamentos.map((depto) => ({
+    departamentos?.data.map((depto) => ({
       label: depto.nombre,
       value: depto.id.toString(),
     })) || [];
 
   const municipalityItems =
-    municipios?.data.municipios.map((mun) => ({
+    municipios?.data.map((mun) => ({
       label: mun.nombre,
       value: mun.id.toString(),
     })) || [];

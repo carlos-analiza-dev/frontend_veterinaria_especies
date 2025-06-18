@@ -166,7 +166,7 @@ const AnimalCard = ({ animal, onPress }: Props) => {
                 style={[styles.infoRow, { backgroundColor: colors.background }]}
               >
                 <MaterialCommunityIcons
-                  name="food"
+                  name="food-steak"
                   size={20}
                   color={colors.onSurfaceVariant}
                   style={styles.icon}
@@ -195,38 +195,42 @@ const AnimalCard = ({ animal, onPress }: Props) => {
               </ThemedView>
             )}
 
-            <ThemedView
-              style={[styles.infoRow, { backgroundColor: colors.background }]}
-            >
-              <ThemedText>Castrado:</ThemedText>
-              <View style={styles.chipsContainer}>
-                <Chip
-                  style={[
-                    styles.smallChip,
-                    { backgroundColor: colors.secondaryContainer },
-                  ]}
-                  textStyle={{ color: colors.onSecondaryContainer }}
-                >
-                  {animal.castrado === true ? "Si" : "No"}
-                </Chip>
-              </View>
-            </ThemedView>
-            <ThemedView
-              style={[styles.infoRow, { backgroundColor: colors.background }]}
-            >
-              <ThemedText>Esterilizado:</ThemedText>
-              <View style={styles.chipsContainer}>
-                <Chip
-                  style={[
-                    styles.smallChip,
-                    { backgroundColor: colors.secondaryContainer },
-                  ]}
-                  textStyle={{ color: colors.onSecondaryContainer }}
-                >
-                  {animal.esterelizado === true ? "Si" : "No"}
-                </Chip>
-              </View>
-            </ThemedView>
+            {animal.sexo === "Macho" && (
+              <ThemedView
+                style={[styles.infoRow, { backgroundColor: colors.background }]}
+              >
+                <ThemedText>Castrado:</ThemedText>
+                <View style={styles.chipsContainer}>
+                  <Chip
+                    style={[
+                      styles.smallChip,
+                      { backgroundColor: colors.secondaryContainer },
+                    ]}
+                    textStyle={{ color: colors.onSecondaryContainer }}
+                  >
+                    {animal.castrado === true ? "Si" : "No"}
+                  </Chip>
+                </View>
+              </ThemedView>
+            )}
+            {animal.sexo === "Hembra" && (
+              <ThemedView
+                style={[styles.infoRow, { backgroundColor: colors.background }]}
+              >
+                <ThemedText>Esterilizado:</ThemedText>
+                <View style={styles.chipsContainer}>
+                  <Chip
+                    style={[
+                      styles.smallChip,
+                      { backgroundColor: colors.secondaryContainer },
+                    ]}
+                    textStyle={{ color: colors.onSecondaryContainer }}
+                  >
+                    {animal.esterelizado === true ? "Si" : "No"}
+                  </Chip>
+                </View>
+              </ThemedView>
+            )}
 
             <Divider
               style={[styles.divider, { backgroundColor: colors.outline }]}

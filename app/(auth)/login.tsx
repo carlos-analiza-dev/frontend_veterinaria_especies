@@ -48,23 +48,30 @@ const LoginScreen = () => {
 
     if (authResponse) {
       const { user } = authResponse;
-      if (user.role.name === "Administrador") {
-        router.replace("/(admin)/users");
-      } else if (user.role.name === "Ganadero") {
-        router.replace("/(user)/home");
-      } else if (user.role.name === "Secretario") {
-        router.replace("/(secretario)/home");
-      } else if (user.role.name === "Veterinario") {
-        router.replace("/(veterinario)/home");
-      } else {
-        Toast.show({
-          type: "error",
-          text1: "Acceso denegado",
-          text2: "No tienes permisos para acceder a esta aplicación.",
-        });
 
-        await logout();
+      switch (user.role.name) {
+        case "Administrador":
+          router.replace("/(admin)/users");
+          break;
+        case "Ganadero":
+          router.replace("/(user)/home");
+          break;
+        case "Secretario":
+          router.replace("/(secretario)/home");
+          break;
+        case "Veterinario":
+          router.replace("/(veterinario)/home");
+          break;
+        default:
+          Toast.show({
+            type: "error",
+            text1: "Acceso denegado",
+            text2: "No tienes permisos para acceder a esta aplicación.",
+          });
+          await logout();
+          break;
       }
+
       return;
     }
     Toast.show({
@@ -87,7 +94,7 @@ const LoginScreen = () => {
           contentContainerStyle={styles.scrollContainer}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={[styles.loginContainer, { paddingTop: height * 0.1 }]}>
+          <View style={[styles.loginContainer, { paddingTop: height * 0.05 }]}>
             <View style={styles.formContainer}>
               <ThemedText style={styles.title} type="title">
                 Ingresar
@@ -188,6 +195,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 24,
     fontWeight: "bold",
+    color: "gray",
   },
   subtitle: {
     color: "gray",

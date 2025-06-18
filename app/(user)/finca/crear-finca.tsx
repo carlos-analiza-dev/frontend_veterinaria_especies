@@ -1,9 +1,9 @@
 import { CreateFinca } from "@/core/fincas/accions/crear-finca";
 import { CrearFinca } from "@/core/fincas/interfaces/crear-finca.interface";
 import { TipoExplotacion } from "@/helpers/data/tipoExplotacion";
-import usePaisesActives from "@/hooks/paises/usePaises";
-import { useDepartamentosPorPais } from "@/hooks/useDepartamentosPorPais";
-import useMunicipiosByDepto from "@/hooks/useMunicipiosByDepto";
+import useGetDeptosActivesByPais from "@/hooks/departamentos/useGetDeptosActivesByPais";
+import useGetMunicipiosActivosByDepto from "@/hooks/municipios/useGetMunicipiosActivosByDepto";
+import useGetPaisesActivos from "@/hooks/paises/useGetPaisesActivos";
 import { useAuthStore } from "@/presentation/auth/store/useAuthStore";
 import EspecieCantidadPicker from "@/presentation/theme/components/EspecieCantidadPicker";
 import ThemedButton from "@/presentation/theme/components/ThemedButton";
@@ -44,20 +44,20 @@ const CrearFincaPage = () => {
   const selectedDeptoId = watch("departamentoId");
   const selectedPaisId = watch("pais_id");
 
-  const { data: deptos } = useDepartamentosPorPais(
+  const { data: deptos } = useGetDeptosActivesByPais(
     selectedPaisId || user?.pais.id || ""
   );
-  const { data: municipios } = useMunicipiosByDepto(selectedDeptoId);
-  const { data: paises } = usePaisesActives();
+  const { data: municipios } = useGetMunicipiosActivosByDepto(selectedDeptoId);
+  const { data: paises } = useGetPaisesActivos();
 
   const departmentItems =
-    deptos?.data.departamentos.map((depto) => ({
+    deptos?.data.map((depto) => ({
       label: depto.nombre,
       value: depto.id.toString(),
     })) || [];
 
   const municipiosItems =
-    municipios?.data.municipios.map((mun) => ({
+    municipios?.data.map((mun) => ({
       label: mun.nombre,
       value: mun.id.toString(),
     })) || [];
@@ -198,7 +198,13 @@ const CrearFincaPage = () => {
       style={{ flex: 1 }}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <ThemedView style={{ flex: 1, backgroundColor: colors.background }}>
+        <ThemedView
+          style={{
+            flex: 1,
+            marginBottom: 20,
+            backgroundColor: colors.background,
+          }}
+        >
           <ScrollView
             contentContainerStyle={[
               styles.scrollContainer,

@@ -1,8 +1,8 @@
-import { obtenerDeptosPaisById } from "@/core/departamentos/accions/obtener-departamentosByPaid";
-import { obtenerMunicipiosDeptoById } from "@/core/municipios/accions/obtener-municipiosByDepto";
 import { CreateUser } from "@/core/users/accions/crear-usuario";
 import { CrearUsuario } from "@/core/users/interfaces/create-user.interface";
-import usePaisesActives from "@/hooks/paises/usePaises";
+import useGetDeptosActivesByPais from "@/hooks/departamentos/useGetDeptosActivesByPais";
+import useGetMunicipiosActivosByDepto from "@/hooks/municipios/useGetMunicipiosActivosByDepto";
+import useGetPaisesActivos from "@/hooks/paises/useGetPaisesActivos";
 import usePaisesById from "@/hooks/paises/usePaisesById";
 import useGetRoles from "@/hooks/roles/useGetRoles";
 import ThemedButton from "@/presentation/theme/components/ThemedButton";
@@ -10,7 +10,7 @@ import ThemedPicker from "@/presentation/theme/components/ThemedPicker";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import ThemedTextInput from "@/presentation/theme/components/ThemedTextInput";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
@@ -82,7 +82,7 @@ const FormCreateUser = () => {
   const paisId = watch("pais");
   const departamentoId = watch("departamento");
 
-  const { data } = usePaisesActives();
+  const { data } = useGetPaisesActivos();
 
   const { data: pais } = usePaisesById(paisId);
 
@@ -94,21 +94,11 @@ const FormCreateUser = () => {
     }
   }, [pais, trigger]);
 
-  const { data: departamentos, isLoading: loadingDeptos } = useQuery({
-    queryKey: ["departamentos", paisId],
-    queryFn: () => obtenerDeptosPaisById(paisId),
-    staleTime: 60 * 100 * 5,
-    retry: 0,
-    enabled: !!paisId,
-  });
+  const { data: departamentos, isLoading: loadingDeptos } =
+    useGetDeptosActivesByPais(paisId);
 
-  const { data: municipios, isLoading: loadingMunicipios } = useQuery({
-    queryKey: ["municipios", departamentoId],
-    queryFn: () => obtenerMunicipiosDeptoById(departamentoId),
-    staleTime: 60 * 100 * 5,
-    retry: 0,
-    enabled: !!departamentoId,
-  });
+  const { data: municipios, isLoading: loadingMunicipios } =
+    useGetMunicipiosActivosByDepto(departamentoId);
 
   const { data: roles } = useGetRoles();
 
@@ -119,13 +109,13 @@ const FormCreateUser = () => {
     })) || [];
 
   const departmentItems =
-    departamentos?.data.departamentos.map((depto) => ({
+    departamentos?.data.map((depto) => ({
       label: depto.nombre,
       value: depto.id.toString(),
     })) || [];
 
   const municipalityItems =
-    municipios?.data.municipios.map((mun) => ({
+    municipios?.data.map((mun) => ({
       label: mun.nombre,
       value: mun.id.toString(),
     })) || [];

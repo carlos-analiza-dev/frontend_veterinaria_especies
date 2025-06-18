@@ -7,3 +7,10 @@ export const obtenerPaises = async () => {
   const response = await veterinariaAPI.get<PaisesResponse[]>(url);
   return response;
 };
+
+export const obtenerPaisesActivos = async () => {
+  const url = `${process.env.EXPO_PUBLIC_API_URL}/pais/activos`;
+
+  const response = await veterinariaAPI.get<PaisesResponse[]>(url);
+  return response;
+};

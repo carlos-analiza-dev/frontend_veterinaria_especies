@@ -14,7 +14,7 @@ import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   Keyboard,
@@ -36,6 +36,7 @@ const CrearAnimal = () => {
   const { height, width } = useWindowDimensions();
   const queryClient = useQueryClient();
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showIdentifierHelp, setShowIdentifierHelp] = useState(false);
   const [alimentosSeleccionados, setAlimentosSeleccionados] = useState<
     string[]
   >([]);
@@ -46,7 +47,7 @@ const CrearAnimal = () => {
     setValue,
     formState: { errors },
     reset,
-  } = useForm<CrearAnimalByFinca>();
+  } = useForm<CrearAnimalByFinca & { identificador_temp: string }>();
 
   const { data: especies } = useGetEspecies();
   const especieId = watch("especie");
@@ -72,6 +73,16 @@ const CrearAnimal = () => {
     value: sexo.value,
   }));
 
+  const selectedSexo = watch("sexo");
+
+  useEffect(() => {
+    if (selectedSexo === "Macho") {
+      setValue("esterelizado", false);
+    } else if (selectedSexo === "Hembra") {
+      setValue("castrado", false);
+    }
+  }, [selectedSexo, setValue]);
+
   const fincasItems =
     fincas?.data.fincas.map((finca) => ({
       label: finca.nombre_finca,
@@ -92,6 +103,49 @@ const CrearAnimal = () => {
       nuevosAlimentos.map((a) => ({ alimento: a }))
     );
   };
+
+  const getIdentifierPrefix = () => {
+    const especie = especies?.data.find((e) => e.id === watch("especie"));
+    const raza = razas?.data.find((r) => r.id === watch("raza"));
+    const sexo = watch("sexo");
+
+    if (!especie || !raza || !sexo) return null;
+
+    const especieCode = especie.nombre.slice(0, 2).toUpperCase();
+    const razaCode = raza.abreviatura.toUpperCase();
+    const sexoCode = sexo === "Macho" ? "1" : "2";
+
+    return `${especieCode}${razaCode}${sexoCode}`;
+  };
+
+  const formatNumber = (num: string) => {
+    return num.padStart(6, "0");
+  };
+
+  const handleIdentifierChange = (input: string) => {
+    const numbersOnly = input.replace(/\D/g, "").slice(0, 6);
+
+    setValue("identificador_temp", numbersOnly);
+
+    const prefix = getIdentifierPrefix();
+    if (prefix && numbersOnly.length === 6) {
+      setValue("identificador", `${prefix}-${formatNumber(numbersOnly)}`);
+    }
+  };
+
+  useEffect(() => {
+    const prefix = getIdentifierPrefix();
+    const currentNumber = watch("identificador_temp");
+
+    if (prefix && currentNumber?.length === 6) {
+      setValue("identificador", `${prefix}-${formatNumber(currentNumber)}`);
+    }
+  }, [
+    watch("especie"),
+    watch("raza"),
+    watch("sexo"),
+    watch("identificador_temp"),
+  ]);
 
   const mutation = useMutation({
     mutationFn: (data: CrearAnimalByFinca) => CreateAnimal(data),
@@ -135,10 +189,51 @@ const CrearAnimal = () => {
   const onSubmit = (data: CrearAnimalByFinca) => {
     if (!user?.id) return;
 
+    if (!data.especie) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Debes seleccionar una especie",
+      });
+      return;
+    }
+
+    if (!data.raza) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Debes seleccionar una raza",
+      });
+      return;
+    }
+
+    if (!data.sexo) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Debes seleccionar un sexo",
+      });
+      return;
+    }
+
+    if (
+      !data.identificador ||
+      !/^[A-ZÁÉÍÓÚÑ]{2}[A-ZÁÉÍÓÚÑ]{3,4}[12]-\d{6}$/.test(data.identificador)
+    ) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "El identificador debe tener 6 dígitos",
+      });
+      return;
+    }
+
     const animalData = {
       ...data,
       propietarioId: user.id,
     };
+
+    delete (animalData as any).identificador_temp;
 
     mutation.mutate(animalData);
   };
@@ -188,13 +283,23 @@ const CrearAnimal = () => {
               />
 
               <ThemedTextInput
-                placeholder="Identificador (ej: BOSE2-000001)"
-                icon="alert-outline"
-                value={watch("identificador")}
-                onChangeText={(text) => setValue("identificador", text)}
+                placeholder="Ingrese 6 dígitos"
+                icon="warning-outline"
+                value={watch("identificador_temp") || ""}
+                onChangeText={handleIdentifierChange}
+                onFocus={() => setShowIdentifierHelp(true)}
+                onBlur={() => setShowIdentifierHelp(false)}
                 error={errors.identificador?.message}
                 style={styles.input}
+                keyboardType="numeric"
+                maxLength={6}
               />
+
+              {showIdentifierHelp && (
+                <Text style={styles.helpText}>
+                  NÚMERO DE SEIS DIGITOS DE IDENTIFICACIÓN DEL ARETE
+                </Text>
+              )}
 
               <ThemedPicker
                 items={
@@ -215,8 +320,8 @@ const CrearAnimal = () => {
                 icon="calendar-number-outline"
                 value={watch("edad_promedio")?.toString()}
                 onChangeText={(text) => {
-                  const num = parseInt(text, 10);
-                  setValue("edad_promedio", num);
+                  const num = text === "" ? 0 : parseInt(text, 10);
+                  setValue("edad_promedio", isNaN(num) ? 0 : num);
                 }}
                 keyboardType="numeric"
                 error={errors.edad_promedio?.message}
@@ -264,23 +369,27 @@ const CrearAnimal = () => {
                 )}
               </View>
 
-              <View style={styles.switchContainer}>
-                <Text style={styles.switchLabel}>Castrado</Text>
-                <Switch
-                  value={watch("castrado") || false}
-                  onValueChange={(value) => setValue("castrado", value)}
-                  color={colors.primary}
-                />
-              </View>
+              {selectedSexo === "Macho" && (
+                <View style={styles.switchContainer}>
+                  <Text style={styles.switchLabel}>Castrado</Text>
+                  <Switch
+                    value={watch("castrado") || false}
+                    onValueChange={(value) => setValue("castrado", value)}
+                    color={colors.primary}
+                  />
+                </View>
+              )}
 
-              <View style={styles.switchContainer}>
-                <Text style={styles.switchLabel}>Esterilizado</Text>
-                <Switch
-                  value={watch("esterelizado") || false}
-                  onValueChange={(value) => setValue("esterelizado", value)}
-                  color={colors.primary}
-                />
-              </View>
+              {selectedSexo === "Hembra" && (
+                <View style={styles.switchContainer}>
+                  <Text style={styles.switchLabel}>Esterilizado</Text>
+                  <Switch
+                    value={watch("esterelizado") || false}
+                    onValueChange={(value) => setValue("esterelizado", value)}
+                    color={colors.primary}
+                  />
+                </View>
+              )}
 
               <ThemedTextInput
                 placeholder="Observaciones"
@@ -372,6 +481,17 @@ const styles = StyleSheet.create({
     color: "red",
     fontSize: 12,
     marginTop: 5,
+  },
+  identifierPreview: {
+    marginBottom: 15,
+    color: "#666",
+    fontSize: 14,
+  },
+  helpText: {
+    color: "#e63946",
+    fontSize: 12,
+    marginBottom: 10,
+    fontStyle: "italic",
   },
 });
 
