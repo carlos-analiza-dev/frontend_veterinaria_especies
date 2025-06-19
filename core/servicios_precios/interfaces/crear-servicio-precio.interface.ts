@@ -1,9 +1,7 @@
 export interface CrearServicePrecio {
-  servicioId: string;
+  sub_servicio_id: string;
   paisId: string;
   precio: number;
-  cantidadMin: number;
-  cantidadMax: number;
   tiempo: number;
 }
 

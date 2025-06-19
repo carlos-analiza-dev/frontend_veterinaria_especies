@@ -51,8 +51,7 @@ const AddPriceServices = ({ route }: DetailsServicioProps) => {
     paisId: "",
     servicioId: servicioId,
     precio: 0,
-    cantidadMin: 0,
-    cantidadMax: 0,
+
     tiempo: 0,
   });
 
@@ -108,20 +107,13 @@ const AddPriceServices = ({ route }: DetailsServicioProps) => {
       paisId: "",
       servicioId: servicioId,
       precio: 0,
-      cantidadMin: 0,
-      cantidadMax: 0,
+
       tiempo: 0,
     });
   };
 
   const handleSubmit = () => {
-    if (
-      !formData.paisId ||
-      formData.precio <= 0 ||
-      formData.cantidadMin <= 0 ||
-      formData.cantidadMax <= 0 ||
-      formData.tiempo <= 0
-    ) {
+    if (!formData.paisId || formData.precio <= 0 || formData.tiempo <= 0) {
       Toast.show({ type: "error", text1: "Todos los campos son obligatorios" });
       return;
     }
@@ -129,8 +121,7 @@ const AddPriceServices = ({ route }: DetailsServicioProps) => {
     const dataToSend: CrearServicePrecio = {
       ...formData,
       precio: Number(formData.precio),
-      cantidadMin: Number(formData.cantidadMin),
-      cantidadMax: Number(formData.cantidadMax),
+
       tiempo: Number(formData.tiempo),
     };
 
@@ -238,32 +229,6 @@ const AddPriceServices = ({ route }: DetailsServicioProps) => {
                 <ThemedText type="defaultSemiBold">
                   {servicio.pais.simbolo_moneda}
                   {servicio.precio}
-                </ThemedText>
-              </View>
-
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  marginVertical: 5,
-                }}
-              >
-                <ThemedText type="default">Cant. Mín:</ThemedText>
-                <ThemedText type="defaultSemiBold">
-                  {servicio.cantidadMin}
-                </ThemedText>
-              </View>
-
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  marginVertical: 5,
-                }}
-              >
-                <ThemedText type="default">Cant. Máx:</ThemedText>
-                <ThemedText type="defaultSemiBold">
-                  {servicio.cantidadMax}
                 </ThemedText>
               </View>
 

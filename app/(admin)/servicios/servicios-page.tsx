@@ -80,10 +80,11 @@ const ServicioPageAdmin = () => {
             />
             <View style={styles.buttonWrapper}>
               <ThemedButton
-                title="Agregar Precios"
+                title="Agregar Sub Servicio"
                 onPress={() =>
-                  navigation.navigate("AgregarPreciosServices", {
+                  navigation.navigate("AgregarSubServicio", {
                     servicioId: item.id,
+                    nombre: item.nombre,
                   })
                 }
               />

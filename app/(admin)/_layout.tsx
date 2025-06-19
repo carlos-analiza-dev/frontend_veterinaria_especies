@@ -24,6 +24,7 @@ import AddPriceServices from "./servicios/agregar-precio-services";
 import CrearServicioPage from "./servicios/crear-servicio";
 import DetailsServices from "./servicios/details-services";
 import ServicioPageAdmin from "./servicios/servicios-page";
+import SubServiciosPage from "./servicios/sub-servicio-page";
 import UsersDetailsScreen from "./user-details";
 import UsersScreenAdmin from "./users";
 
@@ -163,6 +164,16 @@ export default function AdminLayout() {
           options={{
             headerShown: true,
             headerTitle: "Agregar Precios",
+            headerRight: () => <LogoutIconButton />,
+            headerLeft: () => <GoBack />,
+          }}
+        />
+        <UsersStack.Screen
+          name="AgregarSubServicio"
+          component={SubServiciosPage}
+          options={{
+            headerShown: true,
+            headerTitle: "Agregar Sub Servicio",
             headerRight: () => <LogoutIconButton />,
             headerLeft: () => <GoBack />,
           }}

@@ -2,6 +2,7 @@ import { PaisesResponse } from "@/core/paises/interfaces/paises.response.interfa
 import { CrearServicePrecio } from "@/core/servicios_precios/interfaces/crear-servicio-precio.interface";
 import { ResponseServicioPrecio } from "@/core/servicios_precios/interfaces/response-servicio-precio.interface";
 import ThemedPicker from "@/presentation/theme/components/ThemedPicker";
+import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import React from "react";
 import { Button, Modal, Portal, TextInput, useTheme } from "react-native-paper";
 
@@ -15,6 +16,8 @@ interface Props {
   handleSubmit: () => void;
   setFormData: React.Dispatch<React.SetStateAction<CrearServicePrecio>>;
   servicio?: ResponseServicioPrecio | null;
+  isEditing: boolean;
+  nombre: string;
 }
 
 const ModalAgregarPrecios = ({
@@ -26,6 +29,8 @@ const ModalAgregarPrecios = ({
   formData,
   closeModal,
   setFormData,
+  nombre,
+  isEditing,
 }: Props) => {
   const { colors } = useTheme();
 
@@ -54,11 +59,14 @@ const ModalAgregarPrecios = ({
           borderRadius: 10,
         }}
       >
+        <ThemedText type="defaultSemiBold" style={{ margin: 5 }}>
+          {isEditing ? "Editar Precio" : "Agregar Precio"} - {nombre}
+        </ThemedText>
         <ThemedPicker
           items={
             paises?.map((pais) => ({
-              label: pais.nombre,
-              value: pais.id,
+              label: pais?.nombre,
+              value: pais?.id,
             })) || []
           }
           selectedValue={formData.paisId}
@@ -75,26 +83,7 @@ const ModalAgregarPrecios = ({
           keyboardType="numeric"
           style={{ marginBottom: 10 }}
         />
-        <TextInput
-          label="Cantidad mínima animales"
-          mode="outlined"
-          value={
-            formData.cantidadMin === 0 ? "" : formData.cantidadMin.toString()
-          }
-          onChangeText={(text) => handleNumericChange(text, "cantidadMin")}
-          keyboardType="numeric"
-          style={{ marginBottom: 10 }}
-        />
-        <TextInput
-          label="Cantidad máxima animales"
-          mode="outlined"
-          value={
-            formData.cantidadMax === 0 ? "" : formData.cantidadMax.toString()
-          }
-          onChangeText={(text) => handleNumericChange(text, "cantidadMax")}
-          keyboardType="numeric"
-          style={{ marginBottom: 10 }}
-        />
+
         <TextInput
           label="Tiempo maximo"
           mode="outlined"
@@ -110,7 +99,7 @@ const ModalAgregarPrecios = ({
           disabled={isCreating}
           onPress={handleSubmit}
         >
-          Guardar
+          {isEditing ? "Editar" : "Guardar"}
         </Button>
       </Modal>
     </Portal>

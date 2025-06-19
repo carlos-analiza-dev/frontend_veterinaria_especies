@@ -1,4 +1,13 @@
-export interface ResponseServicioPrecio {
+export interface ResponseSubServicios {
+  id: string;
+  nombre: string;
+  descripcion: string;
+  servicioId: string;
+  isActive: boolean;
+  preciosPorPais: PreciosPorPai[];
+}
+
+export interface PreciosPorPai {
   id: string;
   precio: number;
   tiempo: number;

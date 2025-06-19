@@ -31,12 +31,7 @@ const ModalEditServicioPrecio = ({
   const { colors } = useTheme();
   const primary = useThemeColor({}, "primary");
   const [precio, setPrecio] = useState<number>(servicio?.precio || 0);
-  const [cantidadMax, setCantidadMax] = useState<number>(
-    servicio?.cantidadMax || 0
-  );
-  const [cantidadMin, setCantidadMin] = useState<number>(
-    servicio?.cantidadMin || 0
-  );
+
   const [tiempo, setTiempo] = useState<number>(servicio?.tiempo || 0);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -47,8 +42,7 @@ const ModalEditServicioPrecio = ({
     if (servicio) {
       const precioUp = Number(servicio.precio);
       setPrecio(precioUp);
-      setCantidadMax(servicio.cantidadMax);
-      setCantidadMin(servicio.cantidadMin);
+
       setTiempo(servicio.tiempo);
     }
   }, [servicio]);
@@ -56,16 +50,6 @@ const ModalEditServicioPrecio = ({
   const handleSubmit = async () => {
     if (isNaN(precio) || precio <= 0) {
       setError("El precio debe ser un número válido mayor a 0");
-      return;
-    }
-
-    if (isNaN(cantidadMin) || cantidadMin < 0) {
-      setError("La cantidad mínima debe ser un número válido");
-      return;
-    }
-
-    if (isNaN(cantidadMax) || cantidadMax < 0) {
-      setError("La cantidad máxima debe ser un número válido");
       return;
     }
 
@@ -80,8 +64,7 @@ const ModalEditServicioPrecio = ({
     try {
       await updateServicioPrecio(servicio.id, {
         precio: Number(precio),
-        cantidadMin: Number(cantidadMin),
-        cantidadMax: Number(cantidadMax),
+
         tiempo: Number(tiempo),
       });
       queryClient.invalidateQueries({ queryKey: ["servicios-precio"] });
@@ -121,34 +104,6 @@ const ModalEditServicioPrecio = ({
           value={String(precio)}
           onChangeText={(text) => {
             setPrecio(Number(text));
-            setError("");
-          }}
-          mode="outlined"
-          keyboardType="numeric"
-          style={{ marginTop: 15 }}
-          error={!!error}
-        />
-        {error && <HelperText type="error">{error}</HelperText>}
-
-        <TextInput
-          label="Cantidad mínima animales"
-          value={String(cantidadMin)}
-          onChangeText={(text) => {
-            setCantidadMin(Number(text));
-            setError("");
-          }}
-          mode="outlined"
-          keyboardType="numeric"
-          style={{ marginTop: 15 }}
-          error={!!error}
-        />
-        {error && <HelperText type="error">{error}</HelperText>}
-
-        <TextInput
-          label="Cantidad máxima animales"
-          value={String(cantidadMax)}
-          onChangeText={(text) => {
-            setCantidadMax(Number(text));
             setError("");
           }}
           mode="outlined"
