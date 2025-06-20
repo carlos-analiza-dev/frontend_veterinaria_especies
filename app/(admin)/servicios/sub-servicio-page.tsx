@@ -1,4 +1,6 @@
 import { AddSubServicio } from "@/core/sub-servicio/accions/crear-sub-servicio";
+import { UpdateSubServicio } from "@/core/sub-servicio/accions/update-sub-servicio";
+import { CrearSubServicio } from "@/core/sub-servicio/interface/crear-sub-servicio.interface";
 import useGetPaisesActivos from "@/hooks/paises/useGetPaisesActivos";
 import useGetSubServiciosByServicioId from "@/hooks/sub-servicios/useGetSubServiciosByServicioId";
 import MessageError from "@/presentation/components/MessageError";
@@ -30,6 +32,8 @@ const SubServiciosPage = ({ route }: DetailsSubServicioProps) => {
   const { colors } = useTheme();
   const queryClient = useQueryClient();
   const [modalVisible, setModalVisible] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentSubServiceId, setCurrentSubServiceId] = useState("");
   const [newSubService, setNewSubService] = useState({
     nombre: "",
     descripcion: "",
@@ -46,6 +50,70 @@ const SubServiciosPage = ({ route }: DetailsSubServicioProps) => {
   } = useGetSubServiciosByServicioId(servicioId);
 
   const { data: paises } = useGetPaisesActivos();
+
+  const handleAddSubService = () => {
+    setModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalVisible(false);
+    setIsEditing(!isEditing);
+    setNewSubService({
+      nombre: "",
+      descripcion: "",
+      servicioId: servicioId,
+      isActive: true,
+    });
+  };
+
+  const updateSubServiceMutation = useMutation({
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: Partial<CrearSubServicio>;
+    }) => UpdateSubServicio(id, data),
+    onSuccess: () => {
+      handleCloseModal();
+      queryClient.invalidateQueries({
+        queryKey: ["sub-servicios", servicioId],
+      });
+      Toast.show({
+        type: "success",
+        text1: "Exito",
+        text2: "Sub servicio actualizado exitosamente",
+      });
+    },
+    onError: (error) => {
+      if (isAxiosError(error)) {
+        Toast.show({
+          type: "error",
+          text1: error.response?.data
+            ? error.response.data.message
+            : "Ocurrio un error al momento de actualizar el sub servicio",
+        });
+      }
+    },
+  });
+
+  const handleEditSubService = (subServicio: {
+    id: string;
+    nombre: string;
+    descripcion: string;
+    servicioId: string;
+    isActive: boolean;
+  }) => {
+    setCurrentSubServiceId(subServicio.id);
+    setNewSubService({
+      nombre: subServicio.nombre,
+      descripcion: subServicio.descripcion,
+      servicioId: subServicio.servicioId,
+      isActive: subServicio.isActive,
+    });
+    setIsEditing(true);
+    setModalVisible(true);
+  };
 
   const addSubServiceMutation = useMutation({
     mutationFn: AddSubServicio,
@@ -76,22 +144,15 @@ const SubServiciosPage = ({ route }: DetailsSubServicioProps) => {
     refetch();
   };
 
-  const handleAddSubService = () => {
-    setModalVisible(true);
-  };
-
-  const handleCloseModal = () => {
-    setModalVisible(false);
-    setNewSubService({
-      nombre: "",
-      descripcion: "",
-      servicioId: servicioId,
-      isActive: true,
-    });
-  };
-
   const handleSubmit = () => {
-    addSubServiceMutation.mutate(newSubService);
+    if (isEditing) {
+      updateSubServiceMutation.mutate({
+        id: currentSubServiceId,
+        data: newSubService,
+      });
+    } else {
+      addSubServiceMutation.mutate(newSubService);
+    }
   };
 
   if (isLoading && !isRefetching) {
@@ -109,7 +170,7 @@ const SubServiciosPage = ({ route }: DetailsSubServicioProps) => {
       >
         <View style={styles.buttonWrapper}>
           <ThemedButton
-            title="Agregar Sub Servicio"
+            title="Agregar Servicio"
             onPress={handleAddSubService}
             icon="add"
           />
@@ -128,7 +189,11 @@ const SubServiciosPage = ({ route }: DetailsSubServicioProps) => {
           onSubmit={handleSubmit}
           subService={newSubService}
           setSubService={setNewSubService}
-          isSubmitting={addSubServiceMutation.isPending}
+          isSubmitting={
+            addSubServiceMutation.isPending ||
+            updateSubServiceMutation.isPending
+          }
+          isEditing={isEditing}
         />
       </ThemedView>
     );
@@ -144,7 +209,7 @@ const SubServiciosPage = ({ route }: DetailsSubServicioProps) => {
           <ThemedView style={{ backgroundColor: colors.background }}>
             <View style={styles.buttonWrapper}>
               <ThemedButton
-                title="Agregar Sub Servicio"
+                title="Agregar Servicio"
                 onPress={handleAddSubService}
                 icon="add"
               />
@@ -156,7 +221,11 @@ const SubServiciosPage = ({ route }: DetailsSubServicioProps) => {
           </ThemedView>
         }
         renderItem={({ item }) => (
-          <CardSubServicios subServicio={item} paises={paises?.data} />
+          <CardSubServicios
+            subServicio={item}
+            paises={paises?.data}
+            onEdit={handleEditSubService}
+          />
         )}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         refreshControl={
@@ -175,7 +244,10 @@ const SubServiciosPage = ({ route }: DetailsSubServicioProps) => {
         onSubmit={handleSubmit}
         subService={newSubService}
         setSubService={setNewSubService}
-        isSubmitting={addSubServiceMutation.isPending}
+        isSubmitting={
+          addSubServiceMutation.isPending || updateSubServiceMutation.isPending
+        }
+        isEditing={isEditing}
       />
     </ThemedView>
   );

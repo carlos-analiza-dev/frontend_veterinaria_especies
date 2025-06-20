@@ -214,7 +214,7 @@ const RegisterScreen = () => {
             <ThemedText type="title" style={styles.title}>
               Regístrate
             </ThemedText>
-            <ThemedText style={styles.subtitle}>
+            <ThemedText style={{ textAlign: "center", marginBottom: 20 }}>
               Completa tus datos para crear una cuenta
             </ThemedText>
 
@@ -446,8 +446,7 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
-    paddingHorizontal: 10,
-    paddingBottom: 30,
+    paddingHorizontal: 20,
   },
   formContainer: {
     backgroundColor: "rgba(255, 255, 255, 0.9)",
@@ -458,17 +457,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-    marginHorizontal: 20,
-  },
-  title: {
-    marginBottom: 5,
-    textAlign: "center",
-    fontSize: 24,
-    fontWeight: "bold",
-  },
-  subtitle: {
-    color: "gray",
-    textAlign: "center",
     marginBottom: 20,
   },
   inputsContainer: {
@@ -488,6 +476,13 @@ const styles = StyleSheet.create({
   },
   link: {
     marginLeft: 5,
+  },
+  title: {
+    fontSize: 22,
+    fontFamily: "KanitBold",
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 5,
   },
 });
 

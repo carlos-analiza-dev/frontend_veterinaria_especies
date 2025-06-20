@@ -54,7 +54,7 @@ const LoginScreen = () => {
           router.replace("/(admin)/users");
           break;
         case "Ganadero":
-          router.replace("/(user)/home");
+          router.replace("/(user)/citas/home");
           break;
         case "Secretario":
           router.replace("/(secretario)/home");
@@ -94,12 +94,21 @@ const LoginScreen = () => {
           contentContainerStyle={styles.scrollContainer}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={[styles.loginContainer, { paddingTop: height * 0.05 }]}>
+          <View style={{ marginTop: height * 0.25, flex: 1 }}>
             <View style={styles.formContainer}>
-              <ThemedText style={styles.title} type="title">
+              <ThemedText
+                style={{
+                  fontSize: 22,
+                  fontFamily: "KanitBold",
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  marginBottom: 5,
+                }}
+                type="title"
+              >
                 Ingresar
               </ThemedText>
-              <ThemedText style={styles.subtitle}>
+              <ThemedText style={{ textAlign: "center", marginBottom: 20 }}>
                 Por favor, ingrese para continuar
               </ThemedText>
 
@@ -174,10 +183,6 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
-  },
-  loginContainer: {
-    flex: 1,
-    justifyContent: "center",
     paddingHorizontal: 40,
   },
   formContainer: {
@@ -189,17 +194,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-  },
-  title: {
-    marginBottom: 5,
-    textAlign: "center",
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "gray",
-  },
-  subtitle: {
-    color: "gray",
-    textAlign: "center",
     marginBottom: 20,
   },
   inputsContainer: {

@@ -4,7 +4,6 @@ import { updateServicioPrecio } from "@/core/servicios_precios/accions/update-se
 import { CrearServicePrecio } from "@/core/servicios_precios/interfaces/crear-servicio-precio.interface";
 import { ResponseServicioPrecio } from "@/core/servicios_precios/interfaces/response-servicio-precio.interface";
 import { ResponseSubServicios } from "@/core/sub-servicio/interface/obtener-sub-serviciosbyservicio.interface";
-import MyIcon from "@/presentation/auth/components/MyIcon";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
@@ -19,9 +18,16 @@ import ModalAgregarPrecios from "./ModalAgregarPrecios";
 interface Props {
   subServicio: ResponseSubServicios;
   paises: PaisesResponse[] | undefined;
+  onEdit: (subServicio: {
+    id: string;
+    nombre: string;
+    descripcion: string;
+    servicioId: string;
+    isActive: boolean;
+  }) => void;
 }
 
-const CardSubServicios = ({ subServicio, paises }: Props) => {
+const CardSubServicios = ({ subServicio, paises, onEdit }: Props) => {
   const primary = useThemeColor({}, "primary");
   const { colors } = useTheme();
   const queryClient = useQueryClient();
@@ -143,23 +149,45 @@ const CardSubServicios = ({ subServicio, paises }: Props) => {
         <Card.Content>
           <ThemedView
             style={[
+              styles.buttonsContainer,
+              { backgroundColor: colors.background },
+            ]}
+          >
+            <Button
+              mode="contained-tonal"
+              onPress={handleAddPrice}
+              compact
+              style={styles.smallButton}
+              icon="plus"
+            >
+              Precios
+            </Button>
+            <Button
+              mode="outlined"
+              onPress={() => onEdit(subServicio)}
+              compact
+              style={styles.smallButton}
+              icon="pencil"
+            >
+              Editar
+            </Button>
+          </ThemedView>
+          <ThemedView
+            style={[
               styles.headerContainer,
               { backgroundColor: colors.background },
             ]}
           >
-            <ThemedText style={styles.title}>{subServicio.nombre}</ThemedText>
-            <ThemedView style={styles.iconContainer}>
-              <MyIcon
-                name="add-outline"
-                onPress={handleAddPrice}
-                size={20}
-                color={colors.primary}
-                style={styles.icon}
-              />
+            <ThemedView style={styles.titleContainer}>
+              <ThemedText type="defaultSemiBold" numberOfLines={2}>
+                {subServicio.nombre}
+              </ThemedText>
             </ThemedView>
           </ThemedView>
 
-          <ThemedText>{subServicio.descripcion}</ThemedText>
+          <ThemedText type="defaultSemiBold">
+            {subServicio.descripcion}
+          </ThemedText>
           <Divider
             style={[styles.divider, { backgroundColor: colors.outline }]}
           />
@@ -227,14 +255,17 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   headerContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+    marginBottom: 8,
+  },
+  titleContainer: {
     marginBottom: 8,
   },
   title: {
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: "bold",
+    flexShrink: 1,
   },
   iconContainer: {
     flexDirection: "row",
@@ -247,6 +278,15 @@ const styles = StyleSheet.create({
     marginVertical: 12,
     height: 1,
   },
+  smallButton: {
+    minWidth: 0,
+  },
+  buttonsContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    gap: 8,
+    marginBottom: 12,
+  },
   innerDivider: {
     marginVertical: 8,
   },
@@ -257,6 +297,10 @@ const styles = StyleSheet.create({
   accordion: {
     backgroundColor: "transparent",
     padding: 0,
+  },
+  description: {
+    marginBottom: 12,
+    fontSize: 14,
   },
   emptyMessage: {
     textAlign: "center",

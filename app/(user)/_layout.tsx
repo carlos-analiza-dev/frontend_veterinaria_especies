@@ -8,25 +8,44 @@ import {
   createDrawerNavigator,
   DrawerToggleButton,
 } from "@react-navigation/drawer";
-import { Redirect } from "expo-router";
+import { Redirect, router } from "expo-router";
 
+import { isTokenExpired } from "@/helpers/funciones/tokenExpired";
+import { TokenExpiredModal } from "@/presentation/auth/components/TokenExpiredModal";
 import GoBack from "@/presentation/components/GoBack";
+import { useEffect, useState } from "react";
 import AnimalDetailsPage from "./animales/animal-details";
 import AnimalesPageGanadero from "./animales/animales-page";
 import CrearAnimal from "./animales/crear-animal";
+import HomeUser from "./citas/home";
 import CustomDrawerUsers from "./components/CustomDrawerUsers";
 import CrearFincaPage from "./finca/crear-finca";
 import FincaDetailsPage from "./finca/finca-details";
 import FincasPageGanaderos from "./finca/fincas-page";
-import HomeUser from "./home";
 import ProfileUser from "./profile";
 
 const Drawer = createDrawerNavigator();
 
 export default function UserLayout() {
-  const { user, logout } = useAuthStore();
+  const { user, logout, token } = useAuthStore();
   const colorScheme = useColorScheme();
   const iconColor = colorScheme === "dark" ? "white" : "black";
+
+  const [sessionExpired, setSessionExpired] = useState(false);
+
+  useEffect(() => {
+    if (token && isTokenExpired(token)) {
+      setSessionExpired(true);
+    }
+
+    const interval = setInterval(() => {
+      if (token && isTokenExpired(token)) {
+        setSessionExpired(true);
+      }
+    });
+
+    return () => clearInterval(interval);
+  }, [token]);
 
   if (!user) {
     return <Redirect href="/(auth)/login" />;
@@ -128,28 +147,38 @@ export default function UserLayout() {
   };
 
   return (
-    <Drawer.Navigator
-      drawerContent={(props) => (
-        <CustomDrawerUsers {...props} logout={logout} />
-      )}
-      screenOptions={{ headerShown: false }}
-    >
-      <Drawer.Screen name="home" component={UsersCitasStackScreen} />
-      <Drawer.Screen name="fincas-page" component={UsersFincasStackScreen} />
-      <Drawer.Screen
-        name="animales-page"
-        component={UsersAnimalesStackScreen}
-      />
-      <Drawer.Screen
-        name="profile"
-        component={ProfileUser}
-        options={{
-          headerShown: true,
-          headerTitle: "Ganadero Perfil",
-          headerRight: () => <LogoutIconButton />,
-          headerLeft: () => <DrawerToggleButton tintColor={iconColor} />,
+    <>
+      <Drawer.Navigator
+        drawerContent={(props) => (
+          <CustomDrawerUsers {...props} logout={logout} />
+        )}
+        screenOptions={{ headerShown: false }}
+      >
+        <Drawer.Screen name="home" component={UsersCitasStackScreen} />
+        <Drawer.Screen name="fincas-page" component={UsersFincasStackScreen} />
+        <Drawer.Screen
+          name="animales-page"
+          component={UsersAnimalesStackScreen}
+        />
+        <Drawer.Screen
+          name="profile"
+          component={ProfileUser}
+          options={{
+            headerShown: true,
+            headerTitle: "Ganadero Perfil",
+            headerRight: () => <LogoutIconButton />,
+            headerLeft: () => <DrawerToggleButton tintColor={iconColor} />,
+          }}
+        />
+      </Drawer.Navigator>
+      <TokenExpiredModal
+        visible={sessionExpired}
+        onConfirm={() => {
+          logout();
+          router.replace("/login");
+          setSessionExpired(false);
         }}
       />
-    </Drawer.Navigator>
+    </>
   );
 }

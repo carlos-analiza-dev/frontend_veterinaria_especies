@@ -85,7 +85,7 @@ const ModalAgregarPrecios = ({
         />
 
         <TextInput
-          label="Tiempo maximo"
+          label="Tiempo maximo hrs"
           mode="outlined"
           value={formData.tiempo === 0 ? "" : formData.tiempo.toString()}
           onChangeText={(text) => handleNumericChange(text, "tiempo")}

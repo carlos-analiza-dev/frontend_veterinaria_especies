@@ -70,6 +70,14 @@ const CustomDrawerContent = ({ navigation, logout }: Props) => {
 
       <TouchableOpacity
         style={styles.drawerItem}
+        onPress={() => navigation.navigate("medicos-page")}
+      >
+        <MyIcon name="medkit-outline" size={24} color={colors.primary} />
+        <ThemedText style={[styles.itemText]}>Medicos</ThemedText>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.drawerItem}
         onPress={() => navigation.navigate("perfil-admin")}
       >
         <MyIcon name="person-outline" size={24} color={colors.primary} />

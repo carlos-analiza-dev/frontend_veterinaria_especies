@@ -1,7 +1,6 @@
 import useGetServiciosAdmin from "@/hooks/servicios/useGetServiciosAdmin";
 import { FAB } from "@/presentation/components/FAB";
 import MessageError from "@/presentation/components/MessageError";
-import ThemedButton from "@/presentation/theme/components/ThemedButton";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
@@ -74,21 +73,13 @@ const ServicioPageAdmin = () => {
           <View style={{ marginBottom: 40, marginTop: 10 }}>
             <CardService
               services={item}
-              onPress={() => {
-                navigation.navigate("DetailsServicio", { servicioId: item.id });
-              }}
+              onPress={() =>
+                navigation.navigate("AgregarSubServicio", {
+                  servicioId: item.id,
+                  nombre: item.nombre,
+                })
+              }
             />
-            <View style={styles.buttonWrapper}>
-              <ThemedButton
-                title="Agregar Sub Servicio"
-                onPress={() =>
-                  navigation.navigate("AgregarSubServicio", {
-                    servicioId: item.id,
-                    nombre: item.nombre,
-                  })
-                }
-              />
-            </View>
           </View>
         )}
         keyExtractor={(item) => item.id}
@@ -103,7 +94,7 @@ const ServicioPageAdmin = () => {
         }
         ListHeaderComponent={
           <View>
-            <ThemedText type="subtitle">Lista de servicios</ThemedText>
+            <ThemedText type="subtitle">Categorias</ThemedText>
           </View>
         }
         showsVerticalScrollIndicator={false}

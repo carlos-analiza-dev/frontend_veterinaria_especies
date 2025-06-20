@@ -1,7 +1,9 @@
 import { Servicio } from "@/core/servicios/interfaces/response-servicios.interface";
-import React from "react";
+import { ThemedView } from "@/presentation/theme/components/ThemedView";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { Badge, Card, Text, useTheme } from "react-native-paper";
+import { Badge, Button, Card, Text, useTheme } from "react-native-paper";
+import ModalEditService from "./ModalEditService";
 
 interface Props {
   services: Servicio;
@@ -10,42 +12,76 @@ interface Props {
 
 const CardService = ({ services, onPress }: Props) => {
   const theme = useTheme();
+  const [visible, setVisible] = React.useState(false);
+  const [servicioId, setServicioId] = useState("");
+
+  const showModal = () => setVisible(true);
+  const hideModal = () => setVisible(false);
+
+  useEffect(() => {
+    if (services) {
+      setServicioId(services.id);
+    }
+  }, [services]);
 
   return (
-    <Card style={styles.card} onPress={onPress}>
-      <Card.Cover
-        source={{ uri: "https://picsum.photos/700" }}
-        style={styles.cover}
-      />
-      <Card.Content style={styles.content}>
-        <View style={styles.header}>
-          <Text variant="titleLarge" style={styles.title}>
-            {services.nombre}
-          </Text>
-          <Badge
+    <>
+      <Card style={styles.card} onPress={onPress}>
+        <Card.Cover
+          source={{ uri: "https://picsum.photos/700" }}
+          style={styles.cover}
+        />
+        <Card.Content style={styles.content}>
+          <ThemedView
             style={[
-              styles.badge,
-              {
-                backgroundColor: services.isActive
-                  ? theme.colors.primary
-                  : theme.colors.error,
-              },
+              styles.buttonsContainer,
+              { backgroundColor: theme.colors.background },
             ]}
           >
-            {services.isActive ? "Activo" : "Inactivo"}
-          </Badge>
-        </View>
+            <Button
+              mode="outlined"
+              onPress={showModal}
+              compact
+              style={styles.smallButton}
+              icon="pencil"
+            >
+              Editar
+            </Button>
+          </ThemedView>
+          <View style={styles.header}>
+            <Text variant="titleLarge" style={styles.title}>
+              {services.nombre}
+            </Text>
+            <Badge
+              style={[
+                styles.badge,
+                {
+                  backgroundColor: services.isActive
+                    ? theme.colors.primary
+                    : theme.colors.error,
+                },
+              ]}
+            >
+              {services.isActive ? "Activo" : "Inactivo"}
+            </Badge>
+          </View>
 
-        <Text
-          variant="bodyMedium"
-          style={styles.description}
-          numberOfLines={2}
-          ellipsizeMode="tail"
-        >
-          {services.descripcion}
-        </Text>
-      </Card.Content>
-    </Card>
+          <Text
+            variant="bodyMedium"
+            style={styles.description}
+            numberOfLines={2}
+            ellipsizeMode="tail"
+          >
+            {services.descripcion}
+          </Text>
+        </Card.Content>
+      </Card>
+      <ModalEditService
+        visible={visible}
+        hideModal={hideModal}
+        servicioId={servicioId}
+      />
+    </>
   );
 };
 
@@ -81,6 +117,15 @@ const styles = StyleSheet.create({
   footer: {
     flexDirection: "row",
     justifyContent: "flex-end",
+  },
+  buttonsContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    gap: 8,
+    marginBottom: 12,
+  },
+  smallButton: {
+    minWidth: 0,
   },
 });
 

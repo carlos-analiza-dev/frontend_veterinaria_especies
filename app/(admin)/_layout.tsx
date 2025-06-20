@@ -1,39 +1,56 @@
+import { isTokenExpired } from "@/helpers/funciones/tokenExpired";
 import LogoutIconButton from "@/presentation/auth/components/LogoutIconButton";
+import { TokenExpiredModal } from "@/presentation/auth/components/TokenExpiredModal";
 import { useAuthStore } from "@/presentation/auth/store/useAuthStore";
+import GoBack from "@/presentation/components/GoBack";
 import { UsersStackParamList } from "@/presentation/navigation/types";
+import { useColorScheme } from "@/presentation/theme/hooks/useColorScheme.web";
 import {
   createDrawerNavigator,
   DrawerToggleButton,
 } from "@react-navigation/drawer";
 import { createStackNavigator } from "@react-navigation/stack";
-import { Redirect } from "expo-router";
-import CustomDrawerContent from "./components/CustomDrawerContent";
-import SettingsScreen from "./settings";
-
-import GoBack from "@/presentation/components/GoBack";
-import { useColorScheme } from "@/presentation/theme/hooks/useColorScheme.web";
+import { Redirect, router } from "expo-router";
+import { useEffect, useState } from "react";
 import AgregarDepartamentoPais from "./agregar-departamento-pais";
+import CustomDrawerContent from "./components/CustomDrawerContent";
 import CrearPaisPage from "./crea-pais";
 import CrearUsuarioScreen from "./crear-usuario";
 import DashboardAdminPage from "./dashboard";
+import MedicosPage from "./medicos/medicos-page";
 import PaisDetailsPage from "./paise-dateails";
 import PaisesPage from "./paises-page";
 import PerfilAdminPage from "./perfil-admin";
 import RolesPageAdmin from "./roles/roles-page";
-import AddPriceServices from "./servicios/agregar-precio-services";
 import CrearServicioPage from "./servicios/crear-servicio";
-import DetailsServices from "./servicios/details-services";
 import ServicioPageAdmin from "./servicios/servicios-page";
 import SubServiciosPage from "./servicios/sub-servicio-page";
+import SettingsScreen from "./settings";
 import UsersDetailsScreen from "./user-details";
 import UsersScreenAdmin from "./users";
 
 const Drawer = createDrawerNavigator();
 
 export default function AdminLayout() {
-  const { user, logout } = useAuthStore();
+  const { user, logout, token } = useAuthStore();
   const colorScheme = useColorScheme();
   const iconColor = colorScheme === "dark" ? "white" : "black";
+
+  const [sessionExpired, setSessionExpired] = useState(false);
+
+  useEffect(() => {
+    if (token && isTokenExpired(token)) {
+      setSessionExpired(true);
+    }
+
+    const interval = setInterval(() => {
+      if (token && isTokenExpired(token)) {
+        setSessionExpired(true);
+      }
+    });
+
+    return () => clearInterval(interval);
+  }, [token]);
 
   if (user?.role.name !== "Administrador") {
     return <Redirect href="/login" />;
@@ -125,6 +142,23 @@ export default function AdminLayout() {
     );
   };
 
+  const AdminStackScreenMedicos = () => {
+    return (
+      <UsersStack.Navigator screenOptions={{ headerShown: false }}>
+        <UsersStack.Screen
+          name="MedicosPage"
+          component={MedicosPage}
+          options={{
+            headerShown: true,
+            headerTitle: "Admin Medicos",
+            headerRight: () => <LogoutIconButton />,
+            headerLeft: () => <DrawerToggleButton tintColor={iconColor} />,
+          }}
+        />
+      </UsersStack.Navigator>
+    );
+  };
+
   const AdminStackScreenServicios = () => {
     return (
       <UsersStack.Navigator screenOptions={{ headerShown: false }}>
@@ -133,21 +167,12 @@ export default function AdminLayout() {
           component={ServicioPageAdmin}
           options={{
             headerShown: true,
-            headerTitle: "Admin Servicios",
+            headerTitle: "Admin Categorias",
             headerRight: () => <LogoutIconButton />,
             headerLeft: () => <DrawerToggleButton tintColor={iconColor} />,
           }}
         />
-        <UsersStack.Screen
-          name="DetailsServicio"
-          component={DetailsServices}
-          options={{
-            headerShown: true,
-            headerTitle: "Detalles Servicios",
-            headerRight: () => <LogoutIconButton />,
-            headerLeft: () => <GoBack />,
-          }}
-        />
+
         <UsersStack.Screen
           name="CrearServicio"
           component={CrearServicioPage}
@@ -158,22 +183,13 @@ export default function AdminLayout() {
             headerLeft: () => <GoBack />,
           }}
         />
-        <UsersStack.Screen
-          name="AgregarPreciosServices"
-          component={AddPriceServices}
-          options={{
-            headerShown: true,
-            headerTitle: "Agregar Precios",
-            headerRight: () => <LogoutIconButton />,
-            headerLeft: () => <GoBack />,
-          }}
-        />
+
         <UsersStack.Screen
           name="AgregarSubServicio"
           component={SubServiciosPage}
           options={{
             headerShown: true,
-            headerTitle: "Agregar Sub Servicio",
+            headerTitle: "Agregar Servicio",
             headerRight: () => <LogoutIconButton />,
             headerLeft: () => <GoBack />,
           }}
@@ -183,58 +199,72 @@ export default function AdminLayout() {
   };
 
   return (
-    <Drawer.Navigator
-      drawerContent={(props) => (
-        <CustomDrawerContent {...props} logout={logout} />
-      )}
-      screenOptions={{ headerShown: false }}
-    >
-      <Drawer.Screen
-        name="dashboard"
-        component={DashboardAdminPage}
-        options={{
-          headerShown: true,
-          headerTitle: "Admin Dashboard",
-          headerRight: () => <LogoutIconButton />,
-          headerLeft: () => <DrawerToggleButton tintColor={iconColor} />,
+    <>
+      <Drawer.Navigator
+        drawerContent={(props) => (
+          <CustomDrawerContent {...props} logout={logout} />
+        )}
+        screenOptions={{ headerShown: false }}
+      >
+        <Drawer.Screen
+          name="dashboard"
+          component={DashboardAdminPage}
+          options={{
+            headerShown: true,
+            headerTitle: "Admin Dashboard",
+            headerRight: () => <LogoutIconButton />,
+            headerLeft: () => <DrawerToggleButton tintColor={iconColor} />,
+          }}
+        />
+        <Drawer.Screen name="users" component={AdminStackScreen} />
+        <Drawer.Screen name="paises-page" component={AdminStackScreenPaises} />
+        <Drawer.Screen
+          name="roles-page"
+          component={RolesPageAdmin}
+          options={{
+            headerShown: true,
+            headerTitle: "Admin Roles",
+            headerRight: () => <LogoutIconButton />,
+            headerLeft: () => <DrawerToggleButton tintColor={iconColor} />,
+          }}
+        />
+        <Drawer.Screen
+          name="settings"
+          component={SettingsScreen}
+          options={{
+            headerShown: true,
+            headerTitle: "Admin Settings",
+            headerRight: () => <LogoutIconButton />,
+            headerLeft: () => <DrawerToggleButton tintColor={iconColor} />,
+          }}
+        />
+        <Drawer.Screen
+          name="servicios-page"
+          component={AdminStackScreenServicios}
+        />
+        <Drawer.Screen
+          name="medicos-page"
+          component={AdminStackScreenMedicos}
+        />
+        <Drawer.Screen
+          name="perfil-admin"
+          component={PerfilAdminPage}
+          options={{
+            headerShown: true,
+            headerTitle: "Admin Perfil",
+            headerRight: () => <LogoutIconButton />,
+            headerLeft: () => <DrawerToggleButton tintColor={iconColor} />,
+          }}
+        />
+      </Drawer.Navigator>
+      <TokenExpiredModal
+        visible={sessionExpired}
+        onConfirm={() => {
+          logout();
+          router.replace("/login");
+          setSessionExpired(false);
         }}
       />
-      <Drawer.Screen name="users" component={AdminStackScreen} />
-      <Drawer.Screen name="paises-page" component={AdminStackScreenPaises} />
-      <Drawer.Screen
-        name="roles-page"
-        component={RolesPageAdmin}
-        options={{
-          headerShown: true,
-          headerTitle: "Admin Roles",
-          headerRight: () => <LogoutIconButton />,
-          headerLeft: () => <DrawerToggleButton tintColor={iconColor} />,
-        }}
-      />
-      <Drawer.Screen
-        name="settings"
-        component={SettingsScreen}
-        options={{
-          headerShown: true,
-          headerTitle: "Admin Settings",
-          headerRight: () => <LogoutIconButton />,
-          headerLeft: () => <DrawerToggleButton tintColor={iconColor} />,
-        }}
-      />
-      <Drawer.Screen
-        name="servicios-page"
-        component={AdminStackScreenServicios}
-      />
-      <Drawer.Screen
-        name="perfil-admin"
-        component={PerfilAdminPage}
-        options={{
-          headerShown: true,
-          headerTitle: "Admin Perfil",
-          headerRight: () => <LogoutIconButton />,
-          headerLeft: () => <DrawerToggleButton tintColor={iconColor} />,
-        }}
-      />
-    </Drawer.Navigator>
+    </>
   );
 }

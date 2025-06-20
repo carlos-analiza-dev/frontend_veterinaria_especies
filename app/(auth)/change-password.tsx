@@ -128,7 +128,7 @@ const ChangePasswordPage = () => {
           contentContainerStyle={styles.scrollContainer}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={[styles.formContainer, { marginTop: height * 0.1 }]}>
+          <View style={[styles.formContainer, { marginTop: height * 0.2 }]}>
             <ThemedText
               style={{
                 fontSize: 22,
@@ -140,9 +140,7 @@ const ChangePasswordPage = () => {
             >
               Restablecer Contraseña
             </ThemedText>
-            <ThemedText
-              style={{ color: "gray", textAlign: "center", marginBottom: 20 }}
-            >
+            <ThemedText style={{ textAlign: "center", marginBottom: 20 }}>
               Por favor, ingresa tus datos correctamente
             </ThemedText>
 

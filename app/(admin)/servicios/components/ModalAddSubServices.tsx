@@ -29,6 +29,7 @@ interface ModalAddSubServicesProps {
     }>
   >;
   isSubmitting: boolean;
+  isEditing: boolean;
 }
 
 const ModalAddSubServices: React.FC<ModalAddSubServicesProps> = ({
@@ -38,6 +39,7 @@ const ModalAddSubServices: React.FC<ModalAddSubServicesProps> = ({
   subService,
   setSubService,
   isSubmitting,
+  isEditing,
 }) => {
   const theme = useTheme();
   const primary = useThemeColor({}, "primary");
@@ -62,7 +64,7 @@ const ModalAddSubServices: React.FC<ModalAddSubServicesProps> = ({
                 color: primary,
               }}
             >
-              Agregar Nuevo Subservicio
+              {isEditing ? "Editar Servicio" : "Agregar Servicio"}
             </ThemedText>
 
             <TextInput
@@ -104,7 +106,7 @@ const ModalAddSubServices: React.FC<ModalAddSubServicesProps> = ({
                 style={{ flex: 1, marginLeft: 8 }}
                 buttonColor={primary}
               >
-                Guardar
+                {isEditing ? "Editar" : "Guardar"}
               </Button>
             </Card.Actions>
           </Card.Content>
