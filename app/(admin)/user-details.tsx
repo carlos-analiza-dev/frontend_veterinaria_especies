@@ -45,7 +45,6 @@ const UsersDetailsScreen = ({ route }: UserDetailsScreenProps) => {
   const { data: user, isError, isLoading } = userById(userId);
 
   const {
-    control,
     handleSubmit,
     formState: { errors },
     setValue,

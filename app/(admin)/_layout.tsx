@@ -17,6 +17,8 @@ import CustomDrawerContent from "./components/CustomDrawerContent";
 import CrearPaisPage from "./crea-pais";
 import CrearUsuarioScreen from "./crear-usuario";
 import DashboardAdminPage from "./dashboard";
+import CrearMedicoPage from "./medicos/crear-medico";
+import DetailsMedico from "./medicos/details-medico";
 import MedicosPage from "./medicos/medicos-page";
 import PaisDetailsPage from "./paise-dateails";
 import PaisesPage from "./paises-page";
@@ -153,6 +155,26 @@ export default function AdminLayout() {
             headerTitle: "Admin Medicos",
             headerRight: () => <LogoutIconButton />,
             headerLeft: () => <DrawerToggleButton tintColor={iconColor} />,
+          }}
+        />
+        <UsersStack.Screen
+          name="CrearMedicoPage"
+          component={CrearMedicoPage}
+          options={{
+            headerShown: true,
+            headerTitle: "Crear Medico",
+            headerRight: () => <LogoutIconButton />,
+            headerLeft: () => <GoBack />,
+          }}
+        />
+        <UsersStack.Screen
+          name="DetailsMedico"
+          component={DetailsMedico}
+          options={{
+            headerShown: true,
+            headerTitle: "Detalles Medico",
+            headerRight: () => <LogoutIconButton />,
+            headerLeft: () => <GoBack />,
           }}
         />
       </UsersStack.Navigator>

@@ -215,7 +215,7 @@ const SubServiciosPage = ({ route }: DetailsSubServicioProps) => {
               />
             </View>
             <ThemedText type="default" style={styles.headerText}>
-              Subservicios para:{" "}
+              Servicios para:{" "}
               <ThemedText type="defaultSemiBold">{nombre}</ThemedText>
             </ThemedText>
           </ThemedView>

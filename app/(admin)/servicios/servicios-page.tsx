@@ -1,6 +1,7 @@
 import useGetServiciosAdmin from "@/hooks/servicios/useGetServiciosAdmin";
 import { FAB } from "@/presentation/components/FAB";
 import MessageError from "@/presentation/components/MessageError";
+import ThemedButton from "@/presentation/theme/components/ThemedButton";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
@@ -9,12 +10,14 @@ import React, { useState } from "react";
 import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
 import { ActivityIndicator, useTheme } from "react-native-paper";
 import CardService from "./components/CardService";
+import ModalAddService from "./components/ModalAddService";
 
 const ServicioPageAdmin = () => {
   const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
   const { colors } = useTheme();
   const [offset, setOffset] = useState(0);
+  const [visible, setVisible] = useState(false);
   const limit = 10;
   const primary = useThemeColor({}, "primary");
 
@@ -67,6 +70,13 @@ const ServicioPageAdmin = () => {
     <ThemedView
       style={[styles.container, { backgroundColor: colors.background }]}
     >
+      <ThemedView style={{ padding: 10 }}>
+        <ThemedButton
+          title="Agregar Categoria"
+          onPress={() => setVisible(true)}
+          icon="add"
+        />
+      </ThemedView>
       <FlatList
         data={servicios?.data.servicios}
         renderItem={({ item }) => (
@@ -99,10 +109,7 @@ const ServicioPageAdmin = () => {
         }
         showsVerticalScrollIndicator={false}
       />
-      <FAB
-        iconName="add-outline"
-        onPress={() => navigation.navigate("CrearServicio")}
-      />
+      <ModalAddService visible={visible} setVisible={setVisible} />
     </ThemedView>
   );
 };

@@ -26,7 +26,10 @@ const CardService = ({ services, onPress }: Props) => {
 
   return (
     <>
-      <Card style={styles.card} onPress={onPress}>
+      <Card
+        style={[styles.card, { backgroundColor: theme.colors.background }]}
+        onPress={onPress}
+      >
         <Card.Cover
           source={{ uri: "https://picsum.photos/700" }}
           style={styles.cover}
