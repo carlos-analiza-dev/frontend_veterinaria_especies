@@ -12,6 +12,7 @@ export interface Medico {
   isActive: boolean;
   usuario: Usuario;
   areas_trabajo: AreasTrabajo[];
+  horarios: Horario[];
 }
 
 export interface AreasTrabajo {
@@ -19,6 +20,14 @@ export interface AreasTrabajo {
   nombre: string;
   descripcion: string;
   isActive: boolean;
+}
+
+export interface Horario {
+  id: string;
+  diaSemana: number;
+  horaInicio: string;
+  horaFin: string;
+  disponible: boolean;
 }
 
 export interface Usuario {

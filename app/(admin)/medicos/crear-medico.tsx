@@ -132,7 +132,9 @@ const CrearMedicoPage = () => {
             label="Número de colegiado*"
             style={styles.input}
             mode="outlined"
+            keyboardType="numeric"
             value={watch("numero_colegiado")}
+            maxLength={9}
             onChangeText={(text) =>
               setValue("numero_colegiado", text, { shouldValidate: true })
             }
