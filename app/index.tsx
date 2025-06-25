@@ -35,5 +35,5 @@ export default function Index() {
     return <Redirect href="/(veterinario)/home" />;
   }
 
-  return <Redirect href="/(user)/home" />;
+  return <Redirect href="/(user)/citas/home" />;
 }

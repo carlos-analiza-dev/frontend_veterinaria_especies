@@ -17,6 +17,8 @@ import { useEffect, useState } from "react";
 import AnimalDetailsPage from "./animales/animal-details";
 import AnimalesPageGanadero from "./animales/animales-page";
 import CrearAnimal from "./animales/crear-animal";
+
+import CrearCita from "./citas/crear-cita";
 import HomeUser from "./citas/home";
 import CustomDrawerUsers from "./components/CustomDrawerUsers";
 import CrearFincaPage from "./finca/crear-finca";
@@ -57,13 +59,23 @@ export default function UserLayout() {
     return (
       <UsersStack.Navigator screenOptions={{ headerShown: false }}>
         <UsersStack.Screen
-          name="home"
+          name="CitasPage"
           component={HomeUser}
           options={{
             headerShown: true,
-            headerTitle: "Ganadero",
+            headerTitle: "Citas",
             headerRight: () => <LogoutIconButton />,
             headerLeft: () => <DrawerToggleButton tintColor={iconColor} />,
+          }}
+        />
+        <UsersStack.Screen
+          name="CrearCita"
+          component={CrearCita}
+          options={{
+            headerShown: true,
+            headerTitle: "Agendar Cita",
+            headerRight: () => <LogoutIconButton />,
+            headerLeft: () => <GoBack />,
           }}
         />
       </UsersStack.Navigator>

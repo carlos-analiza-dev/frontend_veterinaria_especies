@@ -13,7 +13,7 @@ export type UsersStackParamList = {
   AgregarSubServicio: { servicioId: string; nombre: string };
   AgregarPreciosServices: { servicioId: string };
   RolesPage: undefined;
-  home: undefined;
+  CitasPage: undefined;
   FincasPage: undefined;
   AnimalesPage: undefined;
   CrearFincaPage: undefined;
@@ -24,6 +24,7 @@ export type UsersStackParamList = {
   MedicosPage: undefined;
   CrearMedicoPage: undefined;
   DetailsMedico: { medicoId: string };
+  CrearCita: undefined;
 };
 
 declare global {
