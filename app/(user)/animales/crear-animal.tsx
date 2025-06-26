@@ -55,8 +55,14 @@ const CrearAnimal = () => {
 
   const handleDateChange = (event: any, selectedDate?: Date) => {
     setShowDatePicker(Platform.OS === "ios");
+
     if (selectedDate) {
-      setValue("fecha_nacimiento", selectedDate.toISOString().split("T")[0]);
+      const localDate = new Date(selectedDate);
+      const year = localDate.getFullYear();
+      const month = String(localDate.getMonth() + 1).padStart(2, "0");
+      const day = String(localDate.getDate()).padStart(2, "0");
+      const formatted = `${year}-${month}-${day}`;
+      setValue("fecha_nacimiento", formatted);
     }
   };
 
@@ -342,7 +348,11 @@ const CrearAnimal = () => {
                 <DateTimePicker
                   value={
                     watch("fecha_nacimiento")
-                      ? new Date(watch("fecha_nacimiento"))
+                      ? new Date(
+                          Number(watch("fecha_nacimiento").split("-")[0]),
+                          Number(watch("fecha_nacimiento").split("-")[1]) - 1,
+                          Number(watch("fecha_nacimiento").split("-")[2])
+                        )
                       : new Date()
                   }
                   mode="date"
