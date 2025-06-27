@@ -120,7 +120,7 @@ const CrearMedicoPage = () => {
           style={[styles.header, { backgroundColor: colors.background }]}
         >
           <ThemedText type="title" style={styles.title}>
-            Registrar Nuevo Médico
+            Registrar Médico
           </ThemedText>
           <ThemedText style={styles.subtitle}>
             Complete todos los campos requeridos
@@ -128,6 +128,16 @@ const CrearMedicoPage = () => {
         </ThemedView>
 
         <ThemedView style={styles.card}>
+          <ThemedPicker
+            items={veterinarios_items}
+            icon="accessibility-outline"
+            selectedValue={watch("usuarioId")}
+            onValueChange={(text) =>
+              setValue("usuarioId", text, { shouldValidate: true })
+            }
+            placeholder="Seleccione un usuario*"
+            error={errors.usuarioId?.message}
+          />
           <TextInput
             label="Número de colegiado*"
             style={styles.input}
@@ -204,17 +214,6 @@ const CrearMedicoPage = () => {
               {errors.anios_experiencia.message}
             </ThemedText>
           )}
-
-          <ThemedPicker
-            items={veterinarios_items}
-            icon="accessibility-outline"
-            selectedValue={watch("usuarioId")}
-            onValueChange={(text) =>
-              setValue("usuarioId", text, { shouldValidate: true })
-            }
-            placeholder="Seleccione un veterinario*"
-            error={errors.usuarioId?.message}
-          />
 
           <ThemedText style={styles.sectionTitle}>Áreas de trabajo*</ThemedText>
           <View style={styles.areasContainer}>

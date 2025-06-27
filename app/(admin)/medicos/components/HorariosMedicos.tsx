@@ -40,7 +40,6 @@ const HorariosMedicos = ({ medico, medicoId, onHorarioCreado }: Props) => {
   const danger = useThemeColor({}, "danger");
   const primary = useThemeColor({}, "primary");
   const success = useThemeColor({}, "success");
-  const background = useThemeColor({}, "background");
   const [horarioId, setHorarioId] = useState("");
 
   const { data: horarios, refetch } = useGetHorariosByMedico(medicoId);

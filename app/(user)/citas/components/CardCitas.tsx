@@ -1,4 +1,5 @@
 import { Cita } from "@/core/citas/interfaces/response-citas-user.interface";
+import { useAuthStore } from "@/presentation/auth/store/useAuthStore";
 import { MaterialIcons } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -9,15 +10,8 @@ interface Props {
 }
 
 const CardCitas = ({ item, onPress }: Props) => {
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("es-HN", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
+  const { user } = useAuthStore();
+  const pais = user?.pais;
 
   const getStatusColor = () => {
     switch (item.estado.toLowerCase()) {
@@ -49,7 +43,7 @@ const CardCitas = ({ item, onPress }: Props) => {
         <View style={styles.column}>
           <View style={styles.infoRow}>
             <MaterialIcons name="calendar-today" size={16} color="#555" />
-            <Text style={styles.infoText}>{formatDate(item.fecha)}</Text>
+            <Text style={styles.infoText}>{item.fecha}</Text>
           </View>
 
           <View style={styles.infoRow}>
@@ -102,7 +96,7 @@ const CardCitas = ({ item, onPress }: Props) => {
 
       <View style={styles.footer}>
         <Text style={styles.priceText}>
-          Total a pagar: L. {parseFloat(item.totalPagar).toFixed(2)}
+          Valor: {pais?.simbolo_moneda} {parseFloat(item.totalPagar).toFixed(2)}
         </Text>
       </View>
     </TouchableOpacity>

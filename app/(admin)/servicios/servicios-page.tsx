@@ -1,5 +1,4 @@
 import useGetServiciosAdmin from "@/hooks/servicios/useGetServiciosAdmin";
-import { FAB } from "@/presentation/components/FAB";
 import MessageError from "@/presentation/components/MessageError";
 import ThemedButton from "@/presentation/theme/components/ThemedButton";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
@@ -54,13 +53,16 @@ const ServicioPageAdmin = () => {
       <ThemedView
         style={[styles.container, { backgroundColor: colors.background }]}
       >
+        <ThemedView style={{ padding: 10 }}>
+          <ThemedButton
+            title="Agregar Categoria"
+            onPress={() => setVisible(true)}
+            icon="add"
+          />
+        </ThemedView>
         <MessageError
           titulo="No se encontraron servicios"
           descripcion=" No se encontraron datos de los servicios en este módulo. Por favor, verifica más tarde o vuelve a intentar."
-        />
-        <FAB
-          iconName="add-outline"
-          onPress={() => navigation.navigate("CrearServicio")}
         />
       </ThemedView>
     );

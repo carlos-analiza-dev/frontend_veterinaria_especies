@@ -1,3 +1,4 @@
+import { CreateCita } from "@/core/citas/accions/crear-cita";
 import { CrearCitaInterface } from "@/core/citas/interfaces/crear-cita.interface";
 import useGetAnimalesByFincaEspRaza from "@/hooks/animales/useGetAnimalesByFincaEspRaza";
 import useGetEspecies from "@/hooks/especies/useGetEspecies";
@@ -14,6 +15,8 @@ import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import ThemedTextInput from "@/presentation/theme/components/ThemedTextInput";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { isAxiosError } from "axios";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
@@ -21,9 +24,9 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
-  useWindowDimensions,
 } from "react-native";
 import { useTheme } from "react-native-paper";
+import Toast from "react-native-toast-message";
 
 interface HoraDisponibleItem {
   value: string;
@@ -39,18 +42,19 @@ const CrearCita = () => {
   const userId = user?.id || "";
   const paisId = user?.pais.id || "";
   const { colors } = useTheme();
-  const { height } = useWindowDimensions();
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [especieId, setespecieId] = useState("");
   const [razaId, setRazaId] = useState("");
   const [categoriaId, setCategoriaId] = useState("");
   const [filteredHours, setFilteredHours] = useState<HoraDisponibleItem[]>([]);
   const [duracion, setDuracion] = useState(1);
+  const queryClient = useQueryClient();
 
   const {
     reset,
     setValue,
     watch,
+    handleSubmit,
     formState: { errors },
   } = useForm<CrearCitaInterface>();
 
@@ -112,7 +116,7 @@ const CrearCita = () => {
         if (precioPais) {
           const duracionServicio = precioPais.tiempo;
           setValue("duracion", duracionServicio);
-          setValue("totalPagar", precioPais.precio);
+          setValue("totalPagar", Number(precioPais.precio));
           setDuracion(duracionServicio);
 
           const horasFiltradas = horas_disponibles
@@ -220,6 +224,44 @@ const CrearCita = () => {
       label: medico.usuario.name,
     })) || [];
 
+  const mutation = useMutation({
+    mutationFn: CreateCita,
+    onSuccess: () => {
+      Toast.show({
+        type: "success",
+        text1: "Exito",
+        text2: "Cita agendada exitosamente",
+      });
+      queryClient.invalidateQueries({ queryKey: ["citas-user"] });
+      reset();
+    },
+    onError: (error) => {
+      if (isAxiosError(error)) {
+        const messages = error.response?.data?.message;
+        const errorMessage = Array.isArray(messages)
+          ? messages[0]
+          : typeof messages === "string"
+          ? messages
+          : "Hubo un error al crear la cita";
+
+        Toast.show({
+          type: "error",
+          text1: errorMessage,
+        });
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "Error inesperado",
+          text2: "Contacte al administrador",
+        });
+      }
+    },
+  });
+
+  const onSubmit = (data: CrearCitaInterface) => {
+    mutation.mutate({ ...data, usuarioId: userId });
+  };
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -231,7 +273,7 @@ const CrearCita = () => {
         showsVerticalScrollIndicator={false}
       >
         <ThemedView style={styles.header}>
-          <ThemedText style={styles.title}>Nueva Cita Veterinaria</ThemedText>
+          <ThemedText style={styles.title}>Nueva Cita</ThemedText>
         </ThemedView>
 
         <ThemedView style={styles.formContainer}>
@@ -324,6 +366,7 @@ const CrearCita = () => {
             selectedValue={watch("subServicioId")}
             onValueChange={(text) => setValue("subServicioId", text)}
           />
+
           <ThemedPicker
             items={allMedicos}
             icon="person-outline"
@@ -352,7 +395,7 @@ const CrearCita = () => {
             <ThemedView style={styles.warningContainer}>
               <ThemedText style={styles.warningText}>
                 {watch("subServicioId") && watch("medicoId") && watch("fecha")
-                  ? "No hay horarios disponibles para la duración de este servicio"
+                  ? "No hay horarios disponibles para citas en este momento"
                   : "Complete la información del servicio para ver horarios disponibles"}
               </ThemedText>
             </ThemedView>
@@ -384,9 +427,10 @@ const CrearCita = () => {
 
           <ThemedView style={styles.buttonContainer}>
             <ThemedButton
-              onPress={() => {}}
+              onPress={handleSubmit(onSubmit)}
               icon="checkmark-circle-outline"
               title="Confirmar Cita"
+              disabled={mutation.isPending}
             />
           </ThemedView>
         </ThemedView>

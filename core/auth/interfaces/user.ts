@@ -36,6 +36,7 @@ export interface User {
   name: string;
   identificacion: string;
   direccion: string;
+  sexo: string;
   telefono: string;
   isActive: boolean;
   isAuthorized: boolean;
@@ -51,6 +52,7 @@ export type UserUpdateData = {
   name: string;
   identificacion: string;
   direccion: string;
+  sexo: string;
   telefono: string;
   role: string;
   pais: string;

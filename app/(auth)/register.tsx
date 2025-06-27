@@ -1,5 +1,6 @@
 import { CreateUser } from "@/core/users/accions/crear-usuario";
 import { CrearUsuario } from "@/core/users/interfaces/create-user.interface";
+import { sexosData } from "@/helpers/data/sexo";
 import useGetDeptosActivesByPais from "@/hooks/departamentos/useGetDeptosActivesByPais";
 import useGetMunicipiosActivosByDepto from "@/hooks/municipios/useGetMunicipiosActivosByDepto";
 import useGetPaisesActivos from "@/hooks/paises/useGetPaisesActivos";
@@ -114,6 +115,12 @@ const RegisterScreen = () => {
     municipios?.data.map((mun) => ({
       label: mun.nombre,
       value: mun.id.toString(),
+    })) || [];
+
+  const sexos =
+    sexosData.map((sexo) => ({
+      value: sexo.value,
+      label: sexo.sexo,
     })) || [];
 
   const validateIdentification = (value: string, codigoPais: string) => {
@@ -248,6 +255,15 @@ const RegisterScreen = () => {
                 value={watch("name")}
                 onChangeText={(text) => setValue("name", text)}
                 error={errors.name?.message}
+              />
+
+              <ThemedPicker
+                icon="transgender-outline"
+                items={sexos}
+                selectedValue={watch("sexo")}
+                onValueChange={(text) => setValue("sexo", text)}
+                placeholder="Selecciona un sexo"
+                error={errors.departamento?.message}
               />
 
               <ThemedPicker

@@ -1,5 +1,6 @@
 import { UserUpdateData } from "@/core/auth/interfaces/user";
 import { actualizarUsuario } from "@/core/users/accions/get-user-byId";
+import { sexosData } from "@/helpers/data/sexo";
 import useGetDeptosActivesByPais from "@/hooks/departamentos/useGetDeptosActivesByPais";
 import useGetMunicipiosActivosByDepto from "@/hooks/municipios/useGetMunicipiosActivosByDepto";
 import useGetPaisesActivos from "@/hooks/paises/useGetPaisesActivos";
@@ -90,6 +91,12 @@ const UsersDetailsScreen = ({ route }: UserDetailsScreenProps) => {
       value: rol.id.toString(),
     })) || [];
 
+  const sexos =
+    sexosData.map((sexo) => ({
+      value: sexo.value,
+      label: sexo.sexo,
+    })) || [];
+
   useEffect(() => {
     if (user) {
       reset({
@@ -100,6 +107,7 @@ const UsersDetailsScreen = ({ route }: UserDetailsScreenProps) => {
         telefono: user.data.telefono,
         role: user.data.role.id,
         pais: user.data.pais.id,
+        sexo: user.data.sexo,
         departamento: user.data.departamento?.id || "",
         municipio: user.data.municipio?.id || "",
         isActive: user.data.isActive,
@@ -255,6 +263,16 @@ const UsersDetailsScreen = ({ route }: UserDetailsScreenProps) => {
             onChangeText={(text) => setValue("name", text)}
             error={errors.name?.message}
             editable={isEditing}
+          />
+
+          <ThemedPicker
+            icon="transgender-outline"
+            items={sexos}
+            selectedValue={watch("sexo")}
+            onValueChange={(text) => setValue("sexo", text)}
+            placeholder="Selecciona un país"
+            error={errors.sexo?.message}
+            enabled={isEditing}
           />
 
           <ThemedPicker

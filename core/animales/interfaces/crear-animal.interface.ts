@@ -5,7 +5,7 @@ export interface CrearAnimalByFinca {
   tipo_alimentacion: TipoAlimentacion[];
   identificador: string;
   raza: string;
-  edad_promedio: number;
+  edad_promedio?: number;
   fecha_nacimiento: string;
   observaciones: string;
   propietarioId: string;

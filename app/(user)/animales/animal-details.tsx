@@ -72,6 +72,7 @@ const AnimalDetailsPage = ({ route }: EditarAnimalProps) => {
         sexo: animal?.sexo || "",
         color: animal?.color || "",
         identificador_temp: extractNumberFromIdentifier(animal?.identificador),
+        identificador: animal?.identificador || "",
         raza: animal?.raza?.id || "",
         edad_promedio: Number(animal?.edad_promedio) || 0,
         fecha_nacimiento: animal?.fecha_nacimiento || "",
@@ -155,7 +156,14 @@ const AnimalDetailsPage = ({ route }: EditarAnimalProps) => {
     const raza = razas?.data.find((r) => r.id === watch("raza"));
     const sexo = watch("sexo");
 
-    if (!especie || !raza || !sexo) return null;
+    if (!especie || !raza || !sexo) {
+      const currentId = watch("identificador");
+      if (currentId) {
+        const match = currentId.match(/^([A-Z]{2}[A-Z]{3,4}[12])-/);
+        return match ? match[1] : null;
+      }
+      return null;
+    }
 
     const especieCode = especie.nombre.slice(0, 2).toUpperCase();
     const razaCode = raza.abreviatura.toUpperCase();
@@ -185,12 +193,15 @@ const AnimalDetailsPage = ({ route }: EditarAnimalProps) => {
 
     if (prefix && currentNumber?.length === 6) {
       setValue("identificador", `${prefix}-${formatNumber(currentNumber)}`);
+    } else if (!currentNumber && watch("identificador")) {
+      setValue("identificador", watch("identificador"));
     }
   }, [
     watch("especie"),
     watch("raza"),
     watch("sexo"),
     watch("identificador_temp"),
+    watch("identificador"),
   ]);
 
   const mutation = useMutation({
@@ -263,13 +274,13 @@ const AnimalDetailsPage = ({ route }: EditarAnimalProps) => {
     }
 
     if (
-      !data.identificador ||
+      data.identificador &&
       !/^[A-ZÁÉÍÓÚÑ]{2}[A-ZÁÉÍÓÚÑ]{3,4}[12]-\d{6}$/.test(data.identificador)
     ) {
       Toast.show({
         type: "error",
         text1: "Error",
-        text2: "El identificador debe tener 6 dígitos",
+        text2: "El identificador debe tener el formato correcto",
       });
       return;
     }
@@ -327,7 +338,7 @@ const AnimalDetailsPage = ({ route }: EditarAnimalProps) => {
                 onValueChange={(value) => setValue("sexo", value)}
                 selectedValue={watch("sexo") || ""}
                 placeholder="Selecciona un sexo"
-                icon="code-outline"
+                icon="transgender-outline"
                 error={errors.sexo?.message}
               />
 
@@ -375,20 +386,8 @@ const AnimalDetailsPage = ({ route }: EditarAnimalProps) => {
                 onValueChange={(value) => setValue("raza", value)}
                 selectedValue={watch("raza") || ""}
                 placeholder="Selecciona una raza"
-                icon="bug-outline"
+                icon="git-branch-outline"
                 error={errors.raza?.message}
-              />
-              <ThemedTextInput
-                placeholder="Edad promedio (años)"
-                icon="calendar-number-outline"
-                value={watch("edad_promedio")?.toString()}
-                onChangeText={(text) => {
-                  const num = text === "" ? 0 : parseInt(text, 10);
-                  setValue("edad_promedio", isNaN(num) ? 0 : num);
-                }}
-                keyboardType="numeric"
-                error={errors.edad_promedio?.message}
-                style={styles.input}
               />
 
               <ThemedTextInput

@@ -1,6 +1,5 @@
 import { Medico } from "@/core/medicos/interfaces/obtener-medicos.interface";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
-import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import { FontAwesome } from "@expo/vector-icons";
 import React from "react";
@@ -122,109 +121,116 @@ const CardMedicos = ({ medico, onPress }: Props) => {
       fontSize: 12,
       color: textColor,
     },
+    horariosContainer: {
+      marginTop: 15,
+      borderTopWidth: 1,
+      borderTopColor: colors.primary,
+      paddingTop: 15,
+    },
   });
 
   return (
-    <ThemedView>
-      <TouchableOpacity onPress={onPress} style={styles.card}>
-        <View style={styles.header}>
-          <View style={styles.avatarContainer}>
-            <Avatar.Image size={60} source={{ uri: avatarUrl }} />
-          </View>
-
-          <View style={styles.infoContainer}>
-            <ThemedText style={styles.name}>{medico.usuario.name}</ThemedText>
-            <ThemedText style={styles.email}>{medico.usuario.email}</ThemedText>
-
-            <View style={styles.detailRow}>
-              <FontAwesome name="id-card" size={14} color={secondary} />
-              <ThemedText style={styles.detailText}>
-                {medico.numero_colegiado}
-              </ThemedText>
-            </View>
-          </View>
+    <TouchableOpacity onPress={onPress} style={styles.card}>
+      <View style={styles.header}>
+        <View style={styles.avatarContainer}>
+          <Avatar.Image size={60} source={{ uri: avatarUrl }} />
         </View>
 
-        <View style={styles.detailRow}>
-          <FontAwesome name="stethoscope" size={14} color={secondary} />
-          <ThemedText style={styles.detailText}>
-            {medico.especialidad}
-          </ThemedText>
-        </View>
+        <View style={styles.infoContainer}>
+          <ThemedText style={styles.name}>{medico.usuario.name}</ThemedText>
+          <ThemedText style={styles.email}>{medico.usuario.email}</ThemedText>
 
-        <View style={styles.detailRow}>
-          <FontAwesome name="graduation-cap" size={14} color={secondary} />
-          <ThemedText style={styles.detailText}>
-            {medico.universidad_formacion}
-          </ThemedText>
-        </View>
-
-        <View style={styles.detailRow}>
-          <FontAwesome name="briefcase" size={14} color={secondary} />
-          <ThemedText style={styles.detailText}>
-            Experiencia: {medico.anios_experiencia} años
-          </ThemedText>
-        </View>
-
-        <View style={styles.detailRow}>
-          <FontAwesome name="phone" size={14} color={secondary} />
-          <ThemedText style={styles.detailText}>
-            {medico.usuario.telefono}
-          </ThemedText>
-        </View>
-
-        <View style={styles.detailRow}>
-          <FontAwesome name="map-marker" size={14} color={secondary} />
-          <ThemedText style={styles.detailText}>
-            {medico.usuario.direccion}
-          </ThemedText>
-        </View>
-
-        <ThemedText style={styles.sectionTitle}>Áreas de trabajo</ThemedText>
-        <View style={styles.areasContainer}>
-          {medico.areas_trabajo.map((area) => (
-            <View key={area.id} style={styles.areaBadge}>
-              <ThemedText style={styles.areaText}>{area.nombre}</ThemedText>
-            </View>
-          ))}
-        </View>
-
-        <View style={styles.statusContainer}>
-          <View
-            style={[
-              styles.statusBadge,
-              medico.isActive ? styles.activeBadge : styles.inactiveBadge,
-            ]}
-          >
-            <ThemedText style={styles.statusText}>
-              {medico.isActive ? "Activo" : "Inactivo"}
-            </ThemedText>
-          </View>
-
-          <View
-            style={[
-              styles.statusBadge,
-              medico.usuario.isAuthorized
-                ? styles.authorizedBadge
-                : styles.unauthorizedBadge,
-            ]}
-          >
-            <ThemedText style={styles.statusText}>
-              {medico.usuario.isAuthorized ? "Autorizado" : "No autorizado"}
-            </ThemedText>
-          </View>
-
-          <View style={[styles.statusBadge, { backgroundColor: info + "20" }]}>
-            <ThemedText style={styles.statusText}>
-              ID: {medico.usuario.identificacion}
+          <View style={styles.detailRow}>
+            <FontAwesome name="id-card" size={14} color={secondary} />
+            <ThemedText style={styles.detailText}>
+              {medico.numero_colegiado}
             </ThemedText>
           </View>
         </View>
-      </TouchableOpacity>
-      <ThemedView style={styles.card}>
+      </View>
+
+      <View style={styles.detailRow}>
+        <FontAwesome name="stethoscope" size={14} color={secondary} />
+        <ThemedText style={styles.detailText}>{medico.especialidad}</ThemedText>
+      </View>
+
+      <View style={styles.detailRow}>
+        <FontAwesome name="graduation-cap" size={14} color={secondary} />
+        <ThemedText style={styles.detailText}>
+          {medico.universidad_formacion}
+        </ThemedText>
+      </View>
+
+      <View style={styles.detailRow}>
+        <FontAwesome name="briefcase" size={14} color={secondary} />
+        <ThemedText style={styles.detailText}>
+          Experiencia: {medico.anios_experiencia} años
+        </ThemedText>
+      </View>
+
+      <View style={styles.detailRow}>
+        <FontAwesome name="phone" size={14} color={secondary} />
+        <ThemedText style={styles.detailText}>
+          {medico.usuario.telefono}
+        </ThemedText>
+      </View>
+
+      <View style={styles.detailRow}>
+        <FontAwesome name="map-marker" size={14} color={secondary} />
+        <ThemedText style={styles.detailText}>
+          {medico.usuario.direccion}
+        </ThemedText>
+      </View>
+
+      <ThemedText style={styles.sectionTitle}>Áreas de trabajo</ThemedText>
+      <View style={styles.areasContainer}>
+        {medico.areas_trabajo.map((area) => (
+          <View key={area.id} style={styles.areaBadge}>
+            <ThemedText style={styles.areaText}>{area.nombre}</ThemedText>
+          </View>
+        ))}
+      </View>
+
+      {/* Estados */}
+      <View style={styles.statusContainer}>
+        <View
+          style={[
+            styles.statusBadge,
+            medico.isActive ? styles.activeBadge : styles.inactiveBadge,
+          ]}
+        >
+          <ThemedText style={styles.statusText}>
+            {medico.isActive ? "Activo" : "Inactivo"}
+          </ThemedText>
+        </View>
+
+        <View
+          style={[
+            styles.statusBadge,
+            medico.usuario.isAuthorized
+              ? styles.authorizedBadge
+              : styles.unauthorizedBadge,
+          ]}
+        >
+          <ThemedText style={styles.statusText}>
+            {medico.usuario.isAuthorized ? "Autorizado" : "No autorizado"}
+          </ThemedText>
+        </View>
+
+        <View style={[styles.statusBadge, { backgroundColor: info + "20" }]}>
+          <ThemedText style={styles.statusText}>
+            ID: {medico.usuario.identificacion}
+          </ThemedText>
+        </View>
+      </View>
+
+      <View style={styles.horariosContainer}>
+        <ThemedText style={styles.sectionTitle}>
+          Horarios de atención
+        </ThemedText>
         <HorariosMedicos medico={medico} medicoId={medico.id} />
-      </ThemedView>
-    </ThemedView>
+      </View>
+    </TouchableOpacity>
   );
 };
 

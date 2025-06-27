@@ -47,7 +47,7 @@ const ModalAddService = ({ visible, setVisible }: Props) => {
   const mutation = useMutation({
     mutationFn: (data: CrearServicio) => AddServicio(data),
     onSuccess: () => {
-      Toast.show({ type: "success", text1: "Servicio Creado Exitosamente" });
+      Toast.show({ type: "success", text1: "Categoria Creada Exitosamente" });
       reset();
       queryClient.invalidateQueries({ queryKey: ["servicios-admin"] });
       setVisible(false);
@@ -97,7 +97,7 @@ const ModalAddService = ({ visible, setVisible }: Props) => {
             rules={{ required: "El nombre es requerido" }}
             render={({ field }) => (
               <TextInput
-                label="Nombre del Servicio"
+                label="Nombre Categoria"
                 mode="outlined"
                 style={styles.input}
                 value={field.value}

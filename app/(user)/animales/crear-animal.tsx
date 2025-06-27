@@ -275,7 +275,7 @@ const CrearAnimal = () => {
                 onValueChange={(value) => setValue("sexo", value)}
                 selectedValue={watch("sexo")}
                 placeholder="Selecciona un sexo"
-                icon="code-outline"
+                icon="transgender-outline"
                 error={errors.sexo?.message}
               />
 
@@ -303,7 +303,7 @@ const CrearAnimal = () => {
 
               {showIdentifierHelp && (
                 <Text style={styles.helpText}>
-                  NÚMERO DE SEIS DIGITOS DE IDENTIFICACIÓN DEL ARETE
+                  PRIMEROS SEIS DIGITOS DE IDENTIFICACIÓN DEL ARETE
                 </Text>
               )}
 
@@ -317,21 +317,8 @@ const CrearAnimal = () => {
                 onValueChange={(value) => setValue("raza", value)}
                 selectedValue={watch("raza")}
                 placeholder="Selecciona una raza"
-                icon="bug-outline"
+                icon="git-branch-outline"
                 error={errors.raza?.message}
-              />
-
-              <ThemedTextInput
-                placeholder="Edad promedio (años)"
-                icon="calendar-number-outline"
-                value={watch("edad_promedio")?.toString()}
-                onChangeText={(text) => {
-                  const num = text === "" ? 0 : parseInt(text, 10);
-                  setValue("edad_promedio", isNaN(num) ? 0 : num);
-                }}
-                keyboardType="numeric"
-                error={errors.edad_promedio?.message}
-                style={styles.input}
               />
 
               <ThemedTextInput
@@ -402,7 +389,7 @@ const CrearAnimal = () => {
               )}
 
               <ThemedTextInput
-                placeholder="Observaciones"
+                placeholder="Caracteristicas"
                 icon="clipboard-outline"
                 value={watch("observaciones")}
                 onChangeText={(text) => setValue("observaciones", text)}

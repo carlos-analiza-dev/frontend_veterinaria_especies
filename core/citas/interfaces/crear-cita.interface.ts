@@ -8,6 +8,6 @@ export interface CrearCitaInterface {
   horaInicio: string;
   horaFin: string;
   duracion: number;
-  cantidadAnimales: number;
+  cantidadAnimales?: number;
   totalPagar: number;
 }

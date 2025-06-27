@@ -24,7 +24,6 @@ import PaisDetailsPage from "./paise-dateails";
 import PaisesPage from "./paises-page";
 import PerfilAdminPage from "./perfil-admin";
 import RolesPageAdmin from "./roles/roles-page";
-import CrearServicioPage from "./servicios/crear-servicio";
 import ServicioPageAdmin from "./servicios/servicios-page";
 import SubServiciosPage from "./servicios/sub-servicio-page";
 import SettingsScreen from "./settings";
@@ -192,17 +191,6 @@ export default function AdminLayout() {
             headerTitle: "Admin Categorias",
             headerRight: () => <LogoutIconButton />,
             headerLeft: () => <DrawerToggleButton tintColor={iconColor} />,
-          }}
-        />
-
-        <UsersStack.Screen
-          name="CrearServicio"
-          component={CrearServicioPage}
-          options={{
-            headerShown: true,
-            headerTitle: "Agregar Servicio",
-            headerRight: () => <LogoutIconButton />,
-            headerLeft: () => <GoBack />,
           }}
         />
 

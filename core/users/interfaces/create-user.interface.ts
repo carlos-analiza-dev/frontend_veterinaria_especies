@@ -5,6 +5,7 @@ export interface CrearUsuario {
   identificacion: string;
   direccion: string;
   telefono: string;
+  sexo: string;
   role?: string;
   pais: string;
   departamento: string;

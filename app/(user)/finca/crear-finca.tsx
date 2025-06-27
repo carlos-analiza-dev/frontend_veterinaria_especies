@@ -258,7 +258,7 @@ const CrearFincaPage = () => {
               >
                 <ThemedTextInput
                   placeholder="Abreviatura"
-                  icon="language-outline"
+                  icon="text-outline"
                   value={watch("abreviatura")}
                   onChangeText={(text) => setValue("abreviatura", text)}
                 />

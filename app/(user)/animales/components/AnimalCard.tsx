@@ -166,7 +166,7 @@ const AnimalCard = ({ animal, onPress }: Props) => {
                 style={[styles.infoRow, { backgroundColor: colors.background }]}
               >
                 <MaterialCommunityIcons
-                  name="food-steak"
+                  name="silverware-clean"
                   size={20}
                   color={colors.onSurfaceVariant}
                   style={styles.icon}
@@ -281,7 +281,7 @@ const AnimalCard = ({ animal, onPress }: Props) => {
                 <ThemedText
                   style={[styles.infoText, { color: colors.onSurface }]}
                 >
-                  Observaciones: {animal.observaciones}
+                  Caracteristicas: {animal.observaciones}
                 </ThemedText>
               </ThemedView>
             )}

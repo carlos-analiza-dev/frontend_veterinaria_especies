@@ -8,7 +8,6 @@ export type UsersStackParamList = {
   CrearPais: undefined;
   PerfilAdmin: undefined;
   ServiciosAdmin: undefined;
-  CrearServicio: undefined;
   DetailsServicio: { servicioId: string };
   AgregarSubServicio: { servicioId: string; nombre: string };
   AgregarPreciosServices: { servicioId: string };
