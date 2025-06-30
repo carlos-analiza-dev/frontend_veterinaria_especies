@@ -1,5 +1,6 @@
 import { CrearMedico } from "@/core/medicos/accions/crear-medico";
 import { CrearMedicoInterface } from "@/core/medicos/interfaces/crear-medico.interface";
+import { ResponseVeterinarios } from "@/core/users/interfaces/veterinarios-response.interface";
 import useGetServiciosActivos from "@/hooks/servicios/useGetServiciosActivos";
 import useGetVeterinarios from "@/hooks/users/useGetVeterinarios";
 import ThemedButton from "@/presentation/theme/components/ThemedButton";
@@ -30,6 +31,9 @@ const CrearMedicoPage = () => {
   const { data: veterinarios } = useGetVeterinarios();
   const { data: categorias } = useGetServiciosActivos();
   const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
+  const [selectedUser, setSelectedUser] = useState<
+    ResponseVeterinarios | undefined
+  >(undefined);
 
   const {
     watch,
@@ -40,6 +44,12 @@ const CrearMedicoPage = () => {
   } = useForm<CrearMedicoInterface>({
     mode: "onChange",
   });
+
+  const handleUserChange = (userId: string) => {
+    setValue("usuarioId", userId, { shouldValidate: true });
+    const user = veterinarios?.find((vet) => vet.id === userId);
+    setSelectedUser(user);
+  };
 
   const handleAreaSelection = (areaId: string) => {
     setSelectedAreas((prev) => {
@@ -132,12 +142,47 @@ const CrearMedicoPage = () => {
             items={veterinarios_items}
             icon="accessibility-outline"
             selectedValue={watch("usuarioId")}
-            onValueChange={(text) =>
-              setValue("usuarioId", text, { shouldValidate: true })
-            }
+            onValueChange={handleUserChange}
             placeholder="Seleccione un usuario*"
             error={errors.usuarioId?.message}
           />
+          {selectedUser && (
+            <ThemedView style={styles.userInfoContainer}>
+              <ThemedText style={styles.userInfoTitle}>
+                Información del Usuario Seleccionado:
+              </ThemedText>
+
+              <ThemedView style={styles.userInfoRow}>
+                <ThemedText style={styles.userInfoLabel}>Nombre:</ThemedText>
+                <ThemedText style={styles.userInfoValue}>
+                  {selectedUser.name}
+                </ThemedText>
+              </ThemedView>
+
+              <ThemedView style={styles.userInfoRow}>
+                <ThemedText style={styles.userInfoLabel}>Email:</ThemedText>
+                <ThemedText style={styles.userInfoValue}>
+                  {selectedUser.email}
+                </ThemedText>
+              </ThemedView>
+
+              <ThemedView style={styles.userInfoRow}>
+                <ThemedText style={styles.userInfoLabel}>
+                  Identificación:
+                </ThemedText>
+                <ThemedText style={styles.userInfoValue}>
+                  {selectedUser.identificacion}
+                </ThemedText>
+              </ThemedView>
+
+              <ThemedView style={styles.userInfoRow}>
+                <ThemedText style={styles.userInfoLabel}>Teléfono:</ThemedText>
+                <ThemedText style={styles.userInfoValue}>
+                  {selectedUser.telefono}
+                </ThemedText>
+              </ThemedView>
+            </ThemedView>
+          )}
           <TextInput
             label="Número de colegiado*"
             style={styles.input}
@@ -337,6 +382,32 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     height: 50,
     justifyContent: "center",
+  },
+  userInfoContainer: {
+    marginBottom: 15,
+    padding: 15,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#e9ecef",
+  },
+  userInfoTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 10,
+    color: "#495057",
+  },
+  userInfoRow: {
+    flexDirection: "row",
+    marginBottom: 5,
+  },
+  userInfoLabel: {
+    fontWeight: "600",
+    width: 120,
+    color: "#6c757d",
+  },
+  userInfoValue: {
+    flex: 1,
+    color: "#212529",
   },
 });
 

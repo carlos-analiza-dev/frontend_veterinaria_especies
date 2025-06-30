@@ -13,8 +13,6 @@ interface Props {
 const EspecieCantidadPicker = ({ value, onChange, cantidadTotal }: Props) => {
   const { data: especies } = useGetEspecies();
 
-  const especiesData = especies?.data || [];
-
   const calcularSumaActual = () => {
     return value.reduce((sum, item) => sum + (item.cantidad || 0), 0);
   };
@@ -54,7 +52,8 @@ const EspecieCantidadPicker = ({ value, onChange, cantidadTotal }: Props) => {
     if (nuevaSuma > cantidadTotal) {
       Toast.show({
         type: "error",
-        text1: "La suma supera la cantidad total de animales",
+        text1:
+          "Los animales ingresados superan la cantidad permitida para la finca seleccionada.",
         text2: `Total permitido: ${cantidadTotal}`,
       });
       return;

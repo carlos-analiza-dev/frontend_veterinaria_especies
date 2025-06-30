@@ -1,4 +1,5 @@
 import useGetMedicos from "@/hooks/medicos/useGetMedicos";
+import Buscador from "@/presentation/components/Buscador";
 import { FAB } from "@/presentation/components/FAB";
 import MessageError from "@/presentation/components/MessageError";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
@@ -7,7 +8,7 @@ import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import { useNavigation } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
-import { Searchbar, useTheme } from "react-native-paper";
+import { useTheme } from "react-native-paper";
 import CardMedicos from "./components/CardMedicos";
 
 const MedicosPage = () => {
@@ -49,14 +50,10 @@ const MedicosPage = () => {
       <ThemedView
         style={[styles.container, { backgroundColor: colors.background }]}
       >
-        <Searchbar
-          style={[
-            styles.searchInput,
-            { backgroundColor: colors.background, color: textColor },
-          ]}
-          placeholder="Buscar médico por nombre..."
-          value={name}
-          onChangeText={setName}
+        <Buscador
+          title="Buscar médico por nombre..."
+          setSearchTerm={setName}
+          searchTerm={name}
         />
         <MessageError
           titulo="Error al cargar los medicos"
@@ -73,14 +70,10 @@ const MedicosPage = () => {
 
   return (
     <ThemedView style={styles.container}>
-      <Searchbar
-        style={[
-          styles.searchInput,
-          { backgroundColor: colors.background, color: textColor },
-        ]}
-        placeholder="Buscar médico por nombre..."
-        value={name}
-        onChangeText={setName}
+      <Buscador
+        title="Buscar médico por nombre..."
+        setSearchTerm={setName}
+        searchTerm={name}
       />
 
       {isLoading ? (

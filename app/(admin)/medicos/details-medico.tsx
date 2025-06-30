@@ -183,6 +183,16 @@ const DetailsMedico = ({ route }: DetailsMedicoProps) => {
         </ThemedView>
 
         <ThemedView style={styles.card}>
+          <ThemedPicker
+            items={veterinarios_items}
+            icon="accessibility-outline"
+            selectedValue={watch("usuarioId") || ""}
+            onValueChange={(text) =>
+              setValue("usuarioId", text, { shouldValidate: true })
+            }
+            placeholder="Seleccione un veterinario*"
+            error={errors.usuarioId?.message}
+          />
           <TextInput
             label="Número de colegiado*"
             style={styles.input}
@@ -259,17 +269,6 @@ const DetailsMedico = ({ route }: DetailsMedicoProps) => {
               {errors.anios_experiencia.message}
             </ThemedText>
           )}
-
-          <ThemedPicker
-            items={veterinarios_items}
-            icon="accessibility-outline"
-            selectedValue={watch("usuarioId") || ""}
-            onValueChange={(text) =>
-              setValue("usuarioId", text, { shouldValidate: true })
-            }
-            placeholder="Seleccione un veterinario*"
-            error={errors.usuarioId?.message}
-          />
 
           <ThemedText style={styles.sectionTitle}>Áreas de trabajo*</ThemedText>
           <View style={styles.areasContainer}>

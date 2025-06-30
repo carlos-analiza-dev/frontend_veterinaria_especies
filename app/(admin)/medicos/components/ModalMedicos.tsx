@@ -183,6 +183,7 @@ const ModalMedicos = ({
           <View style={styles.modalButtons}>
             <Button
               mode="contained"
+              buttonColor={primary}
               onPress={handleCrearHorario}
               style={styles.saveButton}
               loading={isLoading}

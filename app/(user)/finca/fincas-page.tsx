@@ -1,12 +1,13 @@
 import { FAB } from "@/presentation/components/FAB";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { RefreshControl, ScrollView, StyleSheet } from "react-native";
 import { ActivityIndicator, useTheme } from "react-native-paper";
 
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
 import { useAuthStore } from "@/presentation/auth/store/useAuthStore";
+import Buscador from "@/presentation/components/Buscador";
 import MessageError from "@/presentation/components/MessageError";
 import { useNavigation } from "expo-router";
 import CardFincas from "./components/CardFincas";
@@ -15,6 +16,15 @@ const FincasPageGanaderos = () => {
   const { colors } = useTheme();
   const { user } = useAuthStore();
   const navigation = useNavigation();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   const {
     data: fincas,
@@ -22,7 +32,7 @@ const FincasPageGanaderos = () => {
     isLoading,
     refetch,
     isRefetching,
-  } = useFincasPropietarios(user?.id ?? "");
+  } = useFincasPropietarios(user?.id ?? "", debouncedSearchTerm);
 
   const onRefresh = useCallback(() => {
     refetch();
@@ -31,14 +41,21 @@ const FincasPageGanaderos = () => {
   if (isLoading) {
     return (
       <ThemedView style={styles.container}>
-        <ActivityIndicator />
+        <ActivityIndicator size="large" />
       </ThemedView>
     );
   }
 
   if (!fincas || fincas.data.fincas.length === 0 || isError) {
     return (
-      <ThemedView style={styles.container}>
+      <ThemedView
+        style={[styles.container, { backgroundColor: colors.background }]}
+      >
+        <Buscador
+          title="Buscar finca por nombre..."
+          setSearchTerm={setSearchTerm}
+          searchTerm={searchTerm}
+        />
         <MessageError
           titulo="Sin fincas"
           descripcion="No se encontraron fincas disponibles en este momento"
@@ -64,6 +81,11 @@ const FincasPageGanaderos = () => {
           />
         }
       >
+        <Buscador
+          title="Buscar finca por nombre..."
+          setSearchTerm={setSearchTerm}
+          searchTerm={searchTerm}
+        />
         <ThemedText style={styles.title}>Mis Fincas</ThemedText>
 
         {fincas.data.fincas.map((finca) => (
@@ -90,6 +112,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    padding: 10,
   },
   scrollContainer: {
     padding: 16,

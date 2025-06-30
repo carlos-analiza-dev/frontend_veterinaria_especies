@@ -15,7 +15,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import React, { useState } from "react";
 import { Platform, StyleSheet, TouchableOpacity, View } from "react-native";
-import { Text } from "react-native-paper";
+import { Text, useTheme } from "react-native-paper";
 import Toast from "react-native-toast-message";
 import ModalMedicos from "./ModalMedicos";
 
@@ -40,6 +40,7 @@ const HorariosMedicos = ({ medico, medicoId, onHorarioCreado }: Props) => {
   const danger = useThemeColor({}, "danger");
   const primary = useThemeColor({}, "primary");
   const success = useThemeColor({}, "success");
+  const { colors } = useTheme();
   const [horarioId, setHorarioId] = useState("");
 
   const { data: horarios, refetch } = useGetHorariosByMedico(medicoId);
@@ -253,7 +254,9 @@ const HorariosMedicos = ({ medico, medicoId, onHorarioCreado }: Props) => {
   });
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <View style={styles.headerContainer}>
         <ThemedText style={styles.title}>
           Horario - {medico.usuario.name}

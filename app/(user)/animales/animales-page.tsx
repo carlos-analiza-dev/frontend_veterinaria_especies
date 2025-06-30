@@ -1,22 +1,21 @@
 import useAnimalesByPropietario from "@/hooks/animales/useAnimalesByPropietario";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
 import { useAuthStore } from "@/presentation/auth/store/useAuthStore";
+import Buscador from "@/presentation/components/Buscador";
 import { FAB } from "@/presentation/components/FAB";
 import MessageError from "@/presentation/components/MessageError";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import ButtonFilter from "@/presentation/theme/components/ui/ButtonFilter";
-import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import { useNavigation } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
-import { ActivityIndicator, Searchbar, useTheme } from "react-native-paper";
+import { ActivityIndicator, useTheme } from "react-native-paper";
 import AnimalCard from "./components/AnimalCard";
 
 const AnimalesPageGanadero = () => {
   const navigation = useNavigation();
   const { user } = useAuthStore();
   const { colors } = useTheme();
-  const textColor = useThemeColor({}, "text");
   const [fincaId, setFincaId] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
@@ -60,14 +59,10 @@ const AnimalesPageGanadero = () => {
       >
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <View style={styles.filterContainer}>
-            <Searchbar
-              style={[
-                styles.searchInput,
-                { backgroundColor: colors.background, color: textColor },
-              ]}
-              placeholder="Buscar por identificador..."
-              onChangeText={setSearchTerm}
-              value={searchTerm}
+            <Buscador
+              title="Buscar por identificador..."
+              setSearchTerm={setSearchTerm}
+              searchTerm={searchTerm}
             />
             <View style={styles.roleFilterContainer}>
               <ButtonFilter
@@ -118,14 +113,10 @@ const AnimalesPageGanadero = () => {
         }
       >
         <View style={styles.filterContainer}>
-          <Searchbar
-            style={[
-              styles.searchInput,
-              { backgroundColor: colors.background, color: textColor },
-            ]}
-            placeholder="Buscar por identificador..."
-            onChangeText={setSearchTerm}
-            value={searchTerm}
+          <Buscador
+            title="Buscar por identificador..."
+            setSearchTerm={setSearchTerm}
+            searchTerm={searchTerm}
           />
           <View style={styles.roleFilterContainer}>
             <ButtonFilter

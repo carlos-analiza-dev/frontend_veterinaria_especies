@@ -1,5 +1,6 @@
 import useGetRoles from "@/hooks/roles/useGetRoles";
 import useGetUsersInfinityScroll from "@/hooks/users/useGetUsersInfinityScroll";
+import Buscador from "@/presentation/components/Buscador";
 import { FAB } from "@/presentation/components/FAB";
 import MessageError from "@/presentation/components/MessageError";
 import UserCard from "@/presentation/components/UseCard";
@@ -15,7 +16,7 @@ import {
   Text,
   View,
 } from "react-native";
-import { Searchbar, useTheme } from "react-native-paper";
+import { useTheme } from "react-native-paper";
 
 const UsersScreenAdmin = () => {
   const limit = 10;
@@ -77,14 +78,10 @@ const UsersScreenAdmin = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Gestión de Usuarios </Text>
       <View style={styles.filterContainer}>
-        <Searchbar
-          style={[
-            styles.searchInput,
-            { backgroundColor: colors.background, color: textColor },
-          ]}
-          placeholder="Buscar por nombre..."
-          onChangeText={setSearchTerm}
-          value={searchTerm}
+        <Buscador
+          title="Buscar por nombre..."
+          setSearchTerm={setSearchTerm}
+          searchTerm={searchTerm}
         />
 
         <View style={styles.roleFilterContainer}>

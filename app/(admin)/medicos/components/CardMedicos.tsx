@@ -191,7 +191,6 @@ const CardMedicos = ({ medico, onPress }: Props) => {
         ))}
       </View>
 
-      {/* Estados */}
       <View style={styles.statusContainer}>
         <View
           style={[
