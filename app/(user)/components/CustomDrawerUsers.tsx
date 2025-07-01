@@ -27,6 +27,13 @@ const CustomDrawerUsers = ({ navigation, logout }: Props) => {
       >
         <ThemedText style={[styles.title]}>Menú Ganadero</ThemedText>
       </ThemedView>
+      <TouchableOpacity
+        style={styles.drawerItem}
+        onPress={() => navigation.navigate("servicios-user")}
+      >
+        <MyIcon name="hammer-outline" size={24} color={colors.primary} />
+        <ThemedText style={[styles.itemText]}>Servicios Disponibles</ThemedText>
+      </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.drawerItem}
@@ -37,7 +44,7 @@ const CustomDrawerUsers = ({ navigation, logout }: Props) => {
           size={24}
           color={colors.primary}
         />
-        <ThemedText style={[styles.itemText]}>Agendar Cita</ThemedText>
+        <ThemedText style={[styles.itemText]}>Citas</ThemedText>
       </TouchableOpacity>
 
       <TouchableOpacity

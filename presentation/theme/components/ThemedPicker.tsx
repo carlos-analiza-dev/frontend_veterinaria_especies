@@ -60,13 +60,17 @@ const ThemedPicker = ({
           enabled={enabled}
         >
           <Picker.Item label={placeholder} value="" />
-          {items.map((item) => (
-            <Picker.Item
-              key={item.value}
-              label={item.label}
-              value={item.value}
-            />
-          ))}
+          {items && items.length > 0 ? (
+            items.map((item) => (
+              <Picker.Item
+                key={item.value}
+                label={item.label}
+                value={item.value}
+              />
+            ))
+          ) : (
+            <Picker.Item label="No hay opciones disponibles" value="" />
+          )}
         </Picker>
       </View>
       {error && (

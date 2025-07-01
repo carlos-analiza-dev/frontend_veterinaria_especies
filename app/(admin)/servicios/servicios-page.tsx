@@ -1,3 +1,4 @@
+import CardService from "@/app/(admin)/servicios/components/CardService";
 import useGetServiciosAdmin from "@/hooks/servicios/useGetServiciosAdmin";
 import MessageError from "@/presentation/components/MessageError";
 import ThemedButton from "@/presentation/theme/components/ThemedButton";
@@ -8,7 +9,6 @@ import { useNavigation } from "expo-router";
 import React, { useState } from "react";
 import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
 import { ActivityIndicator, useTheme } from "react-native-paper";
-import CardService from "./components/CardService";
 import ModalAddService from "./components/ModalAddService";
 
 const ServicioPageAdmin = () => {

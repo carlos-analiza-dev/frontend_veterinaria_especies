@@ -25,6 +25,8 @@ import CrearFincaPage from "./finca/crear-finca";
 import FincaDetailsPage from "./finca/finca-details";
 import FincasPageGanaderos from "./finca/fincas-page";
 import ProfileUser from "./profile";
+import AgregarCitaServicio from "./servicios-user/agregar-cita-servicio";
+import ServicesUser from "./servicios-user/servicios-user";
 
 const Drawer = createDrawerNavigator();
 
@@ -158,6 +160,33 @@ export default function UserLayout() {
     );
   };
 
+  const UsersServiciosUserStackScreen = () => {
+    return (
+      <UsersStack.Navigator screenOptions={{ headerShown: false }}>
+        <UsersStack.Screen
+          name="ServiciosUser"
+          component={ServicesUser}
+          options={{
+            headerShown: true,
+            headerTitle: "Servicios Disponibles",
+            headerRight: () => <LogoutIconButton />,
+            headerLeft: () => <DrawerToggleButton tintColor={iconColor} />,
+          }}
+        />
+        <UsersStack.Screen
+          name="AgregarCitaServicio"
+          component={AgregarCitaServicio}
+          options={{
+            headerShown: true,
+            headerTitle: "Agendar Cita",
+            headerRight: () => <LogoutIconButton />,
+            headerLeft: () => <GoBack />,
+          }}
+        />
+      </UsersStack.Navigator>
+    );
+  };
+
   return (
     <>
       <Drawer.Navigator
@@ -166,6 +195,10 @@ export default function UserLayout() {
         )}
         screenOptions={{ headerShown: false }}
       >
+        <Drawer.Screen
+          name="servicios-user"
+          component={UsersServiciosUserStackScreen}
+        />
         <Drawer.Screen name="home" component={UsersCitasStackScreen} />
         <Drawer.Screen name="fincas-page" component={UsersFincasStackScreen} />
         <Drawer.Screen

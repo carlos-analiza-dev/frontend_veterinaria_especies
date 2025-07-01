@@ -54,7 +54,7 @@ const LoginScreen = () => {
           router.replace("/(admin)/users");
           break;
         case "Ganadero":
-          router.replace("/(user)/citas/home");
+          router.replace("/(user)/servicios-user/servicios-user");
           break;
         case "Secretario":
           router.replace("/(secretario)/home");
