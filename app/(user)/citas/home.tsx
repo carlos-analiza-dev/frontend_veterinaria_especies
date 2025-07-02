@@ -7,8 +7,14 @@ import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 
 import { useNavigation } from "expo-router";
 import { useCallback } from "react";
-import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
-import { ActivityIndicator, Text } from "react-native-paper";
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  View,
+} from "react-native";
+import { Text } from "react-native-paper";
 import CardCitas from "./components/CardCitas";
 
 const HomeUser = () => {
@@ -47,7 +53,7 @@ const HomeUser = () => {
       <ThemedView
         style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
       >
-        <ActivityIndicator />
+        <ActivityIndicator size="large" />
       </ThemedView>
     );
   }

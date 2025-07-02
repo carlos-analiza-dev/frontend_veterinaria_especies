@@ -16,6 +16,7 @@ import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import { RouteProp, useTheme } from "@react-navigation/native";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
+import { useNavigation } from "expo-router";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import {
@@ -39,6 +40,7 @@ interface UserDetailsScreenProps {
 const UsersDetailsScreen = ({ route }: UserDetailsScreenProps) => {
   const { colors } = useTheme();
   const { userId } = route.params;
+  const navigation = useNavigation();
   const { height } = useWindowDimensions();
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = React.useState(false);
@@ -151,6 +153,7 @@ const UsersDetailsScreen = ({ route }: UserDetailsScreenProps) => {
         type: "success",
         text1: "Usuario actualizado correctamente",
       });
+      navigation.goBack();
     },
     onError: (error) => {
       if (isAxiosError(error)) {

@@ -5,6 +5,7 @@ import PaisesCard from "@/presentation/components/paises/PaisesCard";
 import ThemedButton from "@/presentation/theme/components/ThemedButton";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
+import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import { useTheme } from "@react-navigation/native";
 import { useNavigation } from "expo-router";
 import React, { useState } from "react";
@@ -19,7 +20,7 @@ import {
 const PaisesPage = () => {
   const navigation = useNavigation();
   const { colors } = useTheme();
-
+  const colorPrimary = useThemeColor({}, "primary");
   const [refreshing, setRefreshing] = useState(false);
 
   const { data, isError, isLoading, refetch } = usePaises();
@@ -89,8 +90,8 @@ const PaisesPage = () => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            colors={[colors.primary]}
-            tintColor={colors.primary}
+            colors={[colorPrimary]}
+            tintColor={colorPrimary}
           />
         }
         ListHeaderComponent={

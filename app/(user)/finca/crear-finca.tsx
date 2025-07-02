@@ -1,21 +1,24 @@
 import { CreateFinca } from "@/core/fincas/accions/crear-finca";
 import { CrearFinca } from "@/core/fincas/interfaces/crear-finca.interface";
 import { TipoExplotacion } from "@/helpers/data/tipoExplotacion";
+import { convertirAHectareas } from "@/helpers/funciones/convertirHectareas";
 import useGetDeptosActivesByPais from "@/hooks/departamentos/useGetDeptosActivesByPais";
 import useGetMunicipiosActivosByDepto from "@/hooks/municipios/useGetMunicipiosActivosByDepto";
 import useGetPaisesActivos from "@/hooks/paises/useGetPaisesActivos";
 import { useAuthStore } from "@/presentation/auth/store/useAuthStore";
 import EspecieCantidadPicker from "@/presentation/theme/components/EspecieCantidadPicker";
 import ThemedButton from "@/presentation/theme/components/ThemedButton";
+import ThemedCheckbox from "@/presentation/theme/components/ThemedCheckbox";
 import ThemedPicker from "@/presentation/theme/components/ThemedPicker";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import ThemedTextInput from "@/presentation/theme/components/ThemedTextInput";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import { useQueryClient } from "@tanstack/react-query";
+import { isAxiosError } from "axios";
+import { useNavigation } from "expo-router";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import {
-  Keyboard,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -29,11 +32,15 @@ import Toast from "react-native-toast-message";
 const CrearFincaPage = () => {
   const queryClient = useQueryClient();
   const { height } = useWindowDimensions();
+  const navigation = useNavigation();
   const [unidadMedida, setUnidadMedida] = useState<
     "ha" | "mz" | "m2" | "km2" | "ac" | "ft2" | "yd2"
   >("ha");
+  const [explotacionSeleccionada, setExplotacionSeleccionada] = useState<
+    string[]
+  >([]);
 
-  const { handleSubmit, watch, setValue } = useForm<CrearFinca>({
+  const { handleSubmit, watch, setValue, reset } = useForm<CrearFinca>({
     defaultValues: {
       especies_maneja: [],
     },
@@ -67,33 +74,6 @@ const CrearFincaPage = () => {
       label: pais.nombre,
       value: pais.id.toString(),
     })) || [];
-
-  const explotacionItems = TipoExplotacion.map((exp) => ({
-    label: exp.explotacion,
-    value: exp.explotacion,
-  }));
-
-  const convertirAHectareas = (valor: string, unidad: string): string => {
-    const num = parseFloat(valor);
-    if (isNaN(num)) return "0";
-
-    switch (unidad) {
-      case "mz":
-        return (num * 0.7).toString();
-      case "m2":
-        return (num * 0.0001).toString();
-      case "km2":
-        return (num * 100).toString();
-      case "ac":
-        return (num * 0.4047).toString();
-      case "ft2":
-        return (num * 0.0000092903).toString();
-      case "yd2":
-        return (num * 0.0000836127).toString();
-      default:
-        return valor;
-    }
-  };
 
   const onSubmit = async (data: CrearFinca) => {
     try {
@@ -186,252 +166,285 @@ const CrearFincaPage = () => {
       queryClient.invalidateQueries({ queryKey: ["fincas-propietario"] });
       if (response.status === 201) {
         Toast.show({ type: "success", text1: "Finca creada correctamente" });
+        setExplotacionSeleccionada([]);
+        reset();
+        navigation.goBack();
       }
     } catch (error) {
-      Toast.show({ type: "error", text1: "No se pudo crear la finca" });
+      if (isAxiosError(error)) {
+        const messages = error.response?.data?.message;
+        const errorMessage = Array.isArray(messages)
+          ? messages[0]
+          : typeof messages === "string"
+          ? messages
+          : "Hubo un error al crear la finca";
+
+        Toast.show({
+          type: "error",
+          text1: errorMessage,
+        });
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "Error inesperado",
+          text2: "Contacte al administrador",
+        });
+      }
     }
+  };
+
+  const handleAlimentoChange = (alimento: string) => {
+    const nuevasExplotacion = [...explotacionSeleccionada];
+    if (nuevasExplotacion.includes(alimento)) {
+      const index = nuevasExplotacion.indexOf(alimento);
+      nuevasExplotacion.splice(index, 1);
+    } else {
+      nuevasExplotacion.push(alimento);
+    }
+    setExplotacionSeleccionada(nuevasExplotacion);
+    setValue(
+      "tipo_explotacion",
+      nuevasExplotacion.map((a) => ({ tipo_explotacion: a }))
+    );
   };
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={{ flex: 1 }}
+      style={[styles.container, { backgroundColor: colors.background }]}
     >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <ScrollView
+        contentContainerStyle={[
+          styles.scrollContainer,
+          { minHeight: height * 0.8 },
+        ]}
+        keyboardShouldPersistTaps="handled"
+      >
         <ThemedView
-          style={{
-            flex: 1,
-            marginBottom: 20,
-            backgroundColor: colors.background,
-          }}
+          style={[styles.row, { backgroundColor: colors.background }]}
         >
-          <ScrollView
-            contentContainerStyle={[
-              styles.scrollContainer,
-              { minHeight: height * 0.8 },
-            ]}
-            keyboardShouldPersistTaps="handled"
+          <ThemedView
+            style={[styles.column, { backgroundColor: colors.background }]}
           >
-            <ThemedView
-              style={[styles.row, { backgroundColor: colors.background }]}
-            >
-              <ThemedView
-                style={[styles.column, { backgroundColor: colors.background }]}
-              >
-                <ThemedTextInput
-                  placeholder="Nombre finca"
-                  icon="home-outline"
-                  value={watch("nombre_finca")}
-                  onChangeText={(text) => setValue("nombre_finca", text)}
-                />
-              </ThemedView>
-              <ThemedView
-                style={[styles.column, { backgroundColor: colors.background }]}
-              >
-                <ThemedTextInput
-                  placeholder="# Animales"
-                  icon="paw-outline"
-                  keyboardType="numeric"
-                  value={watch("cantidad_animales")?.toString() ?? ""}
-                  onChangeText={(text) =>
-                    setValue("cantidad_animales", Number(text))
-                  }
-                />
-              </ThemedView>
-            </ThemedView>
-
-            <ThemedView
-              style={[styles.row, { backgroundColor: colors.background }]}
-            >
-              <ThemedView
-                style={[styles.column, { backgroundColor: colors.background }]}
-              >
-                <ThemedTextInput
-                  placeholder="Ubicación"
-                  icon="location-outline"
-                  value={watch("ubicacion")}
-                  onChangeText={(text) => setValue("ubicacion", text)}
-                />
-              </ThemedView>
-              <ThemedView
-                style={[styles.column, { backgroundColor: colors.background }]}
-              >
-                <ThemedTextInput
-                  placeholder="Abreviatura"
-                  icon="text-outline"
-                  value={watch("abreviatura")}
-                  onChangeText={(text) => setValue("abreviatura", text)}
-                />
-              </ThemedView>
-            </ThemedView>
-
-            <ThemedPicker
-              items={paisesItems}
-              icon="earth"
-              placeholder="Selecciona un país"
-              selectedValue={watch("pais_id")}
-              onValueChange={(value) => setValue("pais_id", value)}
+            <ThemedTextInput
+              placeholder="Nombre finca"
+              icon="home-outline"
+              value={watch("nombre_finca")}
+              onChangeText={(text) => setValue("nombre_finca", text)}
             />
-
-            <ThemedPicker
-              items={departmentItems}
-              icon="map"
-              placeholder="Departamento"
-              selectedValue={selectedDeptoId}
-              onValueChange={(value) => {
-                setValue("departamentoId", value);
-                setValue("municipioId", "");
-              }}
+          </ThemedView>
+          <ThemedView
+            style={[styles.column, { backgroundColor: colors.background }]}
+          >
+            <ThemedTextInput
+              placeholder="# Animales"
+              icon="paw-outline"
+              keyboardType="numeric"
+              value={watch("cantidad_animales")?.toString() ?? ""}
+              onChangeText={(text) =>
+                setValue("cantidad_animales", Number(text))
+              }
             />
+          </ThemedView>
+        </ThemedView>
 
-            {selectedDeptoId && (
-              <ThemedPicker
-                items={municipiosItems}
-                icon="pin"
-                placeholder="Municipio"
-                selectedValue={watch("municipioId")}
-                onValueChange={(value) => setValue("municipioId", value)}
-              />
-            )}
-            <ThemedView
-              style={[
-                styles.unidadesContainer,
-                { backgroundColor: colors.background },
-              ]}
-            >
-              <ThemedText style={styles.unidadLabel}>
-                ¿Con que medidas conoces tu finca?
-              </ThemedText>
+        <ThemedView
+          style={[styles.row, { backgroundColor: colors.background }]}
+        >
+          <ThemedView
+            style={[styles.column, { backgroundColor: colors.background }]}
+          >
+            <ThemedTextInput
+              placeholder="Ubicación"
+              icon="location-outline"
+              value={watch("ubicacion")}
+              onChangeText={(text) => setValue("ubicacion", text)}
+            />
+          </ThemedView>
+          <ThemedView
+            style={[styles.column, { backgroundColor: colors.background }]}
+          >
+            <ThemedTextInput
+              placeholder="Abreviatura"
+              icon="text-outline"
+              value={watch("abreviatura")}
+              onChangeText={(text) => setValue("abreviatura", text)}
+            />
+          </ThemedView>
+        </ThemedView>
 
+        <ThemedPicker
+          items={paisesItems}
+          icon="earth"
+          placeholder="Selecciona un país"
+          selectedValue={watch("pais_id")}
+          onValueChange={(value) => setValue("pais_id", value)}
+        />
+
+        <ThemedPicker
+          items={departmentItems}
+          icon="map"
+          placeholder="Departamento"
+          selectedValue={selectedDeptoId}
+          onValueChange={(value) => {
+            setValue("departamentoId", value);
+            setValue("municipioId", "");
+          }}
+        />
+
+        {selectedDeptoId && (
+          <ThemedPicker
+            items={municipiosItems}
+            icon="pin"
+            placeholder="Municipio"
+            selectedValue={watch("municipioId")}
+            onValueChange={(value) => setValue("municipioId", value)}
+          />
+        )}
+        <ThemedView
+          style={[
+            styles.unidadesContainer,
+            { backgroundColor: colors.background },
+          ]}
+        >
+          <ThemedText style={styles.unidadLabel}>
+            ¿Con que medidas conoces tu finca?
+          </ThemedText>
+
+          <ThemedView
+            style={[
+              styles.checkboxGroup,
+              { backgroundColor: colors.background },
+            ]}
+          >
+            <TouchableWithoutFeedback onPress={() => setUnidadMedida("ha")}>
               <ThemedView
                 style={[
-                  styles.checkboxGroup,
+                  styles.checkboxContainer,
                   { backgroundColor: colors.background },
                 ]}
               >
-                <TouchableWithoutFeedback onPress={() => setUnidadMedida("ha")}>
-                  <ThemedView
-                    style={[
-                      styles.checkboxContainer,
-                      { backgroundColor: colors.background },
-                    ]}
-                  >
-                    <Checkbox
-                      status={unidadMedida === "ha" ? "checked" : "unchecked"}
-                      color={colors.primary}
-                    />
-                    <ThemedText>Hectárea (ha)</ThemedText>
-                  </ThemedView>
-                </TouchableWithoutFeedback>
-
-                <TouchableWithoutFeedback onPress={() => setUnidadMedida("mz")}>
-                  <ThemedView
-                    style={[
-                      styles.checkboxContainer,
-                      { backgroundColor: colors.background },
-                    ]}
-                  >
-                    <Checkbox
-                      status={unidadMedida === "mz" ? "checked" : "unchecked"}
-                      color={colors.primary}
-                    />
-                    <ThemedText>Manzana (mz)</ThemedText>
-                  </ThemedView>
-                </TouchableWithoutFeedback>
-
-                <TouchableWithoutFeedback onPress={() => setUnidadMedida("m2")}>
-                  <ThemedView
-                    style={[
-                      styles.checkboxContainer,
-                      { backgroundColor: colors.background },
-                    ]}
-                  >
-                    <Checkbox
-                      status={unidadMedida === "m2" ? "checked" : "unchecked"}
-                      color={colors.primary}
-                    />
-                    <ThemedText>Metros cuadrados (m²)</ThemedText>
-                  </ThemedView>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback onPress={() => setUnidadMedida("ac")}>
-                  <ThemedView
-                    style={[
-                      styles.checkboxContainer,
-                      { backgroundColor: colors.background },
-                    ]}
-                  >
-                    <Checkbox
-                      status={unidadMedida === "ac" ? "checked" : "unchecked"}
-                      color={colors.primary}
-                    />
-                    <ThemedText>Acre (ac)</ThemedText>
-                  </ThemedView>
-                </TouchableWithoutFeedback>
+                <Checkbox
+                  status={unidadMedida === "ha" ? "checked" : "unchecked"}
+                  color={colors.primary}
+                />
+                <ThemedText>Hectárea (ha)</ThemedText>
               </ThemedView>
-            </ThemedView>
+            </TouchableWithoutFeedback>
 
-            <ThemedTextInput
-              placeholder={`Tamaño total (${unidadMedida})`}
-              icon="map-outline"
-              value={watch("tamaño_total_hectarea")}
-              onChangeText={(text) => setValue("tamaño_total_hectarea", text)}
-              keyboardType="numeric"
-            />
-            <ThemedText style={styles.conversionText}>
-              {watch("tamaño_total_hectarea") &&
-                !isNaN(parseFloat(watch("tamaño_total_hectarea"))) &&
-                `${convertirAHectareas(
-                  watch("tamaño_total_hectarea"),
-                  unidadMedida
-                )} ha`}
-            </ThemedText>
+            <TouchableWithoutFeedback onPress={() => setUnidadMedida("mz")}>
+              <ThemedView
+                style={[
+                  styles.checkboxContainer,
+                  { backgroundColor: colors.background },
+                ]}
+              >
+                <Checkbox
+                  status={unidadMedida === "mz" ? "checked" : "unchecked"}
+                  color={colors.primary}
+                />
+                <ThemedText>Manzana (mz)</ThemedText>
+              </ThemedView>
+            </TouchableWithoutFeedback>
 
-            <ThemedView
-              style={[styles.column, { backgroundColor: colors.background }]}
-            >
-              <ThemedTextInput
-                placeholder={`Área ganadería (${unidadMedida})`}
-                icon="layers-outline"
-                value={watch("area_ganaderia_hectarea")}
-                onChangeText={(text) =>
-                  setValue("area_ganaderia_hectarea", text)
-                }
-                keyboardType="numeric"
-              />
-              <ThemedText style={styles.conversionText}>
-                {watch("area_ganaderia_hectarea") &&
-                  !isNaN(parseFloat(watch("area_ganaderia_hectarea"))) &&
-                  `${convertirAHectareas(
-                    watch("area_ganaderia_hectarea"),
-                    unidadMedida
-                  )} ha`}
-              </ThemedText>
-            </ThemedView>
-
-            <ThemedPicker
-              items={explotacionItems}
-              icon="settings-outline"
-              placeholder="Tipo de explotación"
-              selectedValue={watch("tipo_explotacion")}
-              onValueChange={(value) => setValue("tipo_explotacion", value)}
-            />
-
-            <EspecieCantidadPicker
-              value={watch("especies_maneja") || []}
-              onChange={(val) => setValue("especies_maneja", val)}
-              cantidadTotal={Number(watch("cantidad_animales")) || 0}
-            />
-
-            <ThemedView style={{ marginBottom: 10, marginTop: 16 }}>
-              <ThemedButton
-                title="Guardar Finca"
-                onPress={handleSubmit(onSubmit)}
-                style={styles.submitButton}
-              />
-            </ThemedView>
-          </ScrollView>
+            <TouchableWithoutFeedback onPress={() => setUnidadMedida("m2")}>
+              <ThemedView
+                style={[
+                  styles.checkboxContainer,
+                  { backgroundColor: colors.background },
+                ]}
+              >
+                <Checkbox
+                  status={unidadMedida === "m2" ? "checked" : "unchecked"}
+                  color={colors.primary}
+                />
+                <ThemedText>Metros cuadrados (m²)</ThemedText>
+              </ThemedView>
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback onPress={() => setUnidadMedida("ac")}>
+              <ThemedView
+                style={[
+                  styles.checkboxContainer,
+                  { backgroundColor: colors.background },
+                ]}
+              >
+                <Checkbox
+                  status={unidadMedida === "ac" ? "checked" : "unchecked"}
+                  color={colors.primary}
+                />
+                <ThemedText>Acre (ac)</ThemedText>
+              </ThemedView>
+            </TouchableWithoutFeedback>
+          </ThemedView>
         </ThemedView>
-      </TouchableWithoutFeedback>
+
+        <ThemedTextInput
+          placeholder={`Tamaño total (${unidadMedida})`}
+          icon="map-outline"
+          value={watch("tamaño_total_hectarea")}
+          onChangeText={(text) => setValue("tamaño_total_hectarea", text)}
+          keyboardType="numeric"
+        />
+        <ThemedText style={styles.conversionText}>
+          {watch("tamaño_total_hectarea") &&
+            !isNaN(parseFloat(watch("tamaño_total_hectarea"))) &&
+            `${convertirAHectareas(
+              watch("tamaño_total_hectarea"),
+              unidadMedida
+            )} ha`}
+        </ThemedText>
+
+        <ThemedView
+          style={[styles.column, { backgroundColor: colors.background }]}
+        >
+          <ThemedTextInput
+            placeholder={`Área ganadería (${unidadMedida})`}
+            icon="layers-outline"
+            value={watch("area_ganaderia_hectarea")}
+            onChangeText={(text) => setValue("area_ganaderia_hectarea", text)}
+            keyboardType="numeric"
+          />
+          <ThemedText style={styles.conversionText}>
+            {watch("area_ganaderia_hectarea") &&
+              !isNaN(parseFloat(watch("area_ganaderia_hectarea"))) &&
+              `${convertirAHectareas(
+                watch("area_ganaderia_hectarea"),
+                unidadMedida
+              )} ha`}
+          </ThemedText>
+        </ThemedView>
+
+        <ThemedView style={styles.sectionContainer}>
+          <ThemedText style={styles.sectionTitle}>
+            Tipo de explotacion
+          </ThemedText>
+          {TipoExplotacion.map((explotacion) => (
+            <ThemedCheckbox
+              key={explotacion.id}
+              label={explotacion.explotacion}
+              value={explotacion.explotacion}
+              onPress={handleAlimentoChange}
+              isSelected={explotacionSeleccionada.includes(
+                explotacion.explotacion
+              )}
+            />
+          ))}
+        </ThemedView>
+
+        <EspecieCantidadPicker
+          value={watch("especies_maneja") || []}
+          onChange={(val) => setValue("especies_maneja", val)}
+          cantidadTotal={Number(watch("cantidad_animales")) || 0}
+        />
+
+        <ThemedView style={{ marginBottom: 10, marginTop: 16 }}>
+          <ThemedButton
+            title="Guardar Finca"
+            onPress={handleSubmit(onSubmit)}
+            style={styles.submitButton}
+          />
+        </ThemedView>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 };
@@ -482,6 +495,21 @@ const styles = StyleSheet.create({
     color: "#666",
     marginTop: 4,
     marginLeft: 8,
+  },
+  sectionContainer: {
+    marginBottom: 15,
+    width: "100%",
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 10,
+    color: "#333",
+  },
+  errorText: {
+    color: "red",
+    fontSize: 12,
+    marginTop: 5,
   },
 });
 

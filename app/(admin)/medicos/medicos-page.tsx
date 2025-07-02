@@ -78,7 +78,7 @@ const MedicosPage = () => {
 
       {isLoading ? (
         <View style={styles.loaderContainer}>
-          <ActivityIndicator size="large" color={colors.primary} />
+          <ActivityIndicator size="large" />
         </View>
       ) : (
         <FlatList
@@ -96,9 +96,7 @@ const MedicosPage = () => {
           onEndReachedThreshold={0.5}
           ListFooterComponent={() => (
             <ThemedView style={styles.footer}>
-              {isFetchingNextPage && (
-                <ActivityIndicator size="small" color={colors.primary} />
-              )}
+              {isFetchingNextPage && <ActivityIndicator size="small" />}
               {!hasNextPage && allMedicos.length > 0 && (
                 <ThemedText style={styles.noMoreText}>
                   No hay más médicos para mostrar

@@ -14,7 +14,7 @@ export default function Index() {
   if (status === "checking") {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator />
+        <ActivityIndicator size="large" />
       </View>
     );
   }
@@ -32,7 +32,9 @@ export default function Index() {
   }
 
   if (user?.role.name === "Veterinario") {
-    return <Redirect href="/(veterinario)/home" />;
+    return (
+      <Redirect href="/(veterinario)/citas-veterinario/citas-pendientes" />
+    );
   }
 
   return <Redirect href="/(user)/citas/home" />;

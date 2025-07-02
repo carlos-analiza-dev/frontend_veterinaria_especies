@@ -10,6 +10,7 @@ import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import { RouteProp } from "@react-navigation/native";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
+import { useNavigation } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
@@ -33,6 +34,7 @@ interface DetailsPaisProps {
 const PaisDetailsPage = ({ route }: DetailsPaisProps) => {
   const { paisId } = route.params;
   const [isEditing, setIsEditing] = useState(false);
+  const navigation = useNavigation();
   const queryClient = useQueryClient();
   const { colors } = useTheme();
   const { data: pais, isLoading: cargando, isError } = usePaisesById(paisId);
@@ -71,6 +73,7 @@ const PaisDetailsPage = ({ route }: DetailsPaisProps) => {
       queryClient.invalidateQueries({ queryKey: ["pais", paisId] });
       queryClient.invalidateQueries({ queryKey: ["paises"] });
       setIsEditing(false);
+      navigation.goBack();
     },
     onError: (error) => {
       if (isAxiosError(error)) {

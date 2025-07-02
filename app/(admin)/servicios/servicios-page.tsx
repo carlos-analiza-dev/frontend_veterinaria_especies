@@ -7,8 +7,14 @@ import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import { useNavigation } from "expo-router";
 import React, { useState } from "react";
-import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
-import { ActivityIndicator, useTheme } from "react-native-paper";
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  View,
+} from "react-native";
+import { useTheme } from "react-native-paper";
 import ModalAddService from "./components/ModalAddService";
 
 const ServicioPageAdmin = () => {
@@ -43,7 +49,7 @@ const ServicioPageAdmin = () => {
           alignContent: "center",
         }}
       >
-        <ActivityIndicator />
+        <ActivityIndicator size="large" />
       </View>
     );
   }

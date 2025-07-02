@@ -11,7 +11,7 @@ export interface Finca {
   abreviatura: string;
   tamaño_total_hectarea: string;
   area_ganaderia_hectarea: string;
-  tipo_explotacion: string;
+  tipo_explotacion: TipoExplotacion[];
   especies_maneja: EspeciesManeja[];
   fecha_registro: string;
   isActive: boolean;
@@ -24,7 +24,6 @@ export interface Departamento {
   id: string;
   nombre: string;
   isActive: boolean;
-  municipios?: Departamento[];
 }
 
 export interface EspeciesManeja {
@@ -38,30 +37,13 @@ export interface Propietario {
   name: string;
   identificacion: string;
   direccion: string;
+  sexo: string;
   telefono: string;
   isActive: boolean;
   isAuthorized: boolean;
   createdAt: Date;
-  role: Role;
-  pais: Pais;
-  departamento: Departamento;
-  municipio: Departamento;
 }
 
-export interface Pais {
-  id: string;
-  nombre: string;
-  code: string;
-  code_phone: string;
-  nombre_moneda: string;
-  simbolo_moneda: string;
-  nombre_documento: string;
-  isActive: boolean;
-}
-
-export interface Role {
-  id: string;
-  name: string;
-  description: string;
-  isActive: boolean;
+export interface TipoExplotacion {
+  tipo_explotacion: string;
 }

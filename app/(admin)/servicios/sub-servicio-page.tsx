@@ -8,12 +8,19 @@ import { UsersStackParamList } from "@/presentation/navigation/types";
 import ThemedButton from "@/presentation/theme/components/ThemedButton";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
+import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import { RouteProp } from "@react-navigation/native";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import React, { useState } from "react";
-import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
-import { ActivityIndicator, useTheme } from "react-native-paper";
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  View,
+} from "react-native";
+import { useTheme } from "react-native-paper";
 import Toast from "react-native-toast-message";
 import CardSubServicios from "./components/CardSubServicios";
 import ModalAddSubServices from "./components/ModalAddSubServices";
@@ -30,6 +37,7 @@ interface DetailsSubServicioProps {
 const SubServiciosPage = ({ route }: DetailsSubServicioProps) => {
   const { servicioId, nombre } = route.params;
   const { colors } = useTheme();
+  const colorPrimary = useThemeColor({}, "primary");
   const queryClient = useQueryClient();
   const [modalVisible, setModalVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -232,8 +240,8 @@ const SubServiciosPage = ({ route }: DetailsSubServicioProps) => {
           <RefreshControl
             refreshing={isRefetching}
             onRefresh={handleRefresh}
-            colors={[colors.primary]}
-            tintColor={colors.primary}
+            colors={[colorPrimary]}
+            tintColor={colorPrimary}
           />
         }
       />

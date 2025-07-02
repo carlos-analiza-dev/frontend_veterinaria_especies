@@ -124,6 +124,7 @@ const UsersScreenAdmin = () => {
             refreshing={isRefetching}
             onRefresh={onRefresh}
             colors={[colorPrimary]}
+            tintColor={colorPrimary}
           />
         }
         onEndReached={loadMore}

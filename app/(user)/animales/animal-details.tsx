@@ -18,9 +18,11 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { RouteProp } from "@react-navigation/native";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
+import { useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
+  ActivityIndicator,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -31,7 +33,7 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
-import { ActivityIndicator, Switch, useTheme } from "react-native-paper";
+import { Switch, useTheme } from "react-native-paper";
 import Toast from "react-native-toast-message";
 
 type RouteAnimalProps = RouteProp<UsersStackParamList, "AnimalDetails">;
@@ -43,6 +45,7 @@ interface EditarAnimalProps {
 const AnimalDetailsPage = ({ route }: EditarAnimalProps) => {
   const { animalId } = route.params;
   const { user } = useAuthStore();
+  const navigation = useNavigation();
   const userId = user?.id;
   const { colors } = useTheme();
   const { height, width } = useWindowDimensions();
@@ -215,6 +218,7 @@ const AnimalDetailsPage = ({ route }: EditarAnimalProps) => {
       });
       queryClient.invalidateQueries({ queryKey: ["animales-propietario"] });
       queryClient.invalidateQueries({ queryKey: ["animal-id", animalId] });
+      navigation.goBack();
     },
     onError: (error) => {
       if (isAxiosError(error)) {
@@ -298,7 +302,7 @@ const AnimalDetailsPage = ({ route }: EditarAnimalProps) => {
   if (!animalData?.data) {
     return (
       <ThemedView style={styles.container}>
-        <ActivityIndicator />
+        <ActivityIndicator size={"large"} />
       </ThemedView>
     );
   }

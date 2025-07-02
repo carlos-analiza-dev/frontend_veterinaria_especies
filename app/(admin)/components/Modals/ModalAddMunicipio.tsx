@@ -3,9 +3,8 @@ import { Municipio } from "@/core/municipios/interfaces/response-municipios.inte
 import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 import {
-  ActivityIndicator,
   Button,
   DataTable,
   HelperText,

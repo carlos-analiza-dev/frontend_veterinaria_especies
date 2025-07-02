@@ -60,7 +60,7 @@ const LoginScreen = () => {
           router.replace("/(secretario)/home");
           break;
         case "Veterinario":
-          router.replace("/(veterinario)/home");
+          router.replace("/(veterinario)/citas-veterinario/citas-pendientes");
           break;
         default:
           Toast.show({

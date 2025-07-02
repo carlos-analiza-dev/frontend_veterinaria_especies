@@ -1,4 +1,5 @@
 import { Servicio } from "@/core/servicios/interfaces/response-servicios.interface";
+import ThemedButton from "@/presentation/theme/components/ThemedButton";
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { Badge, Card, Text, useTheme } from "react-native-paper";
@@ -47,6 +48,11 @@ const CardServiceUsers = ({ services, onPress }: Props) => {
         >
           {services.descripcion}
         </Text>
+        <ThemedButton
+          onPress={onPress}
+          title="Agendar Cita"
+          icon="arrow-forward-outline"
+        />
       </Card.Content>
     </Card>
   );

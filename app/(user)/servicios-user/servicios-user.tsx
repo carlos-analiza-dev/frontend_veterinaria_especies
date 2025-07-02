@@ -5,8 +5,14 @@ import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import { useNavigation } from "expo-router";
 import React, { useState } from "react";
-import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
-import { ActivityIndicator, useTheme } from "react-native-paper";
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  View,
+} from "react-native";
+import { useTheme } from "react-native-paper";
 import CardServiceUsers from "./components/CardServiceUsers";
 
 const ServicesUser = () => {
@@ -24,46 +30,49 @@ const ServicesUser = () => {
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await refetch();
-    setRefreshing(false);
+    try {
+      await refetch();
+    } catch (error) {
+      setRefreshing(false);
+    }
   };
 
   if (isLoading && !refreshing) {
     return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          alignContent: "center",
-        }}
-      >
-        <ActivityIndicator size="large" />
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={primary} />
       </View>
     );
   }
 
-  if (isError || servicios?.length === 0) {
+  if (isError) {
     return (
-      <ThemedView
-        style={[styles.container, { backgroundColor: colors.background }]}
-      >
+      <ThemedView style={styles.errorContainer}>
         <MessageError
-          titulo="No se encontraron servicios"
-          descripcion=" No se encontraron datos de los servicios en este módulo. Por favor, verifica más tarde o vuelve a intentar."
+          titulo="Error al cargar servicios"
+          descripcion="Ocurrió un problema al obtener los servicios. Por favor, inténtalo de nuevo más tarde."
+        />
+      </ThemedView>
+    );
+  }
+
+  if (servicios?.length === 0) {
+    return (
+      <ThemedView style={styles.emptyContainer}>
+        <MessageError
+          titulo="No hay servicios disponibles"
+          descripcion="Actualmente no hay servicios activos. Por favor, verifica más tarde."
         />
       </ThemedView>
     );
   }
 
   return (
-    <ThemedView
-      style={[styles.container, { backgroundColor: colors.background }]}
-    >
+    <ThemedView style={styles.container}>
       <FlatList
         data={servicios}
         renderItem={({ item }) => (
-          <View style={{ marginBottom: 40, marginTop: 10 }}>
+          <View style={styles.cardContainer}>
             <CardServiceUsers
               services={item}
               onPress={() =>
@@ -83,14 +92,26 @@ const ServicesUser = () => {
             onRefresh={onRefresh}
             colors={[primary]}
             tintColor={primary}
+            progressViewOffset={20}
           />
         }
         ListHeaderComponent={
-          <View>
-            <ThemedText type="subtitle">Servicios - Analiza</ThemedText>
+          <View style={styles.header}>
+            <ThemedText type="title" style={styles.title}>
+              Nuestros servicios
+            </ThemedText>
+            <ThemedText style={styles.subtitle}>
+              Selecciona un servicio para agendar una cita
+            </ThemedText>
           </View>
         }
+        ListFooterComponent={<View style={styles.footer} />}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        initialNumToRender={5}
+        maxToRenderPerBatch={5}
+        windowSize={10}
+        removeClippedSubviews={true}
       />
     </ThemedView>
   );
@@ -100,13 +121,43 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    padding: 20,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    padding: 20,
+  },
   listContent: {
     paddingHorizontal: 16,
-    paddingTop: 16,
+    paddingBottom: 20,
   },
-  buttonWrapper: {
+  cardContainer: {
+    marginBottom: 24,
     marginTop: 8,
-    marginHorizontal: 16,
+  },
+  header: {
+    marginBottom: 16,
+    alignItems: "center",
+  },
+  title: {
+    marginBottom: 4,
+    fontWeight: "600",
+  },
+  subtitle: {
+    color: "#666",
+    textAlign: "center",
+  },
+  footer: {
+    height: 20,
   },
 });
 

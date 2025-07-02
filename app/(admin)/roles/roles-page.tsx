@@ -7,8 +7,14 @@ import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import React, { useCallback, useState } from "react";
-import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
-import { ActivityIndicator, Button, useTheme } from "react-native-paper";
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  View,
+} from "react-native";
+import { Button, useTheme } from "react-native-paper";
 import Toast from "react-native-toast-message";
 import CardRoles from "./components/CardRoles";
 import RoleCreationModal from "./components/RoleCreationModal";
@@ -95,7 +101,7 @@ const RolesPageAdmin = () => {
   if (isLoading) {
     return (
       <ThemedView style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={primary} />
+        <ActivityIndicator size="large" />
       </ThemedView>
     );
   }

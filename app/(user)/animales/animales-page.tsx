@@ -6,16 +6,24 @@ import { FAB } from "@/presentation/components/FAB";
 import MessageError from "@/presentation/components/MessageError";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import ButtonFilter from "@/presentation/theme/components/ui/ButtonFilter";
+import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import { useNavigation } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
-import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
-import { ActivityIndicator, useTheme } from "react-native-paper";
+import {
+  ActivityIndicator,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
+import { useTheme } from "react-native-paper";
 import AnimalCard from "./components/AnimalCard";
 
 const AnimalesPageGanadero = () => {
   const navigation = useNavigation();
   const { user } = useAuthStore();
   const { colors } = useTheme();
+  const colorPrimary = useThemeColor({}, "primary");
   const [fincaId, setFincaId] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
@@ -101,44 +109,43 @@ const AnimalesPageGanadero = () => {
     <ThemedView
       style={[styles.container, { backgroundColor: colors.background }]}
     >
+      <View style={styles.filterContainer}>
+        <Buscador
+          title="Buscar por identificador..."
+          setSearchTerm={setSearchTerm}
+          searchTerm={searchTerm}
+        />
+        <View style={styles.roleFilterContainer}>
+          <ButtonFilter
+            title="Mostrar todos"
+            onPress={() => setFincaId("")}
+            variant={fincaId === "" ? "primary" : "outline"}
+            style={styles.filterButton}
+            textStyle={styles.filterButtonText}
+          />
+          {fincas?.data.fincas.map((finca) => (
+            <ButtonFilter
+              key={finca.id}
+              title={finca.nombre_finca}
+              onPress={() => handleFincaPress(finca.id)}
+              variant={fincaId === finca.id ? "primary" : "outline"}
+              style={styles.filterButton}
+              textStyle={styles.filterButtonText}
+            />
+          ))}
+        </View>
+      </View>
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         refreshControl={
           <RefreshControl
             onRefresh={onRefresh}
             refreshing={isRefetching}
-            colors={[colors.primary]}
-            tintColor={colors.primary}
+            colors={[colorPrimary]}
+            tintColor={colorPrimary}
           />
         }
       >
-        <View style={styles.filterContainer}>
-          <Buscador
-            title="Buscar por identificador..."
-            setSearchTerm={setSearchTerm}
-            searchTerm={searchTerm}
-          />
-          <View style={styles.roleFilterContainer}>
-            <ButtonFilter
-              title="Mostrar todos"
-              onPress={() => setFincaId("")}
-              variant={fincaId === "" ? "primary" : "outline"}
-              style={styles.filterButton}
-              textStyle={styles.filterButtonText}
-            />
-            {fincas?.data.fincas.map((finca) => (
-              <ButtonFilter
-                key={finca.id}
-                title={finca.nombre_finca}
-                onPress={() => handleFincaPress(finca.id)}
-                variant={fincaId === finca.id ? "primary" : "outline"}
-                style={styles.filterButton}
-                textStyle={styles.filterButtonText}
-              />
-            ))}
-          </View>
-        </View>
-
         {animales?.data.length === 0 ? (
           <MessageError
             titulo="Sin animales"
@@ -175,7 +182,7 @@ const styles = StyleSheet.create({
     paddingBottom: 80,
   },
   filterContainer: {
-    marginBottom: 15,
+    padding: 16,
   },
   roleFilterContainer: {
     flexDirection: "row",

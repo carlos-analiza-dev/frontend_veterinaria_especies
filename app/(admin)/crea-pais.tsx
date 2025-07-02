@@ -6,6 +6,7 @@ import ThemedTextInput from "@/presentation/theme/components/ThemedTextInput";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
+import { useNavigation } from "expo-router";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
@@ -23,6 +24,7 @@ import Toast from "react-native-toast-message";
 const CrearPaisPage = () => {
   const { height } = useWindowDimensions();
   const queryClient = useQueryClient();
+  const navigation = useNavigation();
   const { colors } = useTheme();
   const {
     control,
@@ -55,6 +57,7 @@ const CrearPaisPage = () => {
       });
       queryClient.invalidateQueries({ queryKey: ["paises"] });
       reset();
+      navigation.goBack();
     },
     onError: (error) => {
       let errorMessage = "Ocurrió un error al crear el país";

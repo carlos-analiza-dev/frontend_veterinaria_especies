@@ -13,15 +13,13 @@ interface Props {
 }
 
 const Profile = ({ user, height, primary }: Props) => {
-  const avatarUrl =
-    "https://i.pravatar.cc/150?img=" + Math.floor(Math.random() * 70);
   return (
     <ThemedView style={styles.container}>
       <ThemedView style={[styles.header, { height: height * 0.2 }]}>
         <ThemedView style={[styles.avatarWrapper, { bottom: -50 }]}>
           <Avatar.Image
             size={100}
-            source={{ uri: avatarUrl }}
+            source={require("@/images/profile.png")}
             style={styles.avatarImage}
           />
         </ThemedView>

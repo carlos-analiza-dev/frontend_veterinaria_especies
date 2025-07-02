@@ -11,9 +11,11 @@ import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import { RouteProp } from "@react-navigation/native";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
+import { useNavigation } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
+  ActivityIndicator,
   FlatList,
   KeyboardAvoidingView,
   Platform,
@@ -23,13 +25,7 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
-import {
-  ActivityIndicator,
-  Checkbox,
-  Switch,
-  TextInput,
-  useTheme,
-} from "react-native-paper";
+import { Checkbox, Switch, TextInput, useTheme } from "react-native-paper";
 import Toast from "react-native-toast-message";
 import { ThemedText } from "../../../presentation/theme/components/ThemedText";
 
@@ -44,6 +40,7 @@ const DetailsMedico = ({ route }: DetailsMedicoProps) => {
   const { height, width } = useWindowDimensions();
   const { medicoId } = route.params;
   const queryClient = useQueryClient();
+  const navigation = useNavigation();
   const { data: veterinarios } = useGetVeterinarios();
   const { data: categorias } = useGetServiciosActivos();
   const { data: medico, isLoading, isError } = useGetMedicoById(medicoId);
@@ -106,6 +103,7 @@ const DetailsMedico = ({ route }: DetailsMedicoProps) => {
       });
       queryClient.invalidateQueries({ queryKey: ["medico-id", medicoId] }),
         queryClient.invalidateQueries({ queryKey: ["medicos"] });
+      navigation.goBack();
     },
     onError: (error) => {
       if (isAxiosError(error)) {

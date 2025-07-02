@@ -22,9 +22,6 @@ const UserCard: React.FC<UserCardProps> = ({ user, onPress }) => {
   const info = useThemeColor({}, "info");
   const warning = useThemeColor({}, "warning");
 
-  const avatarUrl =
-    "https://i.pravatar.cc/150?img=" + Math.floor(Math.random() * 70);
-
   const styles = StyleSheet.create({
     card: {
       backgroundColor: colors.background,
@@ -103,7 +100,7 @@ const UserCard: React.FC<UserCardProps> = ({ user, onPress }) => {
   return (
     <TouchableOpacity onPress={onPress} style={styles.card}>
       <ThemedView style={styles.avatarContainer}>
-        <Avatar.Image size={48} source={{ uri: avatarUrl }} />
+        <Avatar.Image size={48} source={require("@/images/profile.png")} />
       </ThemedView>
 
       <ThemedView style={styles.infoContainer}>

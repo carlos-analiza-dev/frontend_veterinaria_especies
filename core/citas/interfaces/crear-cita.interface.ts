@@ -10,4 +10,5 @@ export interface CrearCitaInterface {
   duracion: number;
   cantidadAnimales?: number;
   totalPagar: number;
+  estado?: string;
 }

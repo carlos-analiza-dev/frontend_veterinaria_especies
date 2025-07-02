@@ -18,6 +18,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { RouteProp } from "@react-navigation/native";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
+import { useNavigation } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
@@ -56,7 +57,7 @@ const AgregarCitaServicio = ({ route }: DetailsCitaServicioProps) => {
   const [filteredHours, setFilteredHours] = useState<HoraDisponibleItem[]>([]);
   const [duracion, setDuracion] = useState(1);
   const queryClient = useQueryClient();
-
+  const navigation = useNavigation();
   const {
     reset,
     setValue,
@@ -234,6 +235,7 @@ const AgregarCitaServicio = ({ route }: DetailsCitaServicioProps) => {
       });
       queryClient.invalidateQueries({ queryKey: ["citas-user"] });
       reset();
+      navigation.goBack();
     },
     onError: (error) => {
       if (isAxiosError(error)) {
@@ -246,7 +248,8 @@ const AgregarCitaServicio = ({ route }: DetailsCitaServicioProps) => {
 
         Toast.show({
           type: "error",
-          text1: errorMessage,
+          text1: "Error",
+          text2: errorMessage,
         });
       } else {
         Toast.show({

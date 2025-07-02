@@ -1,6 +1,7 @@
 import { CreateUser } from "@/core/users/accions/crear-usuario";
 import { CrearUsuario } from "@/core/users/interfaces/create-user.interface";
 import { sexosData } from "@/helpers/data/sexo";
+import { validateIdentification } from "@/helpers/funciones/validarIdentificacionUser";
 import useGetDeptosActivesByPais from "@/hooks/departamentos/useGetDeptosActivesByPais";
 import useGetMunicipiosActivosByDepto from "@/hooks/municipios/useGetMunicipiosActivosByDepto";
 import useGetPaisesActivos from "@/hooks/paises/useGetPaisesActivos";
@@ -13,7 +14,7 @@ import ThemedTextInput from "@/presentation/theme/components/ThemedTextInput";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
-import { router } from "expo-router";
+import { useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
@@ -30,31 +31,9 @@ const FormCreateUser = () => {
   const { colors } = useTheme();
   const { height } = useWindowDimensions();
   const queryClient = useQueryClient();
+  const navigation = useNavigation();
   const [codigoPais, setCodigoPais] = useState("");
   const [prefijoNumber, setPrefijoNumber] = useState("");
-
-  const ID_REGEX = {
-    HN: {
-      regex: /^\d{4}-\d{4}-\d{5}$/,
-      message: "Formato inválido. Use: xxxx-xxxx-xxxxx",
-      example: "Ejemplo: 0801-1999-01234",
-    },
-    SV: {
-      regex: /^\d{8}-\d{1}$/,
-      message: "Formato inválido. Use: xxxxxxxx-x",
-      example: "Ejemplo: 04210000-5",
-    },
-    GT: {
-      regex: /^\d{4}-\d{5}-\d{4}$/,
-      message: "Formato inválido. Use: xxxx-xxxxx-xxxx",
-      example: "Ejemplo: 1234-56789-0123",
-    },
-    PASSPORT: {
-      regex: /^[A-Za-z0-9]{6,20}$/,
-      message: "Formato inválido. Use 6-20 caracteres alfanuméricos",
-      example: "Ejemplo: AB123456",
-    },
-  };
 
   const {
     control,
@@ -133,27 +112,12 @@ const FormCreateUser = () => {
       label: sexo.sexo,
     })) || [];
 
-  const validateIdentification = (value: string, codigoPais: string) => {
-    if (!value) return "La identificación es requerida";
-
-    switch (codigoPais) {
-      case "HN":
-        return ID_REGEX.HN.regex.test(value) || ID_REGEX.HN.message;
-      case "SV":
-        return ID_REGEX.SV.regex.test(value) || ID_REGEX.SV.message;
-      case "GT":
-        return ID_REGEX.GT.regex.test(value) || ID_REGEX.GT.message;
-      default:
-        return true;
-    }
-  };
-
   const mutation = useMutation({
     mutationFn: CreateUser,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["usuarios-admin"] });
       Toast.show({ type: "success", text1: "Usuario creado exitosamente." });
-      router.push("/(admin)/users");
+      navigation.goBack();
     },
     onError: (error) => {
       if (isAxiosError(error)) {

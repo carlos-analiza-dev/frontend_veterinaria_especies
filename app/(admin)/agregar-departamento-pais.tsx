@@ -12,8 +12,8 @@ import { RouteProp } from "@react-navigation/native";
 import { useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import React, { useState } from "react";
-import { ScrollView, View } from "react-native";
-import { ActivityIndicator, Button, useTheme } from "react-native-paper";
+import { ActivityIndicator, ScrollView, View } from "react-native";
+import { Button, useTheme } from "react-native-paper";
 import Toast from "react-native-toast-message";
 import ModalAddDepto from "./components/Modals/ModalAddDepto";
 import ModalAddMunicipio from "./components/Modals/ModalAddMunicipio";
@@ -185,7 +185,7 @@ const AgregarDepartamentoPais = ({ route }: DetailsDeptoPaisProps) => {
       <View
         style={{ flex: 1, justifyContent: "center", alignContent: "center" }}
       >
-        <ActivityIndicator />
+        <ActivityIndicator size="large" />
       </View>
     );
   }

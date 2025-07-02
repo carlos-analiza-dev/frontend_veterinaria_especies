@@ -2,18 +2,25 @@ import { FAB } from "@/presentation/components/FAB";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import React, { useCallback, useEffect, useState } from "react";
-import { RefreshControl, ScrollView, StyleSheet } from "react-native";
-import { ActivityIndicator, useTheme } from "react-native-paper";
+import {
+  ActivityIndicator,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+} from "react-native";
+import { useTheme } from "react-native-paper";
 
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
 import { useAuthStore } from "@/presentation/auth/store/useAuthStore";
 import Buscador from "@/presentation/components/Buscador";
 import MessageError from "@/presentation/components/MessageError";
+import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import { useNavigation } from "expo-router";
 import CardFincas from "./components/CardFincas";
 
 const FincasPageGanaderos = () => {
   const { colors } = useTheme();
+  const colorPrimary = useThemeColor({}, "primary");
   const { user } = useAuthStore();
   const navigation = useNavigation();
   const [searchTerm, setSearchTerm] = useState("");
@@ -70,22 +77,24 @@ const FincasPageGanaderos = () => {
 
   return (
     <ThemedView style={{ flex: 1, backgroundColor: colors.background }}>
+      <ThemedView style={styles.searchContainer}>
+        <Buscador
+          title="Buscar finca por nombre..."
+          setSearchTerm={setSearchTerm}
+          searchTerm={searchTerm}
+        />
+      </ThemedView>
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         refreshControl={
           <RefreshControl
             refreshing={isRefetching}
             onRefresh={onRefresh}
-            colors={[colors.primary]}
-            tintColor={colors.primary}
+            colors={[colorPrimary]}
+            tintColor={colorPrimary}
           />
         }
       >
-        <Buscador
-          title="Buscar finca por nombre..."
-          setSearchTerm={setSearchTerm}
-          searchTerm={searchTerm}
-        />
         <ThemedText style={styles.title}>Mis Fincas</ThemedText>
 
         {fincas.data.fincas.map((finca) => (
@@ -125,6 +134,9 @@ const styles = StyleSheet.create({
   subtitle: {
     marginBottom: 16,
     color: "#666",
+  },
+  searchContainer: {
+    padding: 16,
   },
 });
 

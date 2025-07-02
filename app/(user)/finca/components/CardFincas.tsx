@@ -1,4 +1,6 @@
 import { Finca } from "@/core/fincas/interfaces/response-fincasByPropietario.interface";
+import { getSpeciesIcon } from "@/helpers/funciones/getEspecies";
+import { getTipoExplotacionIcon } from "@/helpers/funciones/getExplotacion";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { useRef } from "react";
@@ -68,25 +70,6 @@ const CardFincas = ({ finca, onPress }: Props) => {
     return isActive ? "Activa" : "Inactiva";
   };
 
-  type AllowedIcons = "cow" | "horse" | "pig" | "bird" | "sheep" | "paw";
-
-  const getSpeciesIcon = (especie: string): AllowedIcons => {
-    switch (especie.toLowerCase()) {
-      case "bovina":
-        return "cow";
-      case "equina":
-        return "horse";
-      case "porcina":
-        return "pig";
-      case "aves":
-        return "bird";
-      case "caprinos":
-        return "sheep";
-      default:
-        return "paw";
-    }
-  };
-
   return (
     <TouchableWithoutFeedback
       onPressIn={handlePressIn}
@@ -150,15 +133,23 @@ const CardFincas = ({ finca, onPress }: Props) => {
               </ThemedText>
             </View>
 
-            <View style={styles.infoRow}>
-              <MaterialCommunityIcons
-                name="account-cowboy-hat"
-                size={20}
-                color={colors.onSurfaceVariant}
-              />
-              <ThemedText style={styles.infoText}>
-                {finca.tipo_explotacion}
-              </ThemedText>
+            <View style={styles.speciesContainer}>
+              <ThemedText style={styles.infoText}>Explotacion:</ThemedText>
+              <View style={styles.speciesList}>
+                {finca.tipo_explotacion.map(({ tipo_explotacion }, index) => (
+                  <View key={index} style={styles.speciesItem}>
+                    <MaterialCommunityIcons
+                      name={getTipoExplotacionIcon(tipo_explotacion)}
+                      size={16}
+                      color={colors.onSurfaceVariant}
+                      style={styles.speciesIcon}
+                    />
+                    <ThemedText style={styles.speciesText}>
+                      {tipo_explotacion}
+                    </ThemedText>
+                  </View>
+                ))}
+              </View>
             </View>
 
             <View style={styles.infoRow}>

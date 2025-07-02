@@ -22,9 +22,6 @@ const CardMedicos = ({ medico, onPress }: Props) => {
   const warning = useThemeColor({}, "warning");
   const primary = useThemeColor({}, "primary");
 
-  const avatarUrl =
-    "https://i.pravatar.cc/150?img=" + Math.floor(Math.random() * 70);
-
   const styles = StyleSheet.create({
     card: {
       backgroundColor: colors.background,
@@ -133,7 +130,7 @@ const CardMedicos = ({ medico, onPress }: Props) => {
     <TouchableOpacity onPress={onPress} style={styles.card}>
       <View style={styles.header}>
         <View style={styles.avatarContainer}>
-          <Avatar.Image size={60} source={{ uri: avatarUrl }} />
+          <Avatar.Image size={60} source={require("@/images/profile.png")} />
         </View>
 
         <View style={styles.infoContainer}>

@@ -26,6 +26,7 @@ export type UsersStackParamList = {
   CrearCita: undefined;
   ServiciosUser: undefined;
   AgregarCitaServicio: { servicioId: string; nombre_servicio: string };
+  CitasPendientesVeterinario: undefined;
 };
 
 declare global {

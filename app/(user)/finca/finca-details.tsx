@@ -3,7 +3,6 @@ import useFincasById from "@/hooks/fincas/useFincasById";
 import { UsersStackParamList } from "@/presentation/navigation/types";
 import EspecieCantidadPicker from "@/presentation/theme/components/EspecieCantidadPicker";
 import ThemedButton from "@/presentation/theme/components/ThemedButton";
-import ThemedPicker from "@/presentation/theme/components/ThemedPicker";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import ThemedTextInput from "@/presentation/theme/components/ThemedTextInput";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
@@ -11,6 +10,7 @@ import { RouteProp } from "@react-navigation/native";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import {
+  ActivityIndicator,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -18,13 +18,16 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
 } from "react-native";
-import { ActivityIndicator, useTheme } from "react-native-paper";
+import { useTheme } from "react-native-paper";
 
 import { ActualizarFinca } from "@/core/fincas/accions/update-finca";
 import { CrearFinca } from "@/core/fincas/interfaces/crear-finca.interface";
+import { convertirAHectareas } from "@/helpers/funciones/convertirHectareas";
 import MessageError from "@/presentation/components/MessageError";
+import ThemedCheckbox from "@/presentation/theme/components/ThemedCheckbox";
 import { useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
+import { useNavigation } from "expo-router";
 import { Checkbox } from "react-native-paper";
 import Toast from "react-native-toast-message";
 
@@ -38,11 +41,15 @@ const FincaDetailsPage = ({ route }: DetailsFincaProps) => {
   const { fincaId } = route.params;
   const { colors } = useTheme();
   const queryClient = useQueryClient();
+  const navigation = useNavigation();
   const { data: finca, isLoading, isError } = useFincasById(fincaId);
   const [isEditing, setIsEditing] = useState(false);
   const [unidadMedida, setUnidadMedida] = useState<
     "ha" | "mz" | "m2" | "km2" | "ac" | "ft2" | "yd2"
   >("ha");
+  const [explotacionSeleccionada, setExplotacionSeleccionada] = useState<
+    string[]
+  >([]);
 
   const { handleSubmit, watch, setValue, reset } = useForm<CrearFinca>();
 
@@ -60,35 +67,14 @@ const FincaDetailsPage = ({ route }: DetailsFincaProps) => {
         especies_maneja: fincaData.especies_maneja,
       });
       setUnidadMedida("ha");
+      if (finca?.data.tipo_explotacion) {
+        const explotacion = finca.data.tipo_explotacion.map(
+          (a) => a.tipo_explotacion
+        );
+        setExplotacionSeleccionada(explotacion);
+      }
     }
   }, [finca, isEditing, reset]);
-
-  const explotacionItems = TipoExplotacion.map((exp) => ({
-    label: exp.explotacion,
-    value: exp.explotacion,
-  }));
-
-  const convertirAHectareas = (valor: string, unidad: string): string => {
-    const num = parseFloat(valor);
-    if (isNaN(num)) return "0";
-
-    switch (unidad) {
-      case "mz":
-        return (num * 0.7).toString();
-      case "m2":
-        return (num * 0.0001).toString();
-      case "km2":
-        return (num * 100).toString();
-      case "ac":
-        return (num * 0.4047).toString();
-      case "ft2":
-        return (num * 0.0000092903).toString();
-      case "yd2":
-        return (num * 0.0000836127).toString();
-      default:
-        return valor;
-    }
-  };
 
   const onSubmit = async (data: CrearFinca) => {
     try {
@@ -127,6 +113,7 @@ const FincaDetailsPage = ({ route }: DetailsFincaProps) => {
         setIsEditing(false);
         reset();
         queryClient.invalidateQueries({ queryKey: ["fincas-propietario"] });
+        navigation.goBack();
       }
     } catch (error) {
       if (isAxiosError(error)) {
@@ -140,10 +127,25 @@ const FincaDetailsPage = ({ route }: DetailsFincaProps) => {
     }
   };
 
+  const handleAlimentoChange = (alimento: string) => {
+    const nuevasExplotacion = [...explotacionSeleccionada];
+    if (nuevasExplotacion.includes(alimento)) {
+      const index = nuevasExplotacion.indexOf(alimento);
+      nuevasExplotacion.splice(index, 1);
+    } else {
+      nuevasExplotacion.push(alimento);
+    }
+    setExplotacionSeleccionada(nuevasExplotacion);
+    setValue(
+      "tipo_explotacion",
+      nuevasExplotacion.map((a) => ({ tipo_explotacion: a }))
+    );
+  };
+
   if (isLoading) {
     return (
       <ThemedView style={styles.container}>
-        <ActivityIndicator />
+        <ActivityIndicator size="large" />
       </ThemedView>
     );
   }
@@ -269,13 +271,22 @@ const FincaDetailsPage = ({ route }: DetailsFincaProps) => {
                 keyboardType="numeric"
               />
 
-              <ThemedPicker
-                items={explotacionItems}
-                icon="settings-outline"
-                placeholder="Tipo de explotación"
-                selectedValue={watch("tipo_explotacion")}
-                onValueChange={(value) => setValue("tipo_explotacion", value)}
-              />
+              <ThemedView style={styles.sectionContainer}>
+                <ThemedText style={styles.sectionTitle}>
+                  Tipo de explotacion
+                </ThemedText>
+                {TipoExplotacion.map((explotacion) => (
+                  <ThemedCheckbox
+                    key={explotacion.id}
+                    label={explotacion.explotacion}
+                    value={explotacion.explotacion}
+                    onPress={handleAlimentoChange}
+                    isSelected={explotacionSeleccionada.includes(
+                      explotacion.explotacion
+                    )}
+                  />
+                ))}
+              </ThemedView>
 
               <EspecieCantidadPicker
                 value={watch("especies_maneja") || []}
@@ -361,6 +372,21 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginRight: 16,
     marginVertical: 4,
+  },
+  sectionContainer: {
+    marginBottom: 15,
+    width: "100%",
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 10,
+    color: "#333",
+  },
+  errorText: {
+    color: "red",
+    fontSize: 12,
+    marginTop: 5,
   },
 });
 

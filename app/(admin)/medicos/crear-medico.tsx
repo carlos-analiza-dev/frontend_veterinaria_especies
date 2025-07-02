@@ -9,6 +9,7 @@ import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
+import { useNavigation } from "expo-router";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import {
@@ -28,6 +29,7 @@ const CrearMedicoPage = () => {
   const { height, width } = useWindowDimensions();
   const { colors } = useTheme();
   const queryClient = useQueryClient();
+  const navigation = useNavigation();
   const { data: veterinarios } = useGetVeterinarios();
   const { data: categorias } = useGetServiciosActivos();
   const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
@@ -72,6 +74,7 @@ const CrearMedicoPage = () => {
       reset();
       setSelectedAreas([]);
       queryClient.invalidateQueries({ queryKey: ["medicos"] });
+      navigation.goBack();
     },
     onError: (error) => {
       if (isAxiosError(error)) {

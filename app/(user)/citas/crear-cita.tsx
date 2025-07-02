@@ -17,6 +17,7 @@ import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
+import { useNavigation } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
@@ -39,6 +40,7 @@ interface HoraDisponibleItem {
 
 const CrearCita = () => {
   const { user } = useAuthStore();
+  const navigation = useNavigation();
   const userId = user?.id || "";
   const paisId = user?.pais.id || "";
   const { colors } = useTheme();
@@ -234,6 +236,7 @@ const CrearCita = () => {
       });
       queryClient.invalidateQueries({ queryKey: ["citas-user"] });
       reset();
+      navigation.goBack();
     },
     onError: (error) => {
       if (isAxiosError(error)) {
@@ -246,7 +249,8 @@ const CrearCita = () => {
 
         Toast.show({
           type: "error",
-          text1: errorMessage,
+          text1: "Error",
+          text2: errorMessage,
         });
       } else {
         Toast.show({

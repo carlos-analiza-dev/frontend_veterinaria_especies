@@ -14,6 +14,7 @@ import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
+import { useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
@@ -34,6 +35,7 @@ const CrearAnimal = () => {
   const { user } = useAuthStore();
   const { colors } = useTheme();
   const { height, width } = useWindowDimensions();
+  const navigation = useNavigation();
   const queryClient = useQueryClient();
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showIdentifierHelp, setShowIdentifierHelp] = useState(false);
@@ -164,6 +166,7 @@ const CrearAnimal = () => {
       queryClient.invalidateQueries({ queryKey: ["animales-propietario"] });
       reset();
       setAlimentosSeleccionados([]);
+      navigation.goBack();
     },
     onError: (error) => {
       if (isAxiosError(error)) {
