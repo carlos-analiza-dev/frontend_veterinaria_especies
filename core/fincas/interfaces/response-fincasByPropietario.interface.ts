@@ -8,6 +8,8 @@ export interface Finca {
   nombre_finca: string;
   cantidad_animales: number;
   ubicacion: string;
+  longitud: number;
+  latitud: number;
   abreviatura: string;
   tamaño_total_hectarea: string;
   area_ganaderia_hectarea: string;

@@ -288,42 +288,6 @@ const AgregarCitaServicio = ({ route }: DetailsCitaServicioProps) => {
             Información General
           </ThemedText>
 
-          <ThemedText style={styles.sectionTitle}>Fecha</ThemedText>
-          <ThemedView style={styles.dateInputContainer}>
-            <ThemedButton
-              icon="calendar"
-              onPress={() => setShowDatePicker(true)}
-              style={styles.dateIcon}
-            />
-          </ThemedView>
-          <ThemedTextInput
-            placeholder="Selecciona una fecha"
-            icon="calendar-outline"
-            value={watch("fecha")}
-            onFocus={() => setShowDatePicker(true)}
-            showSoftInputOnFocus={false}
-            error={errors.fecha?.message}
-            style={[styles.input, styles.dateInput]}
-          />
-
-          {showDatePicker && (
-            <DateTimePicker
-              value={
-                watch("fecha")
-                  ? new Date(
-                      Number(watch("fecha").split("-")[0]),
-                      Number(watch("fecha").split("-")[1]) - 1,
-                      Number(watch("fecha").split("-")[2])
-                    )
-                  : new Date()
-              }
-              mode="date"
-              display="spinner"
-              minimumDate={new Date()}
-              onChange={handleDateChange}
-            />
-          )}
-
           <ThemedText style={styles.sectionTitle}>Finca</ThemedText>
           <ThemedPicker
             items={allFincas}
@@ -375,6 +339,42 @@ const AgregarCitaServicio = ({ route }: DetailsCitaServicioProps) => {
             selectedValue={watch("medicoId")}
             onValueChange={(text) => setValue("medicoId", text)}
           />
+
+          <ThemedText style={styles.sectionTitle}>Fecha</ThemedText>
+          <ThemedView style={styles.dateInputContainer}>
+            <ThemedButton
+              icon="calendar"
+              onPress={() => setShowDatePicker(true)}
+              style={styles.dateIcon}
+            />
+          </ThemedView>
+          <ThemedTextInput
+            placeholder="Selecciona una fecha"
+            icon="calendar-outline"
+            value={watch("fecha")}
+            onFocus={() => setShowDatePicker(true)}
+            showSoftInputOnFocus={false}
+            error={errors.fecha?.message}
+            style={[styles.input, styles.dateInput]}
+          />
+
+          {showDatePicker && (
+            <DateTimePicker
+              value={
+                watch("fecha")
+                  ? new Date(
+                      Number(watch("fecha").split("-")[0]),
+                      Number(watch("fecha").split("-")[1]) - 1,
+                      Number(watch("fecha").split("-")[2])
+                    )
+                  : new Date()
+              }
+              mode="date"
+              display="spinner"
+              minimumDate={new Date()}
+              onChange={handleDateChange}
+            />
+          )}
 
           {filteredHours.length > 0 ? (
             <>

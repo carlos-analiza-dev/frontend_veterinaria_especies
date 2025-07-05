@@ -6,6 +6,7 @@ import useGetDeptosActivesByPais from "@/hooks/departamentos/useGetDeptosActives
 import useGetMunicipiosActivosByDepto from "@/hooks/municipios/useGetMunicipiosActivosByDepto";
 import useGetPaisesActivos from "@/hooks/paises/useGetPaisesActivos";
 import { useAuthStore } from "@/presentation/auth/store/useAuthStore";
+import MapaSeleccionDireccion from "@/presentation/components/mapas/MapaSeleccionDireccion";
 import EspecieCantidadPicker from "@/presentation/theme/components/EspecieCantidadPicker";
 import ThemedButton from "@/presentation/theme/components/ThemedButton";
 import ThemedCheckbox from "@/presentation/theme/components/ThemedCheckbox";
@@ -25,12 +26,14 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
   useWindowDimensions,
+  View,
 } from "react-native";
 import { Checkbox, useTheme } from "react-native-paper";
 import Toast from "react-native-toast-message";
 
 const CrearFincaPage = () => {
   const queryClient = useQueryClient();
+  const [modalVisible, setModalVisible] = useState(false);
   const { height } = useWindowDimensions();
   const navigation = useNavigation();
   const [unidadMedida, setUnidadMedida] = useState<
@@ -151,6 +154,8 @@ const CrearFincaPage = () => {
         nombre_finca: data.nombre_finca,
         cantidad_animales: Number(data.cantidad_animales),
         ubicacion: data.ubicacion,
+        longitud: data.longitud,
+        latitud: data.latitud,
         abreviatura: data.abreviatura,
         departamentoId: data.departamentoId,
         municipioId: data.municipioId,
@@ -220,19 +225,36 @@ const CrearFincaPage = () => {
         ]}
         keyboardShouldPersistTaps="handled"
       >
+        <ThemedTextInput
+          placeholder="Nombre finca"
+          icon="home-outline"
+          value={watch("nombre_finca")}
+          onChangeText={(text) => setValue("nombre_finca", text)}
+        />
+        <TouchableWithoutFeedback onPress={() => setModalVisible(true)}>
+          <View pointerEvents="box-only">
+            <ThemedTextInput
+              placeholder="Ubicación"
+              icon="location-outline"
+              value={watch("ubicacion")}
+              editable={false}
+            />
+          </View>
+        </TouchableWithoutFeedback>
+
+        <MapaSeleccionDireccion
+          visible={modalVisible}
+          onClose={() => setModalVisible(false)}
+          onLocationSelect={(direccion, coords) => {
+            setValue("ubicacion", direccion);
+            setValue("latitud", coords.latitude);
+            setValue("longitud", coords.longitude);
+          }}
+        />
+
         <ThemedView
           style={[styles.row, { backgroundColor: colors.background }]}
         >
-          <ThemedView
-            style={[styles.column, { backgroundColor: colors.background }]}
-          >
-            <ThemedTextInput
-              placeholder="Nombre finca"
-              icon="home-outline"
-              value={watch("nombre_finca")}
-              onChangeText={(text) => setValue("nombre_finca", text)}
-            />
-          </ThemedView>
           <ThemedView
             style={[styles.column, { backgroundColor: colors.background }]}
           >
@@ -244,21 +266,6 @@ const CrearFincaPage = () => {
               onChangeText={(text) =>
                 setValue("cantidad_animales", Number(text))
               }
-            />
-          </ThemedView>
-        </ThemedView>
-
-        <ThemedView
-          style={[styles.row, { backgroundColor: colors.background }]}
-        >
-          <ThemedView
-            style={[styles.column, { backgroundColor: colors.background }]}
-          >
-            <ThemedTextInput
-              placeholder="Ubicación"
-              icon="location-outline"
-              value={watch("ubicacion")}
-              onChangeText={(text) => setValue("ubicacion", text)}
             />
           </ThemedView>
           <ThemedView
