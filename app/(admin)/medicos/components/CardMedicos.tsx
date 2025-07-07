@@ -181,11 +181,17 @@ const CardMedicos = ({ medico, onPress }: Props) => {
 
       <ThemedText style={styles.sectionTitle}>Áreas de trabajo</ThemedText>
       <View style={styles.areasContainer}>
-        {medico.areas_trabajo.map((area) => (
-          <View key={area.id} style={styles.areaBadge}>
-            <ThemedText style={styles.areaText}>{area.nombre}</ThemedText>
+        {medico.areas_trabajo.length > 0 ? (
+          medico.areas_trabajo.map((area) => (
+            <View key={area.id} style={styles.areaBadge}>
+              <ThemedText style={styles.areaText}>{area.nombre}</ThemedText>
+            </View>
+          ))
+        ) : (
+          <View style={styles.areaBadge}>
+            <ThemedText style={styles.areaText}>Sin área asignada</ThemedText>
           </View>
-        ))}
+        )}
       </View>
 
       <View style={styles.statusContainer}>

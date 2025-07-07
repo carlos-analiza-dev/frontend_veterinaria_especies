@@ -8,6 +8,7 @@ import { UsersStackParamList } from "@/presentation/navigation/types";
 import ThemedButton from "@/presentation/theme/components/ThemedButton";
 import ThemedPicker from "@/presentation/theme/components/ThemedPicker";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
+import { FontAwesome } from "@expo/vector-icons";
 import { RouteProp } from "@react-navigation/native";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
@@ -16,7 +17,6 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   ActivityIndicator,
-  FlatList,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -44,7 +44,8 @@ const DetailsMedico = ({ route }: DetailsMedicoProps) => {
   const { data: veterinarios } = useGetVeterinarios();
   const { data: categorias } = useGetServiciosActivos();
   const { data: medico, isLoading, isError } = useGetMedicoById(medicoId);
-  const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
+  const [selectedSubservices, setSelectedSubservices] = useState<string[]>([]);
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
   const {
     handleSubmit,
@@ -56,40 +57,45 @@ const DetailsMedico = ({ route }: DetailsMedicoProps) => {
 
   useEffect(() => {
     if (medico) {
-      const areasIds = medico.areas_trabajo.map((area) => area.id);
+      const subServicioIds = medico.areas_trabajo
+        .filter((area) =>
+          categorias?.some((cat) =>
+            cat.subServicios.some((sub) => sub.id === area.id)
+          )
+        )
+        .map((area) => area.id);
       reset({
         anios_experiencia: medico.anios_experiencia,
-        areas_trabajo: areasIds,
+        areas_trabajo: subServicioIds,
         especialidad: medico.especialidad,
         numero_colegiado: medico.numero_colegiado,
         universidad_formacion: medico.universidad_formacion,
         usuarioId: medico?.usuario?.id || "",
         isActive: medico.isActive,
       });
-      setSelectedAreas(areasIds);
+      setSelectedSubservices(subServicioIds);
     }
-  }, [medico]);
+  }, [medico, categorias, reset]);
 
-  const handleAreaSelection = (areaId: string) => {
-    setSelectedAreas((prev) => {
-      const newSelection = prev.includes(areaId)
-        ? prev.filter((id) => id !== areaId)
-        : [...prev, areaId];
+  const handleSubserviceSelection = (subserviceId: string) => {
+    setSelectedSubservices((prev) => {
+      const newSelection = prev.includes(subserviceId)
+        ? prev.filter((id) => id !== subserviceId)
+        : [...prev, subserviceId];
+
       setValue("areas_trabajo", newSelection, { shouldValidate: true });
       return newSelection;
     });
+  };
+
+  const toggleCategoryExpand = (categoryId: string) => {
+    setExpandedCategory((prev) => (prev === categoryId ? null : categoryId));
   };
 
   const veterinarios_items =
     veterinarios?.map((vet) => ({
       label: vet.name,
       value: vet.id,
-    })) || [];
-
-  const categorias_items =
-    categorias?.map((cat) => ({
-      id: cat.id,
-      name: cat.nombre,
     })) || [];
 
   const mutation_update = useMutation({
@@ -129,6 +135,8 @@ const DetailsMedico = ({ route }: DetailsMedicoProps) => {
   });
 
   const onSubmit = (data: Partial<CrearMedicoInterface>) => {
+    console.log("DATA", data);
+
     mutation_update.mutate(data);
   };
 
@@ -270,28 +278,59 @@ const DetailsMedico = ({ route }: DetailsMedicoProps) => {
 
           <ThemedText style={styles.sectionTitle}>Áreas de trabajo*</ThemedText>
           <View style={styles.areasContainer}>
-            <FlatList
-              data={categorias_items}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
+            {categorias?.map((category) => (
+              <View key={category.id} style={styles.categoryContainer}>
                 <TouchableOpacity
-                  style={styles.areaItem}
-                  onPress={() => handleAreaSelection(item.id)}
+                  style={styles.categoryHeader}
+                  onPress={() => toggleCategoryExpand(category.id)}
                 >
-                  <Checkbox
-                    status={
-                      selectedAreas.includes(item.id) ? "checked" : "unchecked"
-                    }
-                    onPress={() => handleAreaSelection(item.id)}
-                    color={colors.primary}
-                  />
-                  <ThemedText style={styles.areaText}>{item.name}</ThemedText>
+                  <ThemedText style={styles.categoryTitle}>
+                    {category.nombre}
+                  </ThemedText>
+                  {category.subServicios.length > 0 && (
+                    <FontAwesome
+                      name={
+                        expandedCategory === category.id
+                          ? "chevron-up"
+                          : "chevron-down"
+                      }
+                      size={16}
+                      color={colors.primary}
+                    />
+                  )}
                 </TouchableOpacity>
-              )}
-              numColumns={width > 500 ? 3 : 2}
-              scrollEnabled={false}
-              contentContainerStyle={styles.areasList}
-            />
+
+                {expandedCategory === category.id &&
+                  category.subServicios.length > 0 && (
+                    <View style={styles.subservicesContainer}>
+                      {category.subServicios.map((subservice) => (
+                        <TouchableOpacity
+                          key={subservice.id}
+                          style={styles.subserviceItem}
+                          onPress={() =>
+                            handleSubserviceSelection(subservice.id)
+                          }
+                        >
+                          <Checkbox
+                            status={
+                              selectedSubservices.includes(subservice.id)
+                                ? "checked"
+                                : "unchecked"
+                            }
+                            onPress={() =>
+                              handleSubserviceSelection(subservice.id)
+                            }
+                            color={colors.primary}
+                          />
+                          <ThemedText style={styles.subserviceText}>
+                            {subservice.nombre}
+                          </ThemedText>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  )}
+              </View>
+            ))}
           </View>
           {errors.areas_trabajo && (
             <ThemedText style={styles.errorText}>
@@ -418,6 +457,42 @@ const styles = StyleSheet.create({
   },
   switchLabel: {
     fontSize: 16,
+  },
+  categoryContainer: {
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: "#e9ecef",
+    borderRadius: 8,
+    overflow: "hidden",
+  },
+  categoryHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 12,
+    backgroundColor: "#f8f9fa",
+  },
+  categoryTitle: {
+    flex: 1,
+    marginLeft: 8,
+    fontWeight: "600",
+    fontSize: 15,
+  },
+  subservicesContainer: {
+    paddingLeft: 40,
+    backgroundColor: "#fff",
+  },
+  subserviceItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderTopWidth: 1,
+    borderTopColor: "#f1f1f1",
+  },
+  subserviceText: {
+    marginLeft: 8,
+    fontSize: 14,
+    color: "#495057",
   },
 });
 

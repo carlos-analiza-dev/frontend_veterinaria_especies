@@ -4,6 +4,7 @@ import { updateServicioPrecio } from "@/core/servicios_precios/accions/update-se
 import { CrearServicePrecio } from "@/core/servicios_precios/interfaces/crear-servicio-precio.interface";
 import { ResponseServicioPrecio } from "@/core/servicios_precios/interfaces/response-servicio-precio.interface";
 import { ResponseSubServicios } from "@/core/sub-servicio/interface/obtener-sub-serviciosbyservicio.interface";
+import userGetMedicoByEspecialidad from "@/hooks/medicos/userGetMedicoByEspecialidad";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
@@ -13,6 +14,7 @@ import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Button, Card, Divider, List, useTheme } from "react-native-paper";
 import Toast from "react-native-toast-message";
+import MedicosSubServicio from "./MedicosSubServicio";
 import ModalAgregarPrecios from "./ModalAgregarPrecios";
 
 interface Props {
@@ -34,6 +36,10 @@ const CardSubServicios = ({ subServicio, paises, onEdit }: Props) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [currentPriceId, setCurrentPriceId] = useState<string | null>(null);
+
+  const { data: medicos } = userGetMedicoByEspecialidad(subServicio.id);
+
+  console.log("MEDICOS", medicos);
 
   const [formData, setFormData] = useState<CrearServicePrecio>({
     sub_servicio_id: subServicio.id,
@@ -232,7 +238,7 @@ const CardSubServicios = ({ subServicio, paises, onEdit }: Props) => {
           )}
         </Card.Content>
       </Card>
-
+      <MedicosSubServicio medicos={medicos || []} />
       <ModalAgregarPrecios
         visible={modalVisible}
         nombre={subServicio.nombre}

@@ -14,7 +14,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import React, { useState } from "react";
-import { Platform, StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import Toast from "react-native-toast-message";
 import ModalMedicos from "./ModalMedicos";
@@ -327,9 +327,8 @@ const HorariosMedicos = ({ medico, medicoId, onHorarioCreado }: Props) => {
         <DateTimePicker
           value={new Date()}
           mode="time"
-          is24Hour={true}
-          display={Platform.OS === "ios" ? "spinner" : "default"}
           onChange={handleTimeChange}
+          design="material"
         />
       )}
     </ThemedView>

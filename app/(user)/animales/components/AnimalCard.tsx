@@ -111,7 +111,7 @@ const AnimalCard = ({ animal, onPress }: Props) => {
               <ThemedText
                 style={[styles.infoText, { color: colors.onSurface }]}
               >
-                Nacimiento:{" "}
+                Nacimiento:
                 {new Date(animal.fecha_nacimiento).toLocaleDateString()}
               </ThemedText>
             </ThemedView>
@@ -188,13 +188,62 @@ const AnimalCard = ({ animal, onPress }: Props) => {
                         fontSize: 12,
                       }}
                     >
-                      {alimento.alimento}
+                      {alimento.alimento}{" "}
+                      {alimento.origen ? `(${alimento.origen})` : ""}
                     </Chip>
                   ))}
                 </View>
               </ThemedView>
             )}
-
+            {animal.complementos && animal.complementos.length > 0 && (
+              <ThemedView
+                style={[styles.infoRow, { backgroundColor: colors.background }]}
+              >
+                <View style={styles.chipsContainer}>
+                  <ThemedText
+                    style={[styles.infoText, { color: colors.onSurface }]}
+                  >
+                    Comp:
+                  </ThemedText>
+                  {animal.complementos.map((complemento, index) => (
+                    <Chip
+                      key={`${complemento.complemento}-${index}`}
+                      style={[
+                        styles.smallChip,
+                        {
+                          backgroundColor: colors.tertiaryContainer,
+                          marginRight: 4,
+                          marginBottom: 4,
+                        },
+                      ]}
+                      textStyle={{
+                        color: colors.onTertiaryContainer,
+                        fontSize: 12,
+                      }}
+                    >
+                      {complemento.complemento}
+                    </Chip>
+                  ))}
+                </View>
+              </ThemedView>
+            )}
+            {animal.medicamento && (
+              <ThemedView
+                style={[styles.infoRow, { backgroundColor: colors.background }]}
+              >
+                <MaterialCommunityIcons
+                  name="medical-bag"
+                  size={20}
+                  color={colors.onSurfaceVariant}
+                  style={styles.icon}
+                />
+                <ThemedText
+                  style={[styles.infoText, { color: colors.onSurface }]}
+                >
+                  Medicamento: {animal.medicamento}
+                </ThemedText>
+              </ThemedView>
+            )}
             {animal.sexo === "Macho" && (
               <ThemedView
                 style={[styles.infoRow, { backgroundColor: colors.background }]}

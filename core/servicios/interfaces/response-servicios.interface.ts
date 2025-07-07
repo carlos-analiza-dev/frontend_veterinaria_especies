@@ -1,12 +1,16 @@
 export interface ResponseServicios {
-  servicios: Servicio[];
-  total: number;
-}
-
-export interface Servicio {
   id: string;
   nombre: string;
   descripcion: string;
+  isActive: boolean;
+  subServicios: SubServicio[];
+}
+
+export interface SubServicio {
+  id: string;
+  nombre: string;
+  descripcion: string;
+  servicioId: string;
   isActive: boolean;
   preciosPorPais: PreciosPorPai[];
 }
@@ -14,7 +18,25 @@ export interface Servicio {
 export interface PreciosPorPai {
   id: string;
   precio: string;
-  cantidadMin: number;
-  cantidadMax: number;
-  tiempo: string;
+  tiempo: number;
+  pais: Pais;
+}
+
+export interface Pais {
+  id: string;
+  nombre: string;
+  code: string;
+  code_phone: string;
+  nombre_moneda: string;
+  simbolo_moneda: string;
+  nombre_documento: string;
+  isActive: boolean;
+  departamentos: Departamento[];
+}
+
+export interface Departamento {
+  id: string;
+  nombre: string;
+  isActive: boolean;
+  municipios?: Departamento[];
 }

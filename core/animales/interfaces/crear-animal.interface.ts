@@ -3,6 +3,8 @@ export interface CrearAnimalByFinca {
   sexo: string;
   color: string;
   tipo_alimentacion: TipoAlimentacion[];
+  complementos?: TipoComplemento[];
+  medicamento?: string;
   identificador: string;
   raza: string;
   edad_promedio?: number;
@@ -16,4 +18,9 @@ export interface CrearAnimalByFinca {
 
 export interface TipoAlimentacion {
   alimento: string;
+  origen: string;
+}
+
+export interface TipoComplemento {
+  complemento: string;
 }

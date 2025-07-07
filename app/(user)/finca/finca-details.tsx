@@ -23,6 +23,7 @@ import { useTheme } from "react-native-paper";
 import { ActualizarFinca } from "@/core/fincas/accions/update-finca";
 import { CrearFinca } from "@/core/fincas/interfaces/crear-finca.interface";
 import { convertirAHectareas } from "@/helpers/funciones/convertirHectareas";
+import MapaSeleccionDireccion from "@/presentation/components/mapas/MapaSeleccionDireccion";
 import MessageError from "@/presentation/components/MessageError";
 import ThemedCheckbox from "@/presentation/theme/components/ThemedCheckbox";
 import { useQueryClient } from "@tanstack/react-query";
@@ -42,6 +43,7 @@ const FincaDetailsPage = ({ route }: DetailsFincaProps) => {
   const { colors } = useTheme();
   const queryClient = useQueryClient();
   const navigation = useNavigation();
+  const [modalVisible, setModalVisible] = useState(false);
   const { data: finca, isLoading, isError } = useFincasById(fincaId);
   const [isEditing, setIsEditing] = useState(false);
   const [unidadMedida, setUnidadMedida] = useState<
@@ -60,6 +62,8 @@ const FincaDetailsPage = ({ route }: DetailsFincaProps) => {
         nombre_finca: fincaData.nombre_finca,
         abreviatura: fincaData.abreviatura,
         ubicacion: fincaData.ubicacion,
+        latitud: fincaData.latitud,
+        longitud: fincaData.longitud,
         cantidad_animales: fincaData.cantidad_animales,
         tamaño_total_hectarea: fincaData.tamaño_total_hectarea,
         area_ganaderia_hectarea: fincaData.area_ganaderia_hectarea,
@@ -90,6 +94,8 @@ const FincaDetailsPage = ({ route }: DetailsFincaProps) => {
         nombre_finca: data.nombre_finca,
         cantidad_animales: Number(data.cantidad_animales),
         ubicacion: data.ubicacion,
+        latitud: data.latitud,
+        longitud: data.longitud,
         abreviatura: data.abreviatura,
         tamaño_total_hectarea: convertirAHectareas(
           data.tamaño_total_hectarea,
@@ -181,30 +187,75 @@ const FincaDetailsPage = ({ route }: DetailsFincaProps) => {
                 value={watch("nombre_finca")}
                 onChangeText={(text) => setValue("nombre_finca", text)}
               />
+              <TouchableWithoutFeedback onPress={() => setModalVisible(true)}>
+                <ThemedView
+                  pointerEvents="box-only"
+                  style={{ backgroundColor: colors.background }}
+                >
+                  <ThemedTextInput
+                    placeholder="Ubicación"
+                    icon="location-outline"
+                    value={watch("ubicacion")}
+                    editable={false}
+                  />
+                </ThemedView>
+              </TouchableWithoutFeedback>
 
-              <ThemedTextInput
-                placeholder="Abreviatura"
-                icon="language-outline"
-                value={watch("abreviatura")}
-                onChangeText={(text) => setValue("abreviatura", text)}
-              />
-
-              <ThemedTextInput
-                placeholder="Ubicación"
-                icon="location-outline"
-                value={watch("ubicacion")}
-                onChangeText={(text) => setValue("ubicacion", text)}
-              />
-
-              <ThemedTextInput
-                placeholder="# Animales"
-                icon="paw-outline"
-                keyboardType="numeric"
-                value={watch("cantidad_animales")?.toString() ?? ""}
-                onChangeText={(text) =>
-                  setValue("cantidad_animales", Number(text))
+              <MapaSeleccionDireccion
+                visible={modalVisible}
+                onClose={() => setModalVisible(false)}
+                onLocationSelect={(direccion, coords) => {
+                  setValue("ubicacion", direccion);
+                  setValue("latitud", coords.latitude);
+                  setValue("longitud", coords.longitude);
+                  console.log("Coordenadas seleccionadas:", {
+                    lat: coords.latitude,
+                    lng: coords.longitude,
+                  });
+                }}
+                initialCoords={
+                  watch("latitud") && watch("longitud")
+                    ? {
+                        latitude: Number(watch("latitud")),
+                        longitude: Number(watch("longitud")),
+                      }
+                    : undefined
                 }
               />
+
+              <ThemedView
+                style={[styles.row, { backgroundColor: colors.background }]}
+              >
+                <ThemedView
+                  style={[
+                    styles.column,
+                    { backgroundColor: colors.background },
+                  ]}
+                >
+                  <ThemedTextInput
+                    placeholder="# Animales"
+                    icon="paw-outline"
+                    keyboardType="numeric"
+                    value={watch("cantidad_animales")?.toString() ?? ""}
+                    onChangeText={(text) =>
+                      setValue("cantidad_animales", Number(text))
+                    }
+                  />
+                </ThemedView>
+                <ThemedView
+                  style={[
+                    styles.column,
+                    { backgroundColor: colors.background },
+                  ]}
+                >
+                  <ThemedTextInput
+                    placeholder="Abreviatura"
+                    icon="text-outline"
+                    value={watch("abreviatura")}
+                    onChangeText={(text) => setValue("abreviatura", text)}
+                  />
+                </ThemedView>
+              </ThemedView>
 
               <ThemedView
                 style={[
@@ -387,6 +438,15 @@ const styles = StyleSheet.create({
     color: "red",
     fontSize: 12,
     marginTop: 5,
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 12,
+  },
+  column: {
+    flex: 1,
+    marginHorizontal: 4,
   },
 });
 

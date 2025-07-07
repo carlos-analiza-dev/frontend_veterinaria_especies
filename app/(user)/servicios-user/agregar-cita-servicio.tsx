@@ -4,7 +4,7 @@ import useGetAnimalesByFincaEspRaza from "@/hooks/animales/useGetAnimalesByFinca
 import useGetEspecies from "@/hooks/especies/useGetEspecies";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
 import useGetHorasMedicoByFecha from "@/hooks/horarios/useGetHorasMedicoByFecha";
-import userGetMedicoByEspecialidadesByPais from "@/hooks/medicos/userGetMedicoByEspecialidadesByPais";
+import userGetMedicoByEspecialidadesByPais from "@/hooks/medicos/userGetMedicoByEspecialidad";
 import useGetRazasByEspecie from "@/hooks/razas/useGetRazasByEspecie";
 import useGetSubServiciosByServicioId from "@/hooks/sub-servicios/useGetSubServiciosByServicioId";
 import { useAuthStore } from "@/presentation/auth/store/useAuthStore";
@@ -90,9 +90,10 @@ const AgregarCitaServicio = ({ route }: DetailsCitaServicioProps) => {
   );
 
   const { data: servicios } = useGetSubServiciosByServicioId(categoriaId);
+  const subServicioId = watch("subServicioId");
   const { data: medicos } = userGetMedicoByEspecialidadesByPais(
     paisId,
-    categoriaId
+    subServicioId
   );
   const medicoId = watch("medicoId");
   const fecha = watch("fecha");
@@ -103,7 +104,10 @@ const AgregarCitaServicio = ({ route }: DetailsCitaServicioProps) => {
     String(duracion)
   );
 
-  const subServicioId = watch("subServicioId");
+  useEffect(() => {
+    setValue("subServicioId", "");
+    setValue("medicoId", "");
+  }, [categoriaId]);
 
   const timeToMinutes = (time: string) => {
     const [hours, minutes] = time.split(":").map(Number);
@@ -307,7 +311,7 @@ const AgregarCitaServicio = ({ route }: DetailsCitaServicioProps) => {
           />
           <ThemedPicker
             items={allRazas}
-            icon="paw-outline"
+            icon="list-circle-outline"
             placeholder="Raza del animal"
             selectedValue={razaId}
             onValueChange={(text) => setRazaId(text)}
@@ -425,6 +429,12 @@ const AgregarCitaServicio = ({ route }: DetailsCitaServicioProps) => {
             editable={false}
             style={styles.input}
           />
+          {watch("totalPagar") > 0 && (
+            <ThemedText style={styles.helpText}>
+              LOS PRECIOS PUEDEN VARIAR DEPENDIENDO DE LOS INSUMOS QUE SE
+              UTILICEN
+            </ThemedText>
+          )}
 
           <ThemedView style={styles.buttonContainer}>
             <ThemedButton
@@ -525,6 +535,12 @@ const styles = StyleSheet.create({
     color: "#2E7D32",
     textAlign: "center",
     fontSize: 14,
+  },
+  helpText: {
+    color: "#e63946",
+    fontSize: 12,
+    marginBottom: 10,
+    fontStyle: "italic",
   },
 });
 export default AgregarCitaServicio;

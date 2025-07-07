@@ -53,7 +53,7 @@ const EspecieCantidadPicker = ({ value, onChange, cantidadTotal }: Props) => {
       Toast.show({
         type: "error",
         text1: "Error",
-        text2: `La suma de animales supera la cantidad antes descrita de animales permitidos en la finca, total permitido: ${cantidadTotal}`,
+        text2: `La suma de animales excede la cantidad antes descrita de animales en la finca.`,
       });
       return;
     }

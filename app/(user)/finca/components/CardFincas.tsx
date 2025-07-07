@@ -206,6 +206,11 @@ const CardFincas = ({ finca, onPress }: Props) => {
           </Card>
         </Animated.View>
       </TouchableWithoutFeedback>
+      <ThemedText
+        style={[styles.fincaName, { fontSize: 16, fontWeight: "bold" }]}
+      >
+        Ubicacion - {finca.nombre_finca}
+      </ThemedText>
       {finca.latitud && finca.longitud && (
         <View style={styles.mapContainer}>
           <MapView

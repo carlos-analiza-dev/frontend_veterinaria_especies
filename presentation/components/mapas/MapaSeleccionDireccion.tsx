@@ -18,12 +18,14 @@ interface Props {
     direccion: string,
     coords: { latitude: number; longitude: number }
   ) => void;
+  initialCoords?: { latitude: number; longitude: number };
 }
 
 const MapaSeleccionDireccion = ({
   visible,
   onClose,
   onLocationSelect,
+  initialCoords,
 }: Props) => {
   const [region, setRegion] = useState<any>(null);
   const [marker, setMarker] = useState<any>(null);
@@ -40,26 +42,28 @@ const MapaSeleccionDireccion = ({
         return;
       }
 
-      const location = await Location.getCurrentPositionAsync({});
+      const initialLocation =
+        initialCoords || (await Location.getCurrentPositionAsync({})).coords;
+
       setRegion({
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
+        latitude: initialLocation.latitude,
+        longitude: initialLocation.longitude,
         latitudeDelta: 0.01,
         longitudeDelta: 0.01,
       });
+
+      if (initialCoords) {
+        setMarker({
+          latitude: initialCoords.latitude,
+          longitude: initialCoords.longitude,
+        });
+
+        updateDireccion(initialCoords.latitude, initialCoords.longitude);
+      }
     })();
-  }, [visible]);
+  }, [visible, initialCoords]);
 
-  const handleMapPress = async (e: MapPressEvent) => {
-    const { latitude, longitude } = e.nativeEvent.coordinate;
-    setMarker({ latitude, longitude });
-    setRegion({
-      latitude,
-      longitude,
-      latitudeDelta: 0.01,
-      longitudeDelta: 0.01,
-    });
-
+  const updateDireccion = async (latitude: number, longitude: number) => {
     try {
       const [reverse] = await Location.reverseGeocodeAsync({
         latitude,
@@ -78,6 +82,18 @@ const MapaSeleccionDireccion = ({
       Alert.alert("Error al obtener la dirección");
       setDireccion("Ubicación seleccionada");
     }
+  };
+
+  const handleMapPress = async (e: MapPressEvent) => {
+    const { latitude, longitude } = e.nativeEvent.coordinate;
+    setMarker({ latitude, longitude });
+    setRegion({
+      latitude,
+      longitude,
+      latitudeDelta: 0.01,
+      longitudeDelta: 0.01,
+    });
+    await updateDireccion(latitude, longitude);
   };
 
   const confirmarUbicacion = () => {

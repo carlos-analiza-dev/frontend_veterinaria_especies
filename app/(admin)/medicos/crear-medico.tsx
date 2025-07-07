@@ -7,13 +7,13 @@ import ThemedButton from "@/presentation/theme/components/ThemedButton";
 import ThemedPicker from "@/presentation/theme/components/ThemedPicker";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
+import { FontAwesome } from "@expo/vector-icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { useNavigation } from "expo-router";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import {
-  FlatList,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -26,13 +26,14 @@ import { Checkbox, TextInput, useTheme } from "react-native-paper";
 import Toast from "react-native-toast-message";
 
 const CrearMedicoPage = () => {
-  const { height, width } = useWindowDimensions();
+  const { height } = useWindowDimensions();
   const { colors } = useTheme();
   const queryClient = useQueryClient();
   const navigation = useNavigation();
   const { data: veterinarios } = useGetVeterinarios();
   const { data: categorias } = useGetServiciosActivos();
-  const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
+  const [selectedSubservices, setSelectedSubservices] = useState<string[]>([]);
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<
     ResponseVeterinarios | undefined
   >(undefined);
@@ -53,14 +54,19 @@ const CrearMedicoPage = () => {
     setSelectedUser(user);
   };
 
-  const handleAreaSelection = (areaId: string) => {
-    setSelectedAreas((prev) => {
-      const newSelection = prev.includes(areaId)
-        ? prev.filter((id) => id !== areaId)
-        : [...prev, areaId];
+  const handleSubserviceSelection = (subserviceId: string) => {
+    setSelectedSubservices((prev) => {
+      const newSelection = prev.includes(subserviceId)
+        ? prev.filter((id) => id !== subserviceId)
+        : [...prev, subserviceId];
+
       setValue("areas_trabajo", newSelection, { shouldValidate: true });
       return newSelection;
     });
+  };
+
+  const toggleCategoryExpand = (categoryId: string) => {
+    setExpandedCategory((prev) => (prev === categoryId ? null : categoryId));
   };
 
   const mutation = useMutation({
@@ -72,7 +78,8 @@ const CrearMedicoPage = () => {
         text2: "Médico creado exitosamente",
       });
       reset();
-      setSelectedAreas([]);
+      setSelectedSubservices([]);
+      setExpandedCategory(null);
       queryClient.invalidateQueries({ queryKey: ["medicos"] });
       navigation.goBack();
     },
@@ -100,19 +107,13 @@ const CrearMedicoPage = () => {
   });
 
   const onSubmit = (data: CrearMedicoInterface) => {
-    mutation.mutate(data);
+    mutation.mutate({ ...data, areas_trabajo: selectedSubservices });
   };
 
   const veterinarios_items =
     veterinarios?.map((vet) => ({
       label: vet.name,
       value: vet.id,
-    })) || [];
-
-  const categorias_items =
-    categorias?.map((cat) => ({
-      id: cat.id,
-      name: cat.nombre,
     })) || [];
 
   return (
@@ -265,28 +266,59 @@ const CrearMedicoPage = () => {
 
           <ThemedText style={styles.sectionTitle}>Áreas de trabajo*</ThemedText>
           <View style={styles.areasContainer}>
-            <FlatList
-              data={categorias_items}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
+            {categorias?.map((category) => (
+              <View key={category.id} style={styles.categoryContainer}>
                 <TouchableOpacity
-                  style={styles.areaItem}
-                  onPress={() => handleAreaSelection(item.id)}
+                  style={styles.categoryHeader}
+                  onPress={() => toggleCategoryExpand(category.id)}
                 >
-                  <Checkbox
-                    status={
-                      selectedAreas.includes(item.id) ? "checked" : "unchecked"
-                    }
-                    onPress={() => handleAreaSelection(item.id)}
-                    color={colors.primary}
-                  />
-                  <ThemedText style={styles.areaText}>{item.name}</ThemedText>
+                  <ThemedText style={styles.categoryTitle}>
+                    {category.nombre}
+                  </ThemedText>
+                  {category.subServicios.length > 0 && (
+                    <FontAwesome
+                      name={
+                        expandedCategory === category.id
+                          ? "chevron-up"
+                          : "chevron-down"
+                      }
+                      size={16}
+                      color={colors.primary}
+                    />
+                  )}
                 </TouchableOpacity>
-              )}
-              numColumns={width > 500 ? 3 : 2}
-              scrollEnabled={false}
-              contentContainerStyle={styles.areasList}
-            />
+
+                {expandedCategory === category.id &&
+                  category.subServicios.length > 0 && (
+                    <View style={styles.subservicesContainer}>
+                      {category.subServicios.map((subservice) => (
+                        <TouchableOpacity
+                          key={subservice.id}
+                          style={styles.subserviceItem}
+                          onPress={() =>
+                            handleSubserviceSelection(subservice.id)
+                          }
+                        >
+                          <Checkbox
+                            status={
+                              selectedSubservices.includes(subservice.id)
+                                ? "checked"
+                                : "unchecked"
+                            }
+                            onPress={() =>
+                              handleSubserviceSelection(subservice.id)
+                            }
+                            color={colors.primary}
+                          />
+                          <ThemedText style={styles.subserviceText}>
+                            {subservice.nombre}
+                          </ThemedText>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  )}
+              </View>
+            ))}
           </View>
           {errors.areas_trabajo && (
             <ThemedText style={styles.errorText}>
@@ -411,6 +443,42 @@ const styles = StyleSheet.create({
   userInfoValue: {
     flex: 1,
     color: "#212529",
+  },
+  categoryContainer: {
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: "#e9ecef",
+    borderRadius: 8,
+    overflow: "hidden",
+  },
+  categoryHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 12,
+    backgroundColor: "#f8f9fa",
+  },
+  categoryTitle: {
+    flex: 1,
+    marginLeft: 8,
+    fontWeight: "600",
+    fontSize: 15,
+  },
+  subservicesContainer: {
+    paddingLeft: 40,
+    backgroundColor: "#fff",
+  },
+  subserviceItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderTopWidth: 1,
+    borderTopColor: "#f1f1f1",
+  },
+  subserviceText: {
+    marginLeft: 8,
+    fontSize: 14,
+    color: "#495057",
   },
 });
 

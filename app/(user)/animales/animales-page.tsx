@@ -3,9 +3,9 @@ import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
 import { useAuthStore } from "@/presentation/auth/store/useAuthStore";
 import Buscador from "@/presentation/components/Buscador";
 import { FAB } from "@/presentation/components/FAB";
+import SelectFincas from "@/presentation/components/fincas/SelectFincas";
 import MessageError from "@/presentation/components/MessageError";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
-import ButtonFilter from "@/presentation/theme/components/ui/ButtonFilter";
 import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import { useNavigation } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
@@ -63,40 +63,28 @@ const AnimalesPageGanadero = () => {
   if (isError) {
     return (
       <ThemedView
-        style={[styles.centered, { backgroundColor: colors.background }]}
+        style={[styles.container, { backgroundColor: colors.background }]}
       >
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
-          <View style={styles.filterContainer}>
-            <Buscador
-              title="Buscar por identificador..."
-              setSearchTerm={setSearchTerm}
-              searchTerm={searchTerm}
-            />
-            <View style={styles.roleFilterContainer}>
-              <ButtonFilter
-                title="Mostrar todos"
-                onPress={() => setFincaId("")}
-                variant={fincaId === "" ? "primary" : "outline"}
-                style={styles.filterButton}
-                textStyle={styles.filterButtonText}
-              />
-              {fincas?.data.fincas.map((finca) => (
-                <ButtonFilter
-                  key={finca.id}
-                  title={finca.nombre_finca}
-                  onPress={() => handleFincaPress(finca.id)}
-                  variant={fincaId === finca.id ? "primary" : "outline"}
-                  style={styles.filterButton}
-                  textStyle={styles.filterButtonText}
-                />
-              ))}
-            </View>
-          </View>
-          <MessageError
-            titulo="Error al cargar los animales"
-            descripcion="No se encontraron animales disponibles en este momento."
+        <View style={styles.filterContainer}>
+          <Buscador
+            title="Buscar por identificador..."
+            setSearchTerm={setSearchTerm}
+            searchTerm={searchTerm}
           />
-        </ScrollView>
+          <ThemedView style={styles.roleFilterContainer}>
+            <SelectFincas
+              fincas={fincas?.data}
+              fincaId={fincaId}
+              setFincaId={setFincaId}
+              handleFincaPress={handleFincaPress}
+            />
+          </ThemedView>
+        </View>
+        <MessageError
+          titulo="Error al cargar los animales"
+          descripcion="No se encontraron animales disponibles en este momento."
+        />
+
         <FAB
           iconName="add"
           onPress={() => navigation.navigate("CrearAnimal")}
@@ -115,25 +103,14 @@ const AnimalesPageGanadero = () => {
           setSearchTerm={setSearchTerm}
           searchTerm={searchTerm}
         />
-        <View style={styles.roleFilterContainer}>
-          <ButtonFilter
-            title="Mostrar todos"
-            onPress={() => setFincaId("")}
-            variant={fincaId === "" ? "primary" : "outline"}
-            style={styles.filterButton}
-            textStyle={styles.filterButtonText}
+        <ThemedView style={styles.roleFilterContainer}>
+          <SelectFincas
+            fincas={fincas?.data}
+            fincaId={fincaId}
+            setFincaId={setFincaId}
+            handleFincaPress={handleFincaPress}
           />
-          {fincas?.data.fincas.map((finca) => (
-            <ButtonFilter
-              key={finca.id}
-              title={finca.nombre_finca}
-              onPress={() => handleFincaPress(finca.id)}
-              variant={fincaId === finca.id ? "primary" : "outline"}
-              style={styles.filterButton}
-              textStyle={styles.filterButtonText}
-            />
-          ))}
-        </View>
+        </ThemedView>
       </View>
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
@@ -184,12 +161,7 @@ const styles = StyleSheet.create({
   filterContainer: {
     padding: 16,
   },
-  roleFilterContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 6,
-    marginBottom: 10,
-  },
+
   filterButton: {
     width: "48%",
     marginBottom: 8,
@@ -201,6 +173,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderWidth: 1,
     borderColor: "#ddd",
+  },
+
+  roleFilterContainer: {
+    width: "100%",
+    marginVertical: 10,
   },
 });
 

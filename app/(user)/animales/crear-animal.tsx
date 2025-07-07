@@ -1,6 +1,7 @@
 import { CreateAnimal } from "@/core/animales/accions/crear-animal";
 import { CrearAnimalByFinca } from "@/core/animales/interfaces/crear-animal.interface";
 import { alimentosOptions } from "@/helpers/data/alimentos";
+import { complementosOptions } from "@/helpers/data/complementos";
 import { sexoOptions } from "@/helpers/data/sexo_animales";
 import useGetEspecies from "@/hooks/especies/useGetEspecies";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
@@ -9,8 +10,10 @@ import { useAuthStore } from "@/presentation/auth/store/useAuthStore";
 import ThemedButton from "@/presentation/theme/components/ThemedButton";
 import ThemedCheckbox from "@/presentation/theme/components/ThemedCheckbox";
 import ThemedPicker from "@/presentation/theme/components/ThemedPicker";
+import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import ThemedTextInput from "@/presentation/theme/components/ThemedTextInput";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
+import { FontAwesome } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
@@ -24,11 +27,12 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   TouchableWithoutFeedback,
   useWindowDimensions,
   View,
 } from "react-native";
-import { Switch, useTheme } from "react-native-paper";
+import { Checkbox, Switch, useTheme } from "react-native-paper";
 import Toast from "react-native-toast-message";
 
 const CrearAnimal = () => {
@@ -39,9 +43,34 @@ const CrearAnimal = () => {
   const queryClient = useQueryClient();
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showIdentifierHelp, setShowIdentifierHelp] = useState(false);
-  const [alimentosSeleccionados, setAlimentosSeleccionados] = useState<
+  const [expandedAlimento, setExpandedAlimento] = useState<string | null>(null);
+  const [tipoAlimentacion, setTipoAlimentacion] = useState<
+    { alimento: string; origen: string }[]
+  >([]);
+  const [complementoSeleccionados, setComplementoSeleccionados] = useState<
     string[]
   >([]);
+  const toggleAlimentoExpand = (alimento: string) => {
+    setExpandedAlimento((prev) => (prev === alimento ? null : alimento));
+  };
+
+  const handleOrigenSelection = (alimento: string, origen: string) => {
+    const updated = [...tipoAlimentacion];
+    const index = updated.findIndex((item) => item.alimento === alimento);
+
+    if (index !== -1) {
+      updated[index].origen = origen;
+    } else {
+      updated.push({ alimento, origen });
+    }
+
+    setTipoAlimentacion(updated);
+    setValue("tipo_alimentacion", updated);
+  };
+
+  const isAlimentoSeleccionado = (alimento: string) => {
+    return tipoAlimentacion.some((a) => a.alimento === alimento);
+  };
 
   const {
     handleSubmit,
@@ -97,21 +126,6 @@ const CrearAnimal = () => {
       value: finca.id,
     })) || [];
 
-  const handleAlimentoChange = (alimento: string) => {
-    const nuevosAlimentos = [...alimentosSeleccionados];
-    if (nuevosAlimentos.includes(alimento)) {
-      const index = nuevosAlimentos.indexOf(alimento);
-      nuevosAlimentos.splice(index, 1);
-    } else {
-      nuevosAlimentos.push(alimento);
-    }
-    setAlimentosSeleccionados(nuevosAlimentos);
-    setValue(
-      "tipo_alimentacion",
-      nuevosAlimentos.map((a) => ({ alimento: a }))
-    );
-  };
-
   const getIdentifierPrefix = () => {
     const especie = especies?.data.find((e) => e.id === watch("especie"));
     const raza = razas?.data.find((r) => r.id === watch("raza"));
@@ -141,6 +155,21 @@ const CrearAnimal = () => {
     }
   };
 
+  const handleAlimentoChange = (alimento: string) => {
+    const nuevosComplementos = [...complementoSeleccionados];
+    if (nuevosComplementos.includes(alimento)) {
+      const index = nuevosComplementos.indexOf(alimento);
+      nuevosComplementos.splice(index, 1);
+    } else {
+      nuevosComplementos.push(alimento);
+    }
+    setComplementoSeleccionados(nuevosComplementos);
+    setValue(
+      "complementos",
+      nuevosComplementos.map((a) => ({ complemento: a }))
+    );
+  };
+
   useEffect(() => {
     const prefix = getIdentifierPrefix();
     const currentNumber = watch("identificador_temp");
@@ -165,7 +194,7 @@ const CrearAnimal = () => {
       });
       queryClient.invalidateQueries({ queryKey: ["animales-propietario"] });
       reset();
-      setAlimentosSeleccionados([]);
+
       navigation.goBack();
     },
     onError: (error) => {
@@ -257,10 +286,7 @@ const CrearAnimal = () => {
           style={[styles.container, { backgroundColor: colors.background }]}
         >
           <ScrollView
-            contentContainerStyle={[
-              styles.scrollContainer,
-              { minHeight: height * 0.8 },
-            ]}
+            contentContainerStyle={[styles.scrollContainer]}
             keyboardShouldPersistTaps="handled"
           >
             <View style={[styles.formContainer, { width: width * 0.9 }]}>
@@ -353,21 +379,136 @@ const CrearAnimal = () => {
 
               <View style={styles.sectionContainer}>
                 <Text style={styles.sectionTitle}>Tipo de alimentación</Text>
-                {alimentosOptions.map((alimento) => (
-                  <ThemedCheckbox
-                    key={alimento.value}
-                    label={alimento.label}
-                    value={alimento.value}
-                    onPress={handleAlimentoChange}
-                    isSelected={alimentosSeleccionados.includes(alimento.value)}
-                  />
-                ))}
+                {alimentosOptions.map((alimento) => {
+                  const alimentoSeleccionado = tipoAlimentacion.find(
+                    (a) => a.alimento === alimento.value
+                  );
+
+                  return (
+                    <View key={alimento.value} style={styles.categoryContainer}>
+                      <TouchableOpacity
+                        style={styles.categoryHeader}
+                        onPress={() => toggleAlimentoExpand(alimento.value)}
+                      >
+                        <View
+                          style={{ flexDirection: "row", alignItems: "center" }}
+                        >
+                          <Checkbox
+                            status={
+                              isAlimentoSeleccionado(alimento.value)
+                                ? "checked"
+                                : "unchecked"
+                            }
+                            onPress={() => {
+                              if (isAlimentoSeleccionado(alimento.value)) {
+                                const updated = tipoAlimentacion.filter(
+                                  (a) => a.alimento !== alimento.value
+                                );
+                                setTipoAlimentacion(updated);
+                                setValue("tipo_alimentacion", updated);
+                              } else {
+                                const updated = [
+                                  ...tipoAlimentacion,
+                                  {
+                                    alimento: alimento.value,
+                                    origen: "comprado",
+                                  },
+                                ];
+                                setTipoAlimentacion(updated);
+                                setValue("tipo_alimentacion", updated);
+                              }
+                            }}
+                            color={colors.primary}
+                          />
+                          <ThemedText style={styles.categoryTitle}>
+                            {alimento.label}
+                          </ThemedText>
+                        </View>
+
+                        <FontAwesome
+                          name={
+                            expandedAlimento === alimento.value
+                              ? "chevron-up"
+                              : "chevron-down"
+                          }
+                          size={16}
+                          color={colors.primary}
+                        />
+                      </TouchableOpacity>
+
+                      {expandedAlimento === alimento.value &&
+                        isAlimentoSeleccionado(alimento.value) && (
+                          <View style={styles.subservicesContainer}>
+                            {["comprado", "producido"].map((origen) => (
+                              <TouchableOpacity
+                                key={origen}
+                                style={styles.subserviceItem}
+                                onPress={() =>
+                                  handleOrigenSelection(
+                                    alimento.value,
+                                    origen as "comprado" | "producido"
+                                  )
+                                }
+                              >
+                                <Checkbox
+                                  status={
+                                    tipoAlimentacion.find(
+                                      (a) => a.alimento === alimento.value
+                                    )?.origen === origen
+                                      ? "checked"
+                                      : "unchecked"
+                                  }
+                                  onPress={() =>
+                                    handleOrigenSelection(
+                                      alimento.value,
+                                      origen as "comprado" | "producido"
+                                    )
+                                  }
+                                  color={colors.primary}
+                                />
+                                <ThemedText style={styles.subserviceText}>
+                                  {origen === "comprado"
+                                    ? "Comprado"
+                                    : "Producido"}
+                                </ThemedText>
+                              </TouchableOpacity>
+                            ))}
+                          </View>
+                        )}
+                    </View>
+                  );
+                })}
+
                 {errors.tipo_alimentacion?.message && (
                   <Text style={styles.errorText}>
                     {errors.tipo_alimentacion.message}
                   </Text>
                 )}
               </View>
+
+              <View style={styles.sectionContainer}>
+                <Text style={styles.sectionTitle}>Tipo de complemento</Text>
+                {complementosOptions.map((complemento) => (
+                  <ThemedCheckbox
+                    key={complemento.value}
+                    label={complemento.label}
+                    value={complemento.value}
+                    onPress={handleAlimentoChange}
+                    isSelected={complementoSeleccionados.includes(
+                      complemento.value
+                    )}
+                  />
+                ))}
+              </View>
+
+              <ThemedTextInput
+                placeholder="Medicamentos"
+                icon="medical-outline"
+                value={watch("medicamento")}
+                onChangeText={(text) => setValue("medicamento", text)}
+                error={errors.medicamento?.message}
+                style={styles.input}
+              />
 
               {selectedSexo === "Macho" && (
                 <View style={styles.switchContainer}>
@@ -492,6 +633,34 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginBottom: 10,
     fontStyle: "italic",
+  },
+  categoryContainer: {
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    padding: 10,
+  },
+  categoryHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  categoryTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  subservicesContainer: {
+    marginTop: 10,
+    paddingLeft: 10,
+  },
+  subserviceItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  subserviceText: {
+    marginLeft: 8,
   },
 });
 

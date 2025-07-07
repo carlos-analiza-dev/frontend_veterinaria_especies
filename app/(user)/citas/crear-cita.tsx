@@ -4,7 +4,7 @@ import useGetAnimalesByFincaEspRaza from "@/hooks/animales/useGetAnimalesByFinca
 import useGetEspecies from "@/hooks/especies/useGetEspecies";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
 import useGetHorasMedicoByFecha from "@/hooks/horarios/useGetHorasMedicoByFecha";
-import userGetMedicoByEspecialidadesByPais from "@/hooks/medicos/userGetMedicoByEspecialidadesByPais";
+import userGetMedicoByEspecialidadesByPais from "@/hooks/medicos/userGetMedicoByEspecialidad";
 import useGetRazasByEspecie from "@/hooks/razas/useGetRazasByEspecie";
 import useGetServiciosActivos from "@/hooks/servicios/useGetServiciosActivos";
 import useGetSubServiciosByServicioId from "@/hooks/sub-servicios/useGetSubServiciosByServicioId";
@@ -51,6 +51,7 @@ const CrearCita = () => {
   const [filteredHours, setFilteredHours] = useState<HoraDisponibleItem[]>([]);
   const [duracion, setDuracion] = useState(1);
   const queryClient = useQueryClient();
+  const [mostrarText, setMostrarText] = useState(false);
 
   const {
     reset,
@@ -83,11 +84,17 @@ const CrearCita = () => {
     razaId
   );
 
+  useEffect(() => {
+    setValue("subServicioId", "");
+    setValue("medicoId", "");
+  }, [categoriaId]);
+
   const { data: categorias } = useGetServiciosActivos();
   const { data: servicios } = useGetSubServiciosByServicioId(categoriaId);
+  const subServicioId = watch("subServicioId");
   const { data: medicos } = userGetMedicoByEspecialidadesByPais(
     paisId,
-    categoriaId
+    subServicioId
   );
   const medicoId = watch("medicoId");
   const fecha = watch("fecha");
@@ -97,8 +104,6 @@ const CrearCita = () => {
     fecha,
     String(duracion)
   );
-
-  const subServicioId = watch("subServicioId");
 
   const timeToMinutes = (time: string) => {
     const [hours, minutes] = time.split(":").map(Number);
@@ -285,42 +290,6 @@ const CrearCita = () => {
             Información General
           </ThemedText>
 
-          <ThemedText style={styles.sectionTitle}>Fecha</ThemedText>
-          <ThemedView style={styles.dateInputContainer}>
-            <ThemedButton
-              icon="calendar"
-              onPress={() => setShowDatePicker(true)}
-              style={styles.dateIcon}
-            />
-          </ThemedView>
-          <ThemedTextInput
-            placeholder="Selecciona una fecha"
-            icon="calendar-outline"
-            value={watch("fecha")}
-            onFocus={() => setShowDatePicker(true)}
-            showSoftInputOnFocus={false}
-            error={errors.fecha?.message}
-            style={[styles.input, styles.dateInput]}
-          />
-
-          {showDatePicker && (
-            <DateTimePicker
-              value={
-                watch("fecha")
-                  ? new Date(
-                      Number(watch("fecha").split("-")[0]),
-                      Number(watch("fecha").split("-")[1]) - 1,
-                      Number(watch("fecha").split("-")[2])
-                    )
-                  : new Date()
-              }
-              mode="date"
-              display="spinner"
-              minimumDate={new Date()}
-              onChange={handleDateChange}
-            />
-          )}
-
           <ThemedText style={styles.sectionTitle}>Finca</ThemedText>
           <ThemedPicker
             items={allFincas}
@@ -340,7 +309,7 @@ const CrearCita = () => {
           />
           <ThemedPicker
             items={allRazas}
-            icon="paw-outline"
+            icon="list-circle-outline"
             placeholder="Raza del animal"
             selectedValue={razaId}
             onValueChange={(text) => setRazaId(text)}
@@ -378,6 +347,42 @@ const CrearCita = () => {
             selectedValue={watch("medicoId")}
             onValueChange={(text) => setValue("medicoId", text)}
           />
+
+          <ThemedText style={styles.sectionTitle}>Fecha</ThemedText>
+          <ThemedView style={styles.dateInputContainer}>
+            <ThemedButton
+              icon="calendar"
+              onPress={() => setShowDatePicker(true)}
+              style={styles.dateIcon}
+            />
+          </ThemedView>
+          <ThemedTextInput
+            placeholder="Selecciona una fecha"
+            icon="calendar-outline"
+            value={watch("fecha")}
+            onFocus={() => setShowDatePicker(true)}
+            showSoftInputOnFocus={false}
+            error={errors.fecha?.message}
+            style={[styles.input, styles.dateInput]}
+          />
+
+          {showDatePicker && (
+            <DateTimePicker
+              value={
+                watch("fecha")
+                  ? new Date(
+                      Number(watch("fecha").split("-")[0]),
+                      Number(watch("fecha").split("-")[1]) - 1,
+                      Number(watch("fecha").split("-")[2])
+                    )
+                  : new Date()
+              }
+              mode="date"
+              display="spinner"
+              minimumDate={new Date()}
+              onChange={handleDateChange}
+            />
+          )}
 
           {filteredHours.length > 0 ? (
             <>
@@ -425,9 +430,16 @@ const CrearCita = () => {
             icon="cash-outline"
             value={watch("totalPagar") ? `${watch("totalPagar")}` : ""}
             onChangeText={(text) => setValue("totalPagar", Number(text))}
+            onBlur={() => setMostrarText(true)}
             editable={false}
             style={styles.input}
           />
+          {watch("totalPagar") > 0 && (
+            <ThemedText style={styles.helpText}>
+              LOS PRECIOS PUEDEN VARIAR DEPENDIENDO DE LOS INSUMOS QUE SE
+              UTILICEN
+            </ThemedText>
+          )}
 
           <ThemedView style={styles.buttonContainer}>
             <ThemedButton
@@ -529,6 +541,12 @@ const styles = StyleSheet.create({
     color: "#2E7D32",
     textAlign: "center",
     fontSize: 14,
+  },
+  helpText: {
+    color: "#e63946",
+    fontSize: 12,
+    marginBottom: 10,
+    fontStyle: "italic",
   },
 });
 
