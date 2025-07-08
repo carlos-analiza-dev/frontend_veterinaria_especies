@@ -39,8 +39,6 @@ const CardSubServicios = ({ subServicio, paises, onEdit }: Props) => {
 
   const { data: medicos } = userGetMedicoByEspecialidad(subServicio.id);
 
-  console.log("MEDICOS", medicos);
-
   const [formData, setFormData] = useState<CrearServicePrecio>({
     sub_servicio_id: subServicio.id,
     paisId: "",

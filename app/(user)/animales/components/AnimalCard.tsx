@@ -199,12 +199,13 @@ const AnimalCard = ({ animal, onPress }: Props) => {
               <ThemedView
                 style={[styles.infoRow, { backgroundColor: colors.background }]}
               >
+                <MaterialCommunityIcons
+                  name="abacus"
+                  size={20}
+                  color={colors.onSurfaceVariant}
+                  style={styles.icon}
+                />
                 <View style={styles.chipsContainer}>
-                  <ThemedText
-                    style={[styles.infoText, { color: colors.onSurface }]}
-                  >
-                    Comp:
-                  </ThemedText>
                   {animal.complementos.map((complemento, index) => (
                     <Chip
                       key={`${complemento.complemento}-${index}`}
@@ -281,6 +282,194 @@ const AnimalCard = ({ animal, onPress }: Props) => {
               </ThemedView>
             )}
 
+            {(animal.nombre_padre ||
+              animal.arete_padre ||
+              animal.raza_padre) && (
+              <>
+                <Divider
+                  style={[styles.divider, { backgroundColor: colors.outline }]}
+                />
+                <ThemedText style={styles.sectionTitle}>
+                  Datos del Padre
+                </ThemedText>
+
+                {animal.nombre_padre && (
+                  <ThemedView
+                    style={[
+                      styles.infoRow,
+                      { backgroundColor: colors.background },
+                    ]}
+                  >
+                    <MaterialCommunityIcons
+                      name="account"
+                      size={20}
+                      color={colors.onSurfaceVariant}
+                    />
+                    <ThemedText
+                      style={[styles.infoText, { color: colors.onSurface }]}
+                    >
+                      Nombre: {animal.nombre_padre}
+                    </ThemedText>
+                  </ThemedView>
+                )}
+
+                {animal.arete_padre && (
+                  <ThemedView
+                    style={[
+                      styles.infoRow,
+                      { backgroundColor: colors.background },
+                    ]}
+                  >
+                    <MaterialCommunityIcons
+                      name="tag"
+                      size={20}
+                      color={colors.onSurfaceVariant}
+                    />
+                    <ThemedText
+                      style={[styles.infoText, { color: colors.onSurface }]}
+                    >
+                      Arete: {animal.arete_padre}
+                    </ThemedText>
+                  </ThemedView>
+                )}
+
+                {animal.raza_padre && (
+                  <ThemedView
+                    style={[
+                      styles.infoRow,
+                      { backgroundColor: colors.background },
+                    ]}
+                  >
+                    <MaterialCommunityIcons
+                      name="gender-female"
+                      size={20}
+                      color={colors.onSurfaceVariant}
+                    />
+                    <ThemedText
+                      style={[styles.infoText, { color: colors.onSurface }]}
+                    >
+                      Raza: {animal.raza_padre}
+                    </ThemedText>
+                  </ThemedView>
+                )}
+
+                {animal.compra_padre && (
+                  <Chip
+                    style={{
+                      backgroundColor: colors.secondaryContainer,
+                      marginVertical: 4,
+                    }}
+                    textStyle={{ color: colors.onSecondaryContainer }}
+                  >
+                    Comprado
+                  </Chip>
+                )}
+              </>
+            )}
+
+            {(animal.nombre_madre ||
+              animal.arete_madre ||
+              animal.raza_madre) && (
+              <>
+                <Divider
+                  style={[styles.divider, { backgroundColor: colors.outline }]}
+                />
+                <ThemedText style={styles.sectionTitle}>
+                  Datos de la Madre
+                </ThemedText>
+
+                {animal.nombre_madre && (
+                  <ThemedView
+                    style={[
+                      styles.infoRow,
+                      { backgroundColor: colors.background },
+                    ]}
+                  >
+                    <MaterialCommunityIcons
+                      name="account"
+                      size={20}
+                      color={colors.onSurfaceVariant}
+                    />
+                    <ThemedText
+                      style={[styles.infoText, { color: colors.onSurface }]}
+                    >
+                      Nombre: {animal.nombre_madre}
+                    </ThemedText>
+                  </ThemedView>
+                )}
+
+                {animal.arete_madre && (
+                  <ThemedView
+                    style={[
+                      styles.infoRow,
+                      { backgroundColor: colors.background },
+                    ]}
+                  >
+                    <MaterialCommunityIcons
+                      name="tag"
+                      size={20}
+                      color={colors.onSurfaceVariant}
+                    />
+                    <ThemedText
+                      style={[styles.infoText, { color: colors.onSurface }]}
+                    >
+                      Arete: {animal.arete_madre}
+                    </ThemedText>
+                  </ThemedView>
+                )}
+
+                {animal.raza_madre && (
+                  <ThemedView
+                    style={[
+                      styles.infoRow,
+                      { backgroundColor: colors.background },
+                    ]}
+                  >
+                    <MaterialCommunityIcons
+                      name="gender-female"
+                      size={20}
+                      color={colors.onSurfaceVariant}
+                    />
+                    <ThemedText
+                      style={[styles.infoText, { color: colors.onSurface }]}
+                    >
+                      Raza: {animal.raza_madre}
+                    </ThemedText>
+                  </ThemedView>
+                )}
+
+                {animal.numero_parto_madre && (
+                  <ThemedView
+                    style={[
+                      styles.infoRow,
+                      { backgroundColor: colors.background },
+                    ]}
+                  >
+                    <MaterialCommunityIcons
+                      name="counter"
+                      size={20}
+                      color={colors.onSurfaceVariant}
+                    />
+                    <ThemedText
+                      style={[styles.infoText, { color: colors.onSurface }]}
+                    >
+                      Número de parto: {animal.numero_parto_madre}
+                    </ThemedText>
+                  </ThemedView>
+                )}
+                {animal.compra_madre && (
+                  <Chip
+                    style={{
+                      backgroundColor: colors.secondaryContainer,
+                      marginVertical: 4,
+                    }}
+                    textStyle={{ color: colors.onSecondaryContainer }}
+                  >
+                    Comprado
+                  </Chip>
+                )}
+              </>
+            )}
             <Divider
               style={[styles.divider, { backgroundColor: colors.outline }]}
             />
@@ -394,6 +583,12 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginTop: 4,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginVertical: 8,
+    color: "#333",
   },
 });
 

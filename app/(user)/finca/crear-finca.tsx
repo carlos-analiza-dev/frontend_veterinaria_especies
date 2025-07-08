@@ -446,7 +446,12 @@ const CrearFincaPage = () => {
                 </ThemedText>
               </ThemedView>
 
-              <ThemedView style={styles.sectionContainer}>
+              <ThemedView
+                style={[
+                  styles.sectionContainer,
+                  { backgroundColor: colors.background },
+                ]}
+              >
                 <ThemedText style={styles.sectionTitle}>
                   Tipo de explotacion
                 </ThemedText>

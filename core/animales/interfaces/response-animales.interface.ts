@@ -4,35 +4,46 @@ export interface ResponseAnimalesByPropietario {
   color: string;
   identificador: string;
   edad_promedio: number;
-  fecha_nacimiento: Date;
-  observaciones: string;
+  fecha_nacimiento: string;
+  observaciones: null | string;
   tipo_alimentacion: TipoAlimentacion[];
-  complementos: Complemento[] | null;
-  medicamento: null | string;
+  complementos: ComplementoElement[];
+  medicamento: string;
+  nombre_padre: string;
+  arete_padre: null | string;
+  raza_padre: null | string;
+  nombre_criador_padre: null | string;
+  nombre_propietario_padre: null | string;
+  nombre_finca_origen_padre: string;
+  compra_padre: boolean;
+  nombre_criador_origen_padre: string;
+  nombre_madre: string;
+  arete_madre: null | string;
+  raza_madre: null | string;
+  nombre_criador_madre: null | string;
+  nombre_propietario_madre: null | string;
+  nombre_finca_origen_madre: string;
+  numero_parto_madre: number;
+  compra_madre: boolean;
+  nombre_criador_origen_madre: string;
   fecha_registro: Date;
   castrado: boolean;
   esterelizado: boolean;
   finca: Finca;
   propietario: Propietario;
-  especie: Especie;
-  raza: Raza;
+  especie: EspecieClass;
+  raza: EspecieClass;
 }
 
-export interface Complemento {
+export interface ComplementoElement {
   complemento: string;
 }
 
-export interface Raza {
+export interface EspecieClass {
   id: string;
   nombre: string;
   isActive: boolean;
   abreviatura?: string;
-}
-
-export interface Especie {
-  id: string;
-  nombre: string;
-  isActive: boolean;
 }
 
 export interface Finca {
@@ -42,13 +53,18 @@ export interface Finca {
   ubicacion: string;
   latitud: number;
   longitud: number;
-  abreviatura: string;
+  abreviatura: Abreviatura;
   tamaño_total_hectarea: string;
   area_ganaderia_hectarea: string;
   tipo_explotacion: TipoExplotacionElement[];
   especies_maneja: EspeciesManeja[];
   fecha_registro: Date;
   isActive: boolean;
+}
+
+export enum Abreviatura {
+  LM = "LM",
+  Lg = "LG",
 }
 
 export interface EspeciesManeja {
@@ -74,6 +90,6 @@ export interface Propietario {
 }
 
 export interface TipoAlimentacion {
+  origen: string;
   alimento: string;
-  origen?: string;
 }

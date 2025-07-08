@@ -1,11 +1,11 @@
-import { Servicio } from "@/core/servicios/interfaces/response-servicios.interface";
+import { ResponseServicios } from "@/core/servicios/interfaces/response-servicios.interface";
 import ThemedButton from "@/presentation/theme/components/ThemedButton";
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { Badge, Card, Text, useTheme } from "react-native-paper";
 
 interface Props {
-  services: Servicio;
+  services: ResponseServicios;
   onPress: () => void;
 }
 

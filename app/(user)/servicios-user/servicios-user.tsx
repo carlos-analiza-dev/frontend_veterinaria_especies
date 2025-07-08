@@ -12,13 +12,11 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import { useTheme } from "react-native-paper";
 import CardServiceUsers from "./components/CardServiceUsers";
 
 const ServicesUser = () => {
   const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
-  const { colors } = useTheme();
   const primary = useThemeColor({}, "primary");
 
   const {

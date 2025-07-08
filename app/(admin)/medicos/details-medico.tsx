@@ -135,8 +135,6 @@ const DetailsMedico = ({ route }: DetailsMedicoProps) => {
   });
 
   const onSubmit = (data: Partial<CrearMedicoInterface>) => {
-    console.log("DATA", data);
-
     mutation_update.mutate(data);
   };
 

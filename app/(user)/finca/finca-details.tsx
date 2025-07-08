@@ -208,10 +208,6 @@ const FincaDetailsPage = ({ route }: DetailsFincaProps) => {
                   setValue("ubicacion", direccion);
                   setValue("latitud", coords.latitude);
                   setValue("longitud", coords.longitude);
-                  console.log("Coordenadas seleccionadas:", {
-                    lat: coords.latitude,
-                    lng: coords.longitude,
-                  });
                 }}
                 initialCoords={
                   watch("latitud") && watch("longitud")
@@ -322,7 +318,12 @@ const FincaDetailsPage = ({ route }: DetailsFincaProps) => {
                 keyboardType="numeric"
               />
 
-              <ThemedView style={styles.sectionContainer}>
+              <ThemedView
+                style={[
+                  styles.sectionContainer,
+                  { backgroundColor: colors.background },
+                ]}
+              >
                 <ThemedText style={styles.sectionTitle}>
                   Tipo de explotacion
                 </ThemedText>
