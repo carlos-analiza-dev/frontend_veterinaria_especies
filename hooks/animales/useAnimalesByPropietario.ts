@@ -10,7 +10,7 @@ const useAnimalesByPropietario = (
     queryKey: ["animales-propietario", propietarioId, fincaId, identificador],
     queryFn: () =>
       ObtenerAnimalesByPropietario(propietarioId, fincaId, identificador),
-    retry: 0,
+    retry: false,
   });
 };
 

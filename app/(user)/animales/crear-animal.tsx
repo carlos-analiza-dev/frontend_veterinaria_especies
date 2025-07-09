@@ -826,7 +826,7 @@ const CrearAnimal = () => {
 
               {checkedMadre && (
                 <ThemedTextInput
-                  placeholder="Nombre del criador"
+                  placeholder="Nombre del criador (origen)"
                   icon="person-outline"
                   value={watch("nombre_criador_origen_madre")}
                   onChangeText={(text) =>

@@ -11,8 +11,8 @@ import { useNavigation } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  FlatList,
   RefreshControl,
-  ScrollView,
   StyleSheet,
   View,
 } from "react-native";
@@ -36,6 +36,7 @@ const AnimalesPageGanadero = () => {
   }, [searchTerm]);
 
   const { data: fincas } = useFincasPropietarios(user?.id ?? "");
+
   const {
     data: animales,
     isLoading,
@@ -112,8 +113,25 @@ const AnimalesPageGanadero = () => {
           />
         </ThemedView>
       </View>
-      <ScrollView
+      <FlatList
+        data={animales?.data || []}
+        renderItem={({ item }) => (
+          <AnimalCard
+            animal={item}
+            key={item.id}
+            onPress={() =>
+              navigation.navigate("AnimalDetails", { animalId: item.id })
+            }
+          />
+        )}
+        keyExtractor={(item) => item.id}
         contentContainerStyle={styles.scrollContainer}
+        ListEmptyComponent={
+          <MessageError
+            titulo="Sin animales"
+            descripcion="Esta finca no tiene animales registrados."
+          />
+        }
         refreshControl={
           <RefreshControl
             onRefresh={onRefresh}
@@ -122,24 +140,7 @@ const AnimalesPageGanadero = () => {
             tintColor={colorPrimary}
           />
         }
-      >
-        {animales?.data.length === 0 ? (
-          <MessageError
-            titulo="Sin animales"
-            descripcion="Esta finca no tiene animales registrados."
-          />
-        ) : (
-          animales?.data.map((animal) => (
-            <AnimalCard
-              animal={animal}
-              key={animal.id}
-              onPress={() =>
-                navigation.navigate("AnimalDetails", { animalId: animal.id })
-              }
-            />
-          ))
-        )}
-      </ScrollView>
+      />
       <FAB iconName="add" onPress={() => navigation.navigate("CrearAnimal")} />
     </ThemedView>
   );
