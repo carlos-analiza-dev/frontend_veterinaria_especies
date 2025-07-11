@@ -2,7 +2,9 @@ import { CreateAnimal } from "@/core/animales/accions/crear-animal";
 import { CrearAnimalByFinca } from "@/core/animales/interfaces/crear-animal.interface";
 import { alimentosOptions } from "@/helpers/data/alimentos";
 import { complementosOptions } from "@/helpers/data/complementos";
+import { purezaOptions } from "@/helpers/data/purezaOptions";
 import { sexoOptions } from "@/helpers/data/sexo_animales";
+import { tipoReproduccionOptions } from "@/helpers/data/tipoReproduccionOptions";
 import useGetEspecies from "@/hooks/especies/useGetEspecies";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
 import useGetRazasByEspecie from "@/hooks/razas/useGetRazasByEspecie";
@@ -251,10 +253,9 @@ const CrearAnimal = () => {
     }
 
     if (prefixMadre && currentNumberMadre?.length === 6) {
-      setValue(
-        "arete_madre",
-        `${prefixMadre}-${formatNumber(currentNumberMadre)}`
-      );
+      const areteMadre = `${prefixMadre}-${formatNumber(currentNumberMadre)}`;
+
+      setValue("arete_madre", areteMadre);
     }
   }, [
     watch("especie"),
@@ -428,6 +429,24 @@ const CrearAnimal = () => {
               error={errors.raza?.message}
             />
 
+            <ThemedPicker
+              items={purezaOptions}
+              onValueChange={(value) => setValue("pureza", value)}
+              selectedValue={watch("pureza")}
+              placeholder="Selecciona pureza"
+              icon="layers-outline"
+              error={errors.pureza?.message}
+            />
+
+            <ThemedPicker
+              items={tipoReproduccionOptions}
+              onValueChange={(value) => setValue("tipo_reproduccion", value)}
+              selectedValue={watch("tipo_reproduccion")}
+              placeholder="Selecciona tipo de reproducción"
+              icon="git-compare-outline"
+              error={errors.tipo_reproduccion?.message}
+            />
+
             <ThemedTextInput
               placeholder="Fecha de nacimiento"
               icon="calendar-outline"
@@ -517,14 +536,21 @@ const CrearAnimal = () => {
                     {expandedAlimento === alimento.value &&
                       isAlimentoSeleccionado(alimento.value) && (
                         <View style={styles.subservicesContainer}>
-                          {["comprado", "producido"].map((origen) => (
+                          {[
+                            "comprado",
+                            "producido",
+                            "comprado y producido",
+                          ].map((origen) => (
                             <TouchableOpacity
                               key={origen}
                               style={styles.subserviceItem}
                               onPress={() =>
                                 handleOrigenSelection(
                                   alimento.value,
-                                  origen as "comprado" | "producido"
+                                  origen as
+                                    | "comprado"
+                                    | "producido"
+                                    | "comprado y producido"
                                 )
                               }
                             >
@@ -539,15 +565,27 @@ const CrearAnimal = () => {
                                 onPress={() =>
                                   handleOrigenSelection(
                                     alimento.value,
-                                    origen as "comprado" | "producido"
+                                    origen as
+                                      | "comprado"
+                                      | "producido"
+                                      | "comprado y producido"
                                   )
                                 }
                                 color={colors.primary}
                               />
                               <ThemedText style={styles.subserviceText}>
-                                {origen === "comprado"
-                                  ? "Comprado"
-                                  : "Producido"}
+                                {(() => {
+                                  switch (origen) {
+                                    case "comprado":
+                                      return "Comprado";
+                                    case "producido":
+                                      return "Producido";
+                                    case "comprado y producido":
+                                      return "Comprado y producido";
+                                    default:
+                                      return origen;
+                                  }
+                                })()}
                               </ThemedText>
                             </TouchableOpacity>
                           ))}

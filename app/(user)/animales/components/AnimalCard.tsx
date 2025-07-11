@@ -161,6 +161,36 @@ const AnimalCard = ({ animal, onPress }: Props) => {
               </ThemedText>
             </ThemedView>
 
+            <ThemedView
+              style={[styles.infoRow, { backgroundColor: colors.background }]}
+            >
+              <MaterialCommunityIcons
+                name="dna"
+                size={20}
+                color={colors.onSurfaceVariant}
+              />
+              <ThemedText
+                style={[styles.infoText, { color: colors.onSurface }]}
+              >
+                Pureza: {animal.pureza}
+              </ThemedText>
+            </ThemedView>
+
+            <ThemedView
+              style={[styles.infoRow, { backgroundColor: colors.background }]}
+            >
+              <MaterialCommunityIcons
+                name="baby-buggy"
+                size={20}
+                color={colors.onSurfaceVariant}
+              />
+              <ThemedText
+                style={[styles.infoText, { color: colors.onSurface }]}
+              >
+                Reproducción: {animal.tipo_reproduccion}
+              </ThemedText>
+            </ThemedView>
+
             {animal.tipo_alimentacion.length > 0 && (
               <ThemedView
                 style={[styles.infoRow, { backgroundColor: colors.background }]}

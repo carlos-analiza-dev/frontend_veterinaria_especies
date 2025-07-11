@@ -2,6 +2,7 @@ import { CustomToast } from "@/presentation/theme/components/CustomToast";
 import { useColorScheme } from "@/presentation/theme/hooks/useColorScheme.web";
 import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import { AuthProvider } from "@/providers/AuthProvider";
+import PermissionsCheckerProvider from "@/providers/PermissionsCheckerProvider";
 import {
   DarkTheme,
   DefaultTheme,
@@ -33,29 +34,31 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
-      <QueryClientProvider client={queryClient}>
-        <GestureHandlerRootView style={{ backgroundColor, flex: 1 }}>
-          <PaperProvider>
-            <ThemeProvider
-              value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-            >
-              <Stack
-                screenOptions={{
-                  headerShown: false,
-                }}
-              ></Stack>
-              <Toast
-                config={{
-                  success: (props) => <CustomToast {...props} />,
-                  error: (props) => <CustomToast {...props} />,
-                  info: (props) => <CustomToast {...props} />,
-                }}
-              />
-              <StatusBar style="auto" />
-            </ThemeProvider>
-          </PaperProvider>
-        </GestureHandlerRootView>
-      </QueryClientProvider>
+      <PermissionsCheckerProvider>
+        <QueryClientProvider client={queryClient}>
+          <GestureHandlerRootView style={{ backgroundColor, flex: 1 }}>
+            <PaperProvider>
+              <ThemeProvider
+                value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+              >
+                <Stack
+                  screenOptions={{
+                    headerShown: false,
+                  }}
+                ></Stack>
+                <Toast
+                  config={{
+                    success: (props) => <CustomToast {...props} />,
+                    error: (props) => <CustomToast {...props} />,
+                    info: (props) => <CustomToast {...props} />,
+                  }}
+                />
+                <StatusBar style="auto" />
+              </ThemeProvider>
+            </PaperProvider>
+          </GestureHandlerRootView>
+        </QueryClientProvider>
+      </PermissionsCheckerProvider>
     </AuthProvider>
   );
 }

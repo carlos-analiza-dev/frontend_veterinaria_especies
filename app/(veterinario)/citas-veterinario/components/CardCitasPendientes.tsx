@@ -1,8 +1,17 @@
-import { Cita } from "@/core/citas/interfaces/response-citas-user.interface";
+import {
+  Cita,
+  Finca,
+} from "@/core/citas/interfaces/response-citas-user.interface";
+import { calcularDistancia } from "@/helpers/funciones/calcularDistancia";
+
 import { formatDate } from "@/helpers/funciones/formatDate";
 import { getStatusColor } from "@/helpers/funciones/getStatusColor";
+import { handleOpenMap } from "@/helpers/funciones/handleOpenMap";
 import { MaterialIcons } from "@expo/vector-icons";
+import * as Location from "expo-location";
+import { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 
 interface Props {
   item: Cita;
@@ -12,6 +21,50 @@ interface Props {
 }
 
 const CardCitasMedico = ({ item, onConfirm, onCancel, onComplete }: Props) => {
+  const [location, setLocation] = useState<Location.LocationObject | null>(
+    null
+  );
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [distance, setDistance] = useState<number | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setErrorMsg("Permiso de ubicación denegado");
+        return;
+      }
+
+      try {
+        let currentLocation = await Location.getCurrentPositionAsync({});
+        setLocation(currentLocation);
+
+        if (item.finca.latitud && item.finca.longitud) {
+          const dist = calcularDistancia(
+            currentLocation.coords.latitude,
+            currentLocation.coords.longitude,
+            item.finca.latitud,
+            item.finca.longitud
+          );
+          setDistance(dist);
+        }
+      } catch (error) {
+        setErrorMsg("Error al obtener la ubicación");
+      }
+    })();
+  }, [item.finca.latitud, item.finca.longitud]);
+
+  const clickMap = (finca: Finca) => {
+    handleOpenMap(finca);
+  };
+
+  const mapRegion = {
+    latitude: item.finca.latitud || 0,
+    longitude: item.finca.longitud || 0,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+  };
+
   return (
     <View style={styles.card}>
       <View style={styles.header}>
@@ -26,6 +79,31 @@ const CardCitasMedico = ({ item, onConfirm, onCancel, onComplete }: Props) => {
         >
           <Text style={styles.statusText}>{item.estado.toUpperCase()}</Text>
         </View>
+      </View>
+
+      <View style={styles.mapContainer}>
+        <MapView
+          provider={PROVIDER_GOOGLE}
+          style={styles.map}
+          region={mapRegion}
+          scrollEnabled={false}
+          zoomEnabled={false}
+        >
+          <Marker
+            coordinate={{
+              latitude: item.finca.latitud || 0,
+              longitude: item.finca.longitud || 0,
+            }}
+            title={item.finca.nombre_finca}
+          />
+        </MapView>
+      </View>
+
+      <View style={styles.distanceContainer}>
+        <MaterialIcons name="location-on" size={20} color="#1a73e8" />
+        <Text style={styles.distanceText}>
+          {distance !== null ? `${distance.toFixed(1)} km` : "Calculando..."}
+        </Text>
       </View>
 
       <View style={styles.infoContainer}>
@@ -57,9 +135,15 @@ const CardCitasMedico = ({ item, onConfirm, onCancel, onComplete }: Props) => {
 
         <View style={styles.infoRow}>
           <MaterialIcons name="location-on" size={16} color="#555" />
-          <Text style={styles.infoText} numberOfLines={1}>
-            Finca: {item.finca.nombre_finca} ({item.finca.ubicacion})
-          </Text>
+          <TouchableOpacity onPress={() => clickMap(item.finca)}>
+            <Text style={[styles.infoText, styles.linkText]} numberOfLines={1}>
+              Finca: {item.finca.nombre_finca} (
+              {distance !== null
+                ? `${distance.toFixed(1)} km`
+                : "Calculando..."}
+              )
+            </Text>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.infoRow}>
@@ -224,6 +308,30 @@ const styles = StyleSheet.create({
   },
   canceledText: {
     color: "#C62828",
+    fontWeight: "bold",
+  },
+  linkText: {
+    color: "#1a73e8",
+    textDecorationLine: "underline",
+  },
+  mapContainer: {
+    height: 150,
+    borderRadius: 10,
+    overflow: "hidden",
+    marginVertical: 12,
+  },
+  map: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  distanceContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  distanceText: {
+    marginLeft: 8,
+    fontSize: 16,
+    color: "#1a73e8",
     fontWeight: "bold",
   },
 });

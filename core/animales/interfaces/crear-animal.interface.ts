@@ -14,6 +14,8 @@ export interface CrearAnimalByFinca {
   fincaId: string;
   castrado: boolean;
   esterelizado: boolean;
+  pureza: string;
+  tipo_reproduccion: string;
 
   nombre_padre?: string;
   arete_padre?: string;

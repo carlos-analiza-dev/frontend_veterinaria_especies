@@ -5,6 +5,7 @@ export const alimentosOptions = [
     origenes: [
       { label: "Comprado", value: "comprado" },
       { label: "Producido", value: "producido" },
+      { label: "Comprado y producido", value: "comprado y producido" },
     ],
   },
   {
@@ -13,6 +14,7 @@ export const alimentosOptions = [
     origenes: [
       { label: "Comprado", value: "comprado" },
       { label: "Producido", value: "producido" },
+      { label: "Comprado y producido", value: "comprado y producido" },
     ],
   },
 ];

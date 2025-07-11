@@ -328,7 +328,7 @@ const HorariosMedicos = ({ medico, medicoId, onHorarioCreado }: Props) => {
           value={new Date()}
           mode="time"
           onChange={handleTimeChange}
-          design="material"
+          design="default"
         />
       )}
     </ThemedView>

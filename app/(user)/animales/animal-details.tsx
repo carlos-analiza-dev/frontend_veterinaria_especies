@@ -631,14 +631,21 @@ const AnimalDetailsPage = ({ route }: EditarAnimalProps) => {
                     {expandedAlimento === alimento.value &&
                       isAlimentoSeleccionado(alimento.value) && (
                         <View style={styles.subservicesContainer}>
-                          {["comprado", "producido"].map((origen) => (
+                          {[
+                            "comprado",
+                            "producido",
+                            "comprado y producido",
+                          ].map((origen) => (
                             <TouchableOpacity
                               key={origen}
                               style={styles.subserviceItem}
                               onPress={() =>
                                 handleOrigenSelection(
                                   alimento.value,
-                                  origen as "comprado" | "producido"
+                                  origen as
+                                    | "comprado"
+                                    | "producido"
+                                    | "comprado y producido"
                                 )
                               }
                             >
@@ -653,15 +660,27 @@ const AnimalDetailsPage = ({ route }: EditarAnimalProps) => {
                                 onPress={() =>
                                   handleOrigenSelection(
                                     alimento.value,
-                                    origen as "comprado" | "producido"
+                                    origen as
+                                      | "comprado"
+                                      | "producido"
+                                      | "comprado y producido"
                                   )
                                 }
                                 color={colors.primary}
                               />
                               <ThemedText style={styles.subserviceText}>
-                                {origen === "comprado"
-                                  ? "Comprado"
-                                  : "Producido"}
+                                {(() => {
+                                  switch (origen) {
+                                    case "comprado":
+                                      return "Comprado";
+                                    case "producido":
+                                      return "Producido";
+                                    case "comprado y producido":
+                                      return "Comprado y producido";
+                                    default:
+                                      return origen;
+                                  }
+                                })()}
                               </ThemedText>
                             </TouchableOpacity>
                           ))}

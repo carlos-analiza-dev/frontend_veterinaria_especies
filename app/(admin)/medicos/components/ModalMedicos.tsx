@@ -1,6 +1,7 @@
 import { diasSemana } from "@/helpers/funciones/diasDisponibles";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
+import { TimePickerButton } from "@/presentation/theme/components/TimeInput";
 import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import { FontAwesome } from "@expo/vector-icons";
 import React from "react";
@@ -21,6 +22,7 @@ interface Props {
   handleCrearHorario: () => Promise<void>;
   isLoading: boolean;
 }
+
 const ModalMedicos = ({
   editingHorario,
   hideModal,
@@ -37,7 +39,7 @@ const ModalMedicos = ({
 }: Props) => {
   const secondary = useThemeColor({}, "textSecondary");
   const textColor = useThemeColor({}, "text");
-
+  const colors = { text: textColor };
   const primary = useThemeColor({}, "primary");
   const success = useThemeColor({}, "success");
   const background = useThemeColor({}, "background");
@@ -123,6 +125,10 @@ const ModalMedicos = ({
       marginBottom: 20,
       textAlign: "center",
     },
+    timeInputsContainer: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+    },
   });
   return (
     <Portal>
@@ -150,22 +156,21 @@ const ModalMedicos = ({
               </TouchableOpacity>
             ))}
           </View>
-
           <View style={styles.timeSection}>
             <ThemedText style={styles.timeSectionTitle}>Horario</ThemedText>
-            <View style={styles.timeButtonsContainer}>
-              <TouchableOpacity
-                style={styles.timeButton}
+            <View style={styles.timeInputsContainer}>
+              <TimePickerButton
+                label="Hora de inicio"
+                time={horaInicio}
                 onPress={() => setShowPicker("inicio")}
-              >
-                <Text style={styles.timeButtonText}>Inicio: {horaInicio}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.timeButton}
+                colors={colors}
+              />
+              <TimePickerButton
+                label="Hora de fin"
+                time={horaFin}
                 onPress={() => setShowPicker("fin")}
-              >
-                <Text style={styles.timeButtonText}>Fin: {horaFin}</Text>
-              </TouchableOpacity>
+                colors={colors}
+              />
             </View>
           </View>
 

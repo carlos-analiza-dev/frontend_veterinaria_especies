@@ -8,6 +8,8 @@ export interface ResponseAnimalesByPropietario {
   observaciones: null | string;
   tipo_alimentacion: TipoAlimentacion[];
   complementos: ComplementoElement[];
+  pureza: string;
+  tipo_reproduccion: string;
   medicamento: string;
   nombre_padre: string;
   arete_padre: null | string;
