@@ -2,7 +2,7 @@ import {
   Cita,
   Finca,
 } from "@/core/citas/interfaces/response-citas-user.interface";
-import { calcularDistancia } from "@/helpers/funciones/calcularDistancia";
+import { obtenerDistanciaGoogleMaps } from "@/helpers/funciones/calcularDistancia";
 
 import { formatDate } from "@/helpers/funciones/formatDate";
 import { getStatusColor } from "@/helpers/funciones/getStatusColor";
@@ -40,7 +40,7 @@ const CardCitasMedico = ({ item, onConfirm, onCancel, onComplete }: Props) => {
         setLocation(currentLocation);
 
         if (item.finca.latitud && item.finca.longitud) {
-          const dist = calcularDistancia(
+          const dist = await obtenerDistanciaGoogleMaps(
             currentLocation.coords.latitude,
             currentLocation.coords.longitude,
             item.finca.latitud,

@@ -5,6 +5,7 @@ export async function obtenerDistanciaGoogleMaps(
   lon2: number
 ): Promise<number | null> {
   const apiKey = process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY;
+
   const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${lat1},${lon1}&destination=${lat2},${lon2}&key=${apiKey}`;
 
   try {
