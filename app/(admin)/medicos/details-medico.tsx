@@ -2,11 +2,9 @@ import { ActualizarMedico } from "@/core/medicos/accions/update-medico";
 import { CrearMedicoInterface } from "@/core/medicos/interfaces/crear-medico.interface";
 import useGetMedicoById from "@/hooks/medicos/useGetMedicosById";
 import useGetServiciosActivos from "@/hooks/servicios/useGetServiciosActivos";
-import useGetVeterinarios from "@/hooks/users/useGetVeterinarios";
 import MessageError from "@/presentation/components/MessageError";
 import { UsersStackParamList } from "@/presentation/navigation/types";
 import ThemedButton from "@/presentation/theme/components/ThemedButton";
-import ThemedPicker from "@/presentation/theme/components/ThemedPicker";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import { FontAwesome } from "@expo/vector-icons";
 import { RouteProp } from "@react-navigation/native";
@@ -37,11 +35,11 @@ interface DetailsMedicoProps {
 
 const DetailsMedico = ({ route }: DetailsMedicoProps) => {
   const { colors } = useTheme();
-  const { height, width } = useWindowDimensions();
+  const { height } = useWindowDimensions();
   const { medicoId } = route.params;
   const queryClient = useQueryClient();
   const navigation = useNavigation();
-  const { data: veterinarios } = useGetVeterinarios();
+
   const { data: categorias } = useGetServiciosActivos();
   const { data: medico, isLoading, isError } = useGetMedicoById(medicoId);
   const [selectedSubservices, setSelectedSubservices] = useState<string[]>([]);
@@ -91,12 +89,6 @@ const DetailsMedico = ({ route }: DetailsMedicoProps) => {
   const toggleCategoryExpand = (categoryId: string) => {
     setExpandedCategory((prev) => (prev === categoryId ? null : categoryId));
   };
-
-  const veterinarios_items =
-    veterinarios?.map((vet) => ({
-      label: vet.name,
-      value: vet.id,
-    })) || [];
 
   const mutation_update = useMutation({
     mutationFn: (data: Partial<CrearMedicoInterface>) =>
@@ -187,16 +179,6 @@ const DetailsMedico = ({ route }: DetailsMedicoProps) => {
         </ThemedView>
 
         <ThemedView style={styles.card}>
-          <ThemedPicker
-            items={veterinarios_items}
-            icon="accessibility-outline"
-            selectedValue={watch("usuarioId") || ""}
-            onValueChange={(text) =>
-              setValue("usuarioId", text, { shouldValidate: true })
-            }
-            placeholder="Seleccione un veterinario*"
-            error={errors.usuarioId?.message}
-          />
           <TextInput
             label="Número de colegiado*"
             style={styles.input}

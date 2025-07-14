@@ -70,7 +70,13 @@ const CardCitas = ({ item, onPress }: Props) => {
 
           <View style={styles.infoRow}>
             <MaterialIcons name="pets" size={16} color="#555" />
-            <Text style={styles.infoText}>{item.animal.raza.nombre}</Text>
+            <Text style={styles.infoText}>
+              {item.animal.razas.length === 1
+                ? item.animal.razas[0].nombre
+                : item.animal.razas.length > 1
+                ? "Encaste"
+                : "Sin raza"}
+            </Text>
           </View>
 
           <View style={styles.infoRow}>

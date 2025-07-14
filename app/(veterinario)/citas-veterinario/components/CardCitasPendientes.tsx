@@ -2,7 +2,7 @@ import {
   Cita,
   Finca,
 } from "@/core/citas/interfaces/response-citas-user.interface";
-import { obtenerDistanciaGoogleMaps } from "@/helpers/funciones/calcularDistancia";
+import { obtenerTiempoViajeGoogleMaps } from "@/helpers/funciones/calcularDistancia";
 
 import { formatDate } from "@/helpers/funciones/formatDate";
 import { getStatusColor } from "@/helpers/funciones/getStatusColor";
@@ -26,6 +26,7 @@ const CardCitasMedico = ({ item, onConfirm, onCancel, onComplete }: Props) => {
   );
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [distance, setDistance] = useState<number | null>(null);
+  const [travelTime, setTravelTime] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -40,13 +41,25 @@ const CardCitasMedico = ({ item, onConfirm, onCancel, onComplete }: Props) => {
         setLocation(currentLocation);
 
         if (item.finca.latitud && item.finca.longitud) {
-          const dist = await obtenerDistanciaGoogleMaps(
+          const resultado = await obtenerTiempoViajeGoogleMaps(
             currentLocation.coords.latitude,
             currentLocation.coords.longitude,
             item.finca.latitud,
             item.finca.longitud
           );
-          setDistance(dist);
+
+          if (
+            resultado &&
+            resultado.distanciaMetros !== null &&
+            resultado.tiempoTexto !== null
+          ) {
+            const distanciaKm = resultado.distanciaMetros / 1000;
+            setDistance(distanciaKm);
+            setTravelTime(resultado.tiempoTexto);
+
+            item.distancia = distanciaKm;
+            item.tiempoViaje = resultado.tiempoTexto;
+          }
         }
       } catch (error) {
         setErrorMsg("Error al obtener la ubicación");
@@ -106,6 +119,15 @@ const CardCitasMedico = ({ item, onConfirm, onCancel, onComplete }: Props) => {
         </Text>
       </View>
 
+      <View style={styles.timeContainer}>
+        <MaterialIcons name="directions-car" size={20} color="#1a73e8" />
+        <Text style={styles.timeText}>
+          {travelTime !== null
+            ? `${travelTime} en auto`
+            : "Calculando tiempo..."}
+        </Text>
+      </View>
+
       <View style={styles.infoContainer}>
         <View style={styles.infoRow}>
           <MaterialIcons name="calendar-today" size={16} color="#555" />
@@ -129,7 +151,12 @@ const CardCitasMedico = ({ item, onConfirm, onCancel, onComplete }: Props) => {
         <View style={styles.infoRow}>
           <MaterialIcons name="pets" size={16} color="#555" />
           <Text style={styles.infoText}>
-            {item.animal.especie.nombre} - {item.animal.raza.nombre}
+            {item?.animal?.especie?.nombre || "Especie no especificada"} -
+            {item.animal.razas.length === 1
+              ? item.animal.razas[0].nombre
+              : item.animal.razas.length > 1
+              ? "Encaste"
+              : "Sin raza"}
           </Text>
         </View>
 
@@ -329,6 +356,17 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   distanceText: {
+    marginLeft: 8,
+    fontSize: 16,
+    color: "#1a73e8",
+    fontWeight: "bold",
+  },
+  timeContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  timeText: {
     marginLeft: 8,
     fontSize: 16,
     color: "#1a73e8",

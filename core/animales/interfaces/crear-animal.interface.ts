@@ -6,7 +6,7 @@ export interface CrearAnimalByFinca {
   complementos?: TipoComplemento[];
   medicamento?: string;
   identificador: string;
-  raza: string;
+  razaIds: string[];
   edad_promedio?: number;
   fecha_nacimiento: string;
   observaciones?: string;
@@ -19,7 +19,7 @@ export interface CrearAnimalByFinca {
 
   nombre_padre?: string;
   arete_padre?: string;
-  raza_padre?: string;
+  razas_padre?: string[];
   nombre_criador_padre?: string;
   nombre_propietario_padre?: string;
   nombre_finca_origen_padre?: string;
@@ -28,7 +28,7 @@ export interface CrearAnimalByFinca {
 
   nombre_madre?: string;
   arete_madre?: string;
-  raza_madre?: string;
+  razas_madre?: string[];
   nombre_criador_madre?: string;
   nombre_propietario_madre?: string;
   nombre_finca_origen_madre?: string;

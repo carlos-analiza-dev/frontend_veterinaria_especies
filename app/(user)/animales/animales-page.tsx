@@ -1,8 +1,10 @@
 import useAnimalesByPropietario from "@/hooks/animales/useAnimalesByPropietario";
+import useGetEspecies from "@/hooks/especies/useGetEspecies";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
 import { useAuthStore } from "@/presentation/auth/store/useAuthStore";
 import Buscador from "@/presentation/components/Buscador";
 import { FAB } from "@/presentation/components/FAB";
+import SelectEspecies from "@/presentation/components/fincas/SelectEspecies";
 import SelectFincas from "@/presentation/components/fincas/SelectFincas";
 import MessageError from "@/presentation/components/MessageError";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
@@ -25,6 +27,7 @@ const AnimalesPageGanadero = () => {
   const { colors } = useTheme();
   const colorPrimary = useThemeColor({}, "primary");
   const [fincaId, setFincaId] = useState("");
+  const [especieId, setEspecieId] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
 
@@ -36,6 +39,7 @@ const AnimalesPageGanadero = () => {
   }, [searchTerm]);
 
   const { data: fincas } = useFincasPropietarios(user?.id ?? "");
+  const { data: especies } = useGetEspecies();
 
   const {
     data: animales,
@@ -43,10 +47,19 @@ const AnimalesPageGanadero = () => {
     isError,
     refetch,
     isRefetching,
-  } = useAnimalesByPropietario(user?.id ?? "", fincaId, debouncedSearchTerm);
+  } = useAnimalesByPropietario(
+    user?.id ?? "",
+    fincaId,
+    especieId,
+    debouncedSearchTerm
+  );
 
   const handleFincaPress = (id: string) => {
     setFincaId((prevId) => (prevId === id ? "" : id));
+  };
+
+  const handleEspeciePress = (id: string) => {
+    setEspecieId((prevId) => (prevId === id ? "" : id));
   };
 
   const onRefresh = useCallback(() => {
@@ -73,12 +86,22 @@ const AnimalesPageGanadero = () => {
             searchTerm={searchTerm}
           />
           <ThemedView style={styles.roleFilterContainer}>
-            <SelectFincas
-              fincas={fincas?.data}
-              fincaId={fincaId}
-              setFincaId={setFincaId}
-              handleFincaPress={handleFincaPress}
-            />
+            <View style={styles.pickerWrapper}>
+              <SelectFincas
+                fincas={fincas?.data}
+                fincaId={fincaId}
+                setFincaId={setFincaId}
+                handleFincaPress={handleFincaPress}
+              />
+            </View>
+            <View style={styles.pickerWrapper}>
+              <SelectEspecies
+                especies={especies?.data}
+                especieId={especieId}
+                setEspecieId={setEspecieId}
+                handleEspeciePress={handleEspeciePress}
+              />
+            </View>
           </ThemedView>
         </View>
         <MessageError
@@ -105,12 +128,22 @@ const AnimalesPageGanadero = () => {
           searchTerm={searchTerm}
         />
         <ThemedView style={styles.roleFilterContainer}>
-          <SelectFincas
-            fincas={fincas?.data}
-            fincaId={fincaId}
-            setFincaId={setFincaId}
-            handleFincaPress={handleFincaPress}
-          />
+          <View style={styles.pickerWrapper}>
+            <SelectFincas
+              fincas={fincas?.data}
+              fincaId={fincaId}
+              setFincaId={setFincaId}
+              handleFincaPress={handleFincaPress}
+            />
+          </View>
+          <View style={styles.pickerWrapper}>
+            <SelectEspecies
+              especies={especies?.data}
+              especieId={especieId}
+              setEspecieId={setEspecieId}
+              handleEspeciePress={handleEspeciePress}
+            />
+          </View>
         </ThemedView>
       </View>
       <FlatList
@@ -177,8 +210,12 @@ const styles = StyleSheet.create({
   },
 
   roleFilterContainer: {
-    width: "100%",
-    marginVertical: 10,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 10,
+  },
+  pickerWrapper: {
+    flex: 1,
   },
 });
 

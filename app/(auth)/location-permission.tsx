@@ -24,25 +24,27 @@ export default function LocationPermissionScreen() {
 
   const handleRequestPermission = async () => {
     setIsLoading(true);
-    const { status } = await Location.requestForegroundPermissionsAsync();
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      setStatus(status);
 
-    setStatus(status);
-    setIsLoading(false);
-
-    if (status === "granted") {
-      router.replace("/(auth)/login");
-    } else if (status === "denied") {
-      Alert.alert(
-        "Permiso requerido",
-        "Por favor, activa los permisos de ubicación en Configuración.",
-        [
-          { text: "Cancelar", style: "cancel" },
-          {
-            text: "Abrir Configuración",
-            onPress: () => Linking.openSettings(),
-          },
-        ]
-      );
+      if (status === "granted") {
+        router.replace("/(auth)/login");
+      } else if (status === "denied") {
+        Alert.alert(
+          "Permiso requerido",
+          "Por favor, activa los permisos de ubicación en Configuración.",
+          [
+            { text: "Cancelar", style: "cancel" },
+            {
+              text: "Abrir Configuración",
+              onPress: () => Linking.openSettings(),
+            },
+          ]
+        );
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 

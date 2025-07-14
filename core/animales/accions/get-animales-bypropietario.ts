@@ -4,6 +4,7 @@ import { ResponseAnimalesByPropietario } from "../interfaces/response-animales.i
 export const ObtenerAnimalesByPropietario = async (
   propietarioId: string,
   fincaId?: string,
+  especieId?: string,
   identificador?: string
 ) => {
   let url = `${process.env.EXPO_PUBLIC_API_URL}/animal-finca/propietario-animales/${propietarioId}`;
@@ -12,6 +13,10 @@ export const ObtenerAnimalesByPropietario = async (
 
   if (fincaId) {
     params.append("fincaId", fincaId);
+  }
+
+  if (especieId) {
+    params.append("especieId", especieId);
   }
 
   if (identificador) {

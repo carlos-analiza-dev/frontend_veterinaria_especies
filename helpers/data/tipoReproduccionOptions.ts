@@ -1,6 +1,11 @@
 export const tipoReproduccionOptions = [
   { label: "Monta natural", value: "Monta natural" },
-  { label: "Inseminación artificial", value: "Inseminación artificial" },
-  { label: "Transferencia de embriones", value: "Transferencia de embriones" },
-  { label: "Clonacion", value: "Clonacion" },
+  {
+    label: "Inseminación aritificial a tiempo fijo (FIV)",
+    value: "Inseminación aritificial a tiempo fijo (FIV)",
+  },
+  {
+    label: "Fecundación in vitro (IATF)",
+    value: "Fecundación in vitro (IATF)",
+  },
 ];

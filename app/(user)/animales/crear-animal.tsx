@@ -11,6 +11,7 @@ import useGetRazasByEspecie from "@/hooks/razas/useGetRazasByEspecie";
 import { useAuthStore } from "@/presentation/auth/store/useAuthStore";
 import ThemedButton from "@/presentation/theme/components/ThemedButton";
 import ThemedCheckbox from "@/presentation/theme/components/ThemedCheckbox";
+import ThemedMultiPicker from "@/presentation/theme/components/ThemedMultiPicker";
 import ThemedPicker from "@/presentation/theme/components/ThemedPicker";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import ThemedTextInput from "@/presentation/theme/components/ThemedTextInput";
@@ -139,44 +140,73 @@ const CrearAnimal = () => {
 
   const getIdentifierPrefix = () => {
     const especie = especies?.data.find((e) => e.id === watch("especie"));
-    const raza = razas?.data.find((r) => r.id === watch("raza"));
+    const razaIds: string[] = watch("razaIds");
     const sexo = watch("sexo");
 
-    if (!especie || !raza || !sexo) return null;
+    if (!especie || !razaIds || razaIds.length === 0 || !sexo) return null;
 
     const especieCode = especie.nombre.slice(0, 2).toUpperCase();
-    const razaCode = raza.abreviatura.toUpperCase();
+
+    const razaCodes = razaIds
+      .map((id) =>
+        razas?.data.find((r) => r.id === id)?.abreviatura?.toUpperCase()
+      )
+      .filter(Boolean);
+
+    if (razaCodes.length === 0) return null;
+
+    const combinedRazaCode =
+      razaCodes.length === 1 ? razaCodes[0] : `${razaCodes[0]}${razaCodes[1]}`;
+
     const sexoCode = sexo === "Macho" ? "1" : "2";
 
-    return `${especieCode}${razaCode}${sexoCode}`;
+    return `${especieCode}${combinedRazaCode}${sexoCode}`;
   };
 
   const getIdentifierPrefixPadre = () => {
     const especie = especies?.data.find((e) => e.id === watch("especie"));
-    const razaNombre = watch("raza_padre");
-    const raza = razas?.data.find((r) => r.nombre === razaNombre);
+    const razaIdsPadre: string[] = watch("razas_padre") || [];
     const sexo = "1";
 
-    if (!especie || !raza || !sexo) return null;
+    if (!especie || !razaIdsPadre || razaIdsPadre.length === 0) return null;
 
     const especieCode = especie.nombre.slice(0, 2).toUpperCase();
-    const razaCode = raza.abreviatura.toUpperCase();
 
-    return `${especieCode}${razaCode}${sexo}`;
+    const razaCodes = razaIdsPadre
+      .map((id) =>
+        razas?.data.find((r) => r.id === id)?.abreviatura?.toUpperCase()
+      )
+      .filter(Boolean);
+
+    if (razaCodes.length === 0) return null;
+
+    const combinedRazaCode =
+      razaCodes.length === 1 ? razaCodes[0] : `${razaCodes[0]}${razaCodes[1]}`;
+
+    return `${especieCode}${combinedRazaCode}${sexo}`;
   };
 
   const getIdentifierPrefixMadre = () => {
     const especie = especies?.data.find((e) => e.id === watch("especie"));
-    const razaNombre = watch("raza_madre");
-    const raza = razas?.data.find((r) => r.nombre === razaNombre);
+    const razaIdsMadre: string[] = watch("razas_madre") || [];
     const sexo = "2";
 
-    if (!especie || !raza || !sexo) return null;
+    if (!especie || !razaIdsMadre || razaIdsMadre.length === 0) return null;
 
     const especieCode = especie.nombre.slice(0, 2).toUpperCase();
-    const razaCode = raza.abreviatura.toUpperCase();
 
-    return `${especieCode}${razaCode}${sexo}`;
+    const razaCodes = razaIdsMadre
+      .map((id) =>
+        razas?.data.find((r) => r.id === id)?.abreviatura?.toUpperCase()
+      )
+      .filter(Boolean);
+
+    if (razaCodes.length === 0) return null;
+
+    const combinedRazaCode =
+      razaCodes.length === 1 ? razaCodes[0] : `${razaCodes[0]}${razaCodes[1]}`;
+
+    return `${especieCode}${combinedRazaCode}${sexo}`;
   };
 
   const formatNumber = (num: string) => {
@@ -259,7 +289,9 @@ const CrearAnimal = () => {
     }
   }, [
     watch("especie"),
-    watch("raza"),
+    watch("razaIds"),
+    watch("razas_madre"),
+    watch("razas_padre"),
     watch("sexo"),
     watch("identificador_temp"),
     watch("identificador_temp_padre"),
@@ -314,7 +346,7 @@ const CrearAnimal = () => {
       return;
     }
 
-    if (!data.raza) {
+    if (!data.razaIds) {
       Toast.show({
         type: "error",
         text1: "Error",
@@ -334,7 +366,7 @@ const CrearAnimal = () => {
 
     if (
       !data.identificador ||
-      !/^[A-ZÁÉÍÓÚÑ]{2}[A-ZÁÉÍÓÚÑ]{3,4}[12]-\d{6}$/.test(data.identificador)
+      !/^[A-ZÁÉÍÓÚÑ]{2}[A-ZÁÉÍÓÚÑ]{3,7}[12]-\d{6}$/.test(data.identificador)
     ) {
       Toast.show({
         type: "error",
@@ -415,18 +447,18 @@ const CrearAnimal = () => {
               </Text>
             )}
 
-            <ThemedPicker
+            <ThemedMultiPicker
               items={
                 razas?.data.map((raza) => ({
                   label: raza.nombre,
                   value: raza.id,
                 })) || []
               }
-              onValueChange={(value) => setValue("raza", value)}
-              selectedValue={watch("raza")}
-              placeholder="Selecciona una raza"
+              onValuesChange={(values) => setValue("razaIds", values)}
+              selectedValues={(watch("razaIds") as string[]) || []}
+              placeholder="Selecciona una o más razas"
               icon="git-branch-outline"
-              error={errors.raza?.message}
+              error={errors.razaIds?.message}
             />
 
             <ThemedPicker
@@ -696,18 +728,18 @@ const CrearAnimal = () => {
                 </Text>
               )}
 
-              <ThemedPicker
+              <ThemedMultiPicker
                 items={
                   razas?.data.map((raza) => ({
                     label: raza.nombre,
-                    value: raza.nombre,
+                    value: raza.id,
                   })) || []
                 }
-                onValueChange={(value) => setValue("raza_padre", value)}
-                selectedValue={watch("raza_padre") ?? ""}
-                placeholder="Raza padre"
+                onValuesChange={(values) => setValue("razas_padre", values)}
+                selectedValues={(watch("razas_padre") as string[]) || []}
+                placeholder="Selecciona una o más razas"
                 icon="git-branch-outline"
-                error={errors.raza_padre?.message}
+                error={errors.razas_padre?.message}
               />
               <ThemedTextInput
                 placeholder="Nombre Criador"
@@ -795,18 +827,18 @@ const CrearAnimal = () => {
                 </Text>
               )}
 
-              <ThemedPicker
+              <ThemedMultiPicker
                 items={
                   razas?.data.map((raza) => ({
                     label: raza.nombre,
-                    value: raza.nombre,
+                    value: raza.id,
                   })) || []
                 }
-                onValueChange={(value) => setValue("raza_madre", value)}
-                selectedValue={watch("raza_madre") ?? ""}
-                placeholder="Raza madre"
+                onValuesChange={(values) => setValue("razas_madre", values)}
+                selectedValues={(watch("razas_madre") as string[]) || []}
+                placeholder="Selecciona una o más razas"
                 icon="git-branch-outline"
-                error={errors.raza_madre?.message}
+                error={errors.razas_madre?.message}
               />
               <ThemedTextInput
                 placeholder="Nombre Criador"

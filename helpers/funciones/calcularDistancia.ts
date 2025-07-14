@@ -29,6 +29,48 @@ export async function obtenerDistanciaGoogleMaps(
   }
 }
 
+export async function obtenerTiempoViajeGoogleMaps(
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number,
+  modo: "driving" | "walking" | "bicycling" | "transit" = "driving"
+): Promise<{
+  tiempoTexto: string | null;
+  tiempoSegundos: number | null;
+  distanciaTexto: string | null;
+  distanciaMetros: number | null;
+} | null> {
+  const apiKey = process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY;
+
+  const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${lat1},${lon1}&destination=${lat2},${lon2}&mode=${modo}&key=${apiKey}`;
+
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (
+      data.routes &&
+      data.routes.length > 0 &&
+      data.routes[0].legs &&
+      data.routes[0].legs.length > 0
+    ) {
+      const leg = data.routes[0].legs[0];
+      return {
+        tiempoTexto: leg.duration.text,
+        tiempoSegundos: leg.duration.value,
+        distanciaTexto: leg.distance.text,
+        distanciaMetros: leg.distance.value,
+      };
+    }
+
+    return null;
+  } catch (error) {
+    console.error("Error al obtener tiempo de viaje desde Google Maps:", error);
+    return null;
+  }
+}
+
 export function calcularDistancia(
   lat1: number,
   lon1: number,

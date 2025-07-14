@@ -3,17 +3,17 @@ export interface ResponseAnimalesByPropietario {
   sexo: string;
   color: string;
   identificador: string;
+  tipo_reproduccion: string;
+  pureza: string;
   edad_promedio: number;
   fecha_nacimiento: string;
-  observaciones: null | string;
+  observaciones: string;
   tipo_alimentacion: TipoAlimentacion[];
-  complementos: ComplementoElement[];
-  pureza: string;
-  tipo_reproduccion: string;
+  complementos: ComplementoElement[] | null;
   medicamento: string;
   nombre_padre: string;
   arete_padre: null | string;
-  raza_padre: null | string;
+  razas_padre: EspecieClass[];
   nombre_criador_padre: null | string;
   nombre_propietario_padre: null | string;
   nombre_finca_origen_padre: string;
@@ -21,7 +21,7 @@ export interface ResponseAnimalesByPropietario {
   nombre_criador_origen_padre: string;
   nombre_madre: string;
   arete_madre: null | string;
-  raza_madre: null | string;
+  razas_madre: EspecieClass[];
   nombre_criador_madre: null | string;
   nombre_propietario_madre: null | string;
   nombre_finca_origen_madre: string;
@@ -34,7 +34,7 @@ export interface ResponseAnimalesByPropietario {
   finca: Finca;
   propietario: Propietario;
   especie: EspecieClass;
-  raza: EspecieClass;
+  razas: EspecieClass[];
 }
 
 export interface ComplementoElement {
@@ -55,18 +55,13 @@ export interface Finca {
   ubicacion: string;
   latitud: number;
   longitud: number;
-  abreviatura: Abreviatura;
+  abreviatura: string;
   tamaño_total_hectarea: string;
   area_ganaderia_hectarea: string;
   tipo_explotacion: TipoExplotacionElement[];
   especies_maneja: EspeciesManeja[];
   fecha_registro: Date;
   isActive: boolean;
-}
-
-export enum Abreviatura {
-  LM = "LM",
-  Lg = "LG",
 }
 
 export interface EspeciesManeja {

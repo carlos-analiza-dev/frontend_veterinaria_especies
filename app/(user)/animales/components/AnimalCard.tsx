@@ -87,7 +87,13 @@ const AnimalCard = ({ animal, onPress }: Props) => {
         <Card style={[styles.card, { backgroundColor: colors.surface }]}>
           <Card.Title
             title={animal.identificador}
-            subtitle={`${animal.especie.nombre} - ${animal.raza.nombre} - ${animal.sexo}`}
+            subtitle={`${animal.especie.nombre} - ${
+              animal.razas.length === 1
+                ? animal.razas[0].nombre
+                : animal.razas.length > 1
+                ? "Encaste"
+                : "Sin raza"
+            } - ${animal.sexo}`}
             left={(props) => (
               <Avatar.Icon
                 {...props}
@@ -314,7 +320,7 @@ const AnimalCard = ({ animal, onPress }: Props) => {
 
             {(animal.nombre_padre ||
               animal.arete_padre ||
-              animal.raza_padre) && (
+              animal.razas_padre) && (
               <>
                 <Divider
                   style={[styles.divider, { backgroundColor: colors.outline }]}
@@ -363,7 +369,7 @@ const AnimalCard = ({ animal, onPress }: Props) => {
                   </ThemedView>
                 )}
 
-                {animal.raza_padre && (
+                {animal.razas_padre && (
                   <ThemedView
                     style={[
                       styles.infoRow,
@@ -378,7 +384,12 @@ const AnimalCard = ({ animal, onPress }: Props) => {
                     <ThemedText
                       style={[styles.infoText, { color: colors.onSurface }]}
                     >
-                      Raza: {animal.raza_padre}
+                      Raza:{" "}
+                      {animal.razas_padre.length === 1
+                        ? animal.razas_padre[0].nombre
+                        : animal.razas_padre.length > 1
+                        ? "Encaste"
+                        : "Sin raza"}
                     </ThemedText>
                   </ThemedView>
                 )}
@@ -399,7 +410,7 @@ const AnimalCard = ({ animal, onPress }: Props) => {
 
             {(animal.nombre_madre ||
               animal.arete_madre ||
-              animal.raza_madre) && (
+              animal.razas_madre) && (
               <>
                 <Divider
                   style={[styles.divider, { backgroundColor: colors.outline }]}
@@ -448,7 +459,7 @@ const AnimalCard = ({ animal, onPress }: Props) => {
                   </ThemedView>
                 )}
 
-                {animal.raza_madre && (
+                {animal.razas_madre && (
                   <ThemedView
                     style={[
                       styles.infoRow,
@@ -463,7 +474,12 @@ const AnimalCard = ({ animal, onPress }: Props) => {
                     <ThemedText
                       style={[styles.infoText, { color: colors.onSurface }]}
                     >
-                      Raza: {animal.raza_madre}
+                      Raza:{" "}
+                      {animal.razas_madre.length === 1
+                        ? animal.razas_madre[0].nombre
+                        : animal.razas_madre.length > 1
+                        ? "Encaste"
+                        : "Sin raza"}
                     </ThemedText>
                   </ThemedView>
                 )}

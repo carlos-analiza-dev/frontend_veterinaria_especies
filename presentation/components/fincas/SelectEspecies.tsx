@@ -1,4 +1,4 @@
-import { ResponseFincasByPropietario } from "@/core/fincas/interfaces/response-fincasByPropietario.interface";
+import { ResponseEspecies } from "@/core/especies/interfaces/response-especies.interface";
 import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import { Picker } from "@react-native-picker/picker";
 import React from "react";
@@ -6,17 +6,17 @@ import { StyleSheet, View } from "react-native";
 import { useTheme } from "react-native-paper";
 
 interface Props {
-  fincas: ResponseFincasByPropietario | undefined;
-  fincaId: string;
-  setFincaId: React.Dispatch<React.SetStateAction<string>>;
-  handleFincaPress: (id: string) => void;
+  especies: ResponseEspecies[] | undefined;
+  especieId: string;
+  setEspecieId: React.Dispatch<React.SetStateAction<string>>;
+  handleEspeciePress: (id: string) => void;
 }
 
-const SelectFincas = ({
-  fincaId,
-  fincas,
-  handleFincaPress,
-  setFincaId,
+const SelectEspecies = ({
+  especieId,
+  especies,
+  handleEspeciePress,
+  setEspecieId,
 }: Props) => {
   const colorPrimary = useThemeColor({}, "primary");
   const { colors } = useTheme();
@@ -29,20 +29,20 @@ const SelectFincas = ({
       ]}
     >
       <Picker
-        selectedValue={fincaId}
+        selectedValue={especieId}
         onValueChange={(itemValue) =>
-          itemValue === "" ? setFincaId("") : handleFincaPress(itemValue)
+          itemValue === "" ? setEspecieId("") : handleEspeciePress(itemValue)
         }
         style={styles.picker}
         dropdownIconColor={colorPrimary}
         mode="dropdown"
       >
         <Picker.Item label="Mostrar todo" value="" />
-        {fincas?.fincas.map((finca) => (
+        {especies?.map((especie) => (
           <Picker.Item
-            key={finca.id}
-            label={finca.nombre_finca}
-            value={finca.id}
+            key={especie.id}
+            label={especie.nombre}
+            value={especie.id}
           />
         ))}
       </Picker>
@@ -64,4 +64,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SelectFincas;
+export default SelectEspecies;

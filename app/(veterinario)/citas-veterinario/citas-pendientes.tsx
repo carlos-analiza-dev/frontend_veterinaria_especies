@@ -5,19 +5,22 @@ import { useAuthStore } from "@/presentation/auth/store/useAuthStore";
 import MessageError from "@/presentation/components/MessageError";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
+import { MaterialIcons } from "@expo/vector-icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
   RefreshControl,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
 import CardCitasMedico from "./components/CardCitasPendientes";
+import HojaRutaOptimizada from "./components/HojaRutaOptimizada";
 
 const CitasPendientesVeterinario = () => {
   const { user } = useAuthStore();
@@ -27,6 +30,7 @@ const CitasPendientesVeterinario = () => {
   const queryClient = useQueryClient();
   const userId = user?.id || "";
   const limit = 10;
+  const [mostrarHojaRuta, setMostrarHojaRuta] = useState(false);
 
   const styles = createStyles(textColor, emptyTextColor);
 
@@ -132,9 +136,26 @@ const CitasPendientesVeterinario = () => {
       .flatMap((page) => page.citas)
       .filter((cita) => cita.estado.toLowerCase() === "pendiente") || [];
 
+  if (mostrarHojaRuta) {
+    return (
+      <HojaRutaOptimizada
+        citas={allCitas}
+        onBack={() => setMostrarHojaRuta(false)}
+      />
+    );
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Citas</Text>
+
+      <TouchableOpacity
+        style={[styles.button, { backgroundColor: colorPrimary }]}
+        onPress={() => setMostrarHojaRuta(true)}
+      >
+        <MaterialIcons name="zoom-in-map" size={20} color="white" />
+        <Text style={styles.buttonText}>Ver Ruta Optimizada</Text>
+      </TouchableOpacity>
 
       <FlatList
         data={allCitas}
@@ -211,6 +232,19 @@ const createStyles = (textColor: string, emptyTextColor: string) =>
     },
     footerLoader: {
       marginVertical: 20,
+    },
+    button: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: 12,
+      borderRadius: 8,
+      marginBottom: 16,
+    },
+    buttonText: {
+      color: "white",
+      marginLeft: 8,
+      fontWeight: "bold",
     },
   });
 
