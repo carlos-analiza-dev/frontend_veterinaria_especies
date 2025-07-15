@@ -9,20 +9,29 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "Permite acceder a tus fotos para cambiar la imagen de perfil",
+        "NSPhotoLibraryAddUsageDescription": "Permite guardar imágenes en tu galería"
+      }
     },
     "android": {
-      "config":{
-        "googleMaps":{
-          "apiKey": "AIzaSyAEVe1V67-7WkPniWCTnfiHAswTyhlhJvw"
+      "config": {
+        "googleMaps": {
+          "apiKey": "process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY"
         }
       },
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package":"com.analiza.veterinariaapp",
-      "edgeToEdgeEnabled": true
+      "package": "com.analiza.veterinariaapp",
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.CAMERA"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -40,7 +49,14 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "La app accede a tus fotos para permitirte compartir imágenes de perfil.",
+          "cameraPermission": "La app necesita acceso a tu cámara para tomar fotos para tu perfil."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

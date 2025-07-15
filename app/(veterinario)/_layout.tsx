@@ -14,6 +14,7 @@ import { Redirect, router } from "expo-router";
 import { useEffect, useState } from "react";
 import CitasPendientesVeterinario from "./citas-veterinario/citas-pendientes";
 import CustomDrawerVeterinario from "./components/CustomDrawerVeterinario";
+import PerfilMedico from "./perfil-veterinario/perfil-vet";
 
 const Drawer = createDrawerNavigator();
 
@@ -73,7 +74,18 @@ export default function VeterinarioLayout() {
           name="citas-pendientes"
           component={VeterinarioStackHome}
         />
+        <Drawer.Screen
+          name="perfil-vet"
+          component={PerfilMedico}
+          options={{
+            headerShown: true,
+            headerTitle: "Veterinario Perfil",
+            headerRight: () => <LogoutIconButton />,
+            headerLeft: () => <DrawerToggleButton tintColor={iconColor} />,
+          }}
+        />
       </Drawer.Navigator>
+
       <TokenExpiredModal
         visible={sessionExpired}
         onConfirm={() => {

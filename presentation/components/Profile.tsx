@@ -1,27 +1,119 @@
 import { User } from "@/core/auth/interfaces/user";
-import React from "react";
-import { StyleSheet } from "react-native";
+import { eliminarImagen } from "@/core/profile-images/core/delete-image";
+import useGetAllImagesProfile from "@/hooks/perfil/useGetAllImagesProfile";
+import useGetImagePerfil from "@/hooks/perfil/useGetImagePerfil";
+import { useQueryClient } from "@tanstack/react-query";
+import { isAxiosError } from "axios";
+import * as ImagePicker from "expo-image-picker";
+import { useState } from "react";
+import { Alert, StyleSheet, TouchableOpacity } from "react-native";
 import { Avatar } from "react-native-paper";
+import Toast from "react-native-toast-message";
 import MyIcon from "../auth/components/MyIcon";
 import { ThemedText } from "../theme/components/ThemedText";
 import { ThemedView } from "../theme/components/ThemedView";
+import ImageGallery from "./ImageGallery";
 
 interface Props {
   user: User | undefined;
   primary: string;
   height: number;
+  onUpdateProfileImage?: (uri: string) => Promise<void>;
 }
 
-const Profile = ({ user, height, primary }: Props) => {
+const Profile = ({ user, height, primary, onUpdateProfileImage }: Props) => {
+  const queryClient = useQueryClient();
+  const userId = user?.id;
+  const [galleryVisible, setGalleryVisible] = useState(false);
+  const { data: imagenes_user } = useGetAllImagesProfile(userId ?? "");
+
+  const { data: perfil } = useGetImagePerfil();
+  const imageUrl = perfil?.data?.url
+    ? perfil.data.url.replace(
+        "localhost",
+        process.env.EXPO_PUBLIC_API || "192.168.0.10"
+      )
+    : undefined;
+
+  const [localImage, setLocalImage] = useState<string | null>(null);
+
+  const pickImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== "granted") {
+      Alert.alert(
+        "Permisos requeridos",
+        "Necesitamos acceso a tus fotos para cambiar la imagen de perfil"
+      );
+      return;
+    }
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+      const selectedImage = result.assets[0].uri;
+      setLocalImage(selectedImage);
+
+      if (onUpdateProfileImage) {
+        try {
+          await onUpdateProfileImage(selectedImage);
+          Toast.show({
+            type: "success",
+            text1: "Exito",
+            text2: "Perfil actualizado exitosamente",
+          });
+          queryClient.invalidateQueries({ queryKey: ["perfil-users"] });
+          queryClient.invalidateQueries({ queryKey: ["all-images-perfil"] });
+        } catch (error) {
+          Alert.alert("Error", "No se pudo actualizar la imagen de perfil");
+          setLocalImage(null);
+        }
+      }
+    }
+  };
+
+  const openGallery = () => {
+    if (imagenes_user && imagenes_user.data.length > 0) {
+      setGalleryVisible(true);
+    }
+  };
+
+  const handleDeleteImage = async (imageId: string) => {
+    try {
+      await eliminarImagen(imageId);
+      Toast.show({
+        type: "success",
+        text1: "Exito",
+        text2: "Imagen eliminada",
+      });
+      queryClient.invalidateQueries({ queryKey: ["perfil-users"] });
+      queryClient.invalidateQueries({ queryKey: ["all-images-perfil"] });
+    } catch (error) {
+      if (isAxiosError(error)) {
+      }
+    }
+  };
+
   return (
     <ThemedView style={styles.container}>
       <ThemedView style={[styles.header, { height: height * 0.2 }]}>
         <ThemedView style={[styles.avatarWrapper, { bottom: -50 }]}>
-          <Avatar.Image
-            size={100}
-            source={require("@/images/profile.png")}
-            style={styles.avatarImage}
-          />
+          <TouchableOpacity onPress={openGallery}>
+            <Avatar.Image
+              size={100}
+              source={
+                imageUrl ? { uri: imageUrl } : require("@/images/profile.png")
+              }
+              style={styles.avatarImage}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={pickImage} style={styles.editIcon}>
+            <MyIcon name="camera" size={20} color="white" />
+          </TouchableOpacity>
         </ThemedView>
       </ThemedView>
 
@@ -76,6 +168,12 @@ const Profile = ({ user, height, primary }: Props) => {
           </ThemedView>
         </ThemedView>
       </ThemedView>
+      <ImageGallery
+        visible={galleryVisible}
+        images={imagenes_user?.data || []}
+        onClose={() => setGalleryVisible(false)}
+        onDelete={(imageId) => handleDeleteImage(imageId)}
+      />
     </ThemedView>
   );
 };
@@ -158,5 +256,13 @@ const styles = StyleSheet.create({
   statLabel: {
     fontSize: 14,
     color: "#657786",
+  },
+  editIcon: {
+    position: "absolute",
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0,0,0,0.6)",
+    borderRadius: 15,
+    padding: 5,
   },
 });

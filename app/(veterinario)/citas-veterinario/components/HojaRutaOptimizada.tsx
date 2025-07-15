@@ -12,6 +12,7 @@ import {
   View,
 } from "react-native";
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
+import { ActivityIndicator } from "react-native-paper";
 
 interface HojaRutaOptimizadaProps {
   citas: Cita[];
@@ -81,7 +82,10 @@ const HojaRutaOptimizada: React.FC<HojaRutaOptimizadaProps> = ({
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <Text>Calculando ruta optimizada...</Text>
+        <View style={styles.loadingBox}>
+          <ActivityIndicator size="large" color="#1a73e8" />
+          <Text style={styles.loadingText}>Calculando ruta optimizada...</Text>
+        </View>
       </View>
     );
   }
@@ -290,7 +294,28 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
   },
+
+  loadingBox: {
+    backgroundColor: "#fff",
+    padding: 24,
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 5,
+    alignItems: "center",
+  },
+
+  loadingText: {
+    marginTop: 12,
+    fontSize: 16,
+    fontWeight: "500",
+    color: "#333",
+  },
+
   errorContainer: {
     flex: 1,
     justifyContent: "center",

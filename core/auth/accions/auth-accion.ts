@@ -1,10 +1,17 @@
 import { veterinariaAPI } from "@/core/api/veterinariaApi";
-import { Departamento, Municipio, Pais, Role } from "../interfaces/user";
+import {
+  Departamento,
+  Municipio,
+  Pais,
+  ProfileImage,
+  Role,
+} from "../interfaces/user";
 
 export interface AuthResponse {
   id: string;
   email: string;
   name: string;
+  sexo: string;
   identificacion: string;
   direccion: string;
   telefono: string;
@@ -15,6 +22,7 @@ export interface AuthResponse {
   pais: Pais;
   departamento: Departamento;
   municipio: Municipio;
+  profileImages: ProfileImage[];
   token: string;
 }
 

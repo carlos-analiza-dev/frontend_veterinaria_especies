@@ -40,6 +40,14 @@ const CustomDrawerVeterinario = ({ navigation, logout }: Props) => {
       </TouchableOpacity>
 
       <TouchableOpacity
+        style={styles.drawerItem}
+        onPress={() => navigation.navigate("perfil-vet")}
+      >
+        <MyIcon name="person-outline" size={24} color={colors.primary} />
+        <ThemedText style={[styles.itemText]}>Perfil</ThemedText>
+      </TouchableOpacity>
+
+      <TouchableOpacity
         style={[styles.drawerItem, styles.logoutButton]}
         onPress={logout}
       >

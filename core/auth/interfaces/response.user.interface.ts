@@ -30,11 +30,21 @@ export interface Role {
   isActive: boolean;
 }
 
+export interface ProfileImage {
+  id: string;
+  url: string;
+  key: string;
+  mimeType: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface ResponseLogin {
   id: string;
   email: string;
   name: string;
   identificacion: string;
+  sexo: string;
   direccion: string;
   telefono: string;
   isActive: boolean;
@@ -44,5 +54,6 @@ export interface ResponseLogin {
   pais: Pais;
   departamento: Departamento;
   municipio: Municipio;
+  profileImages: ProfileImage[];
   token: string;
 }

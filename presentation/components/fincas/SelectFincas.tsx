@@ -37,7 +37,7 @@ const SelectFincas = ({
         dropdownIconColor={colorPrimary}
         mode="dropdown"
       >
-        <Picker.Item label="Mostrar todo" value="" />
+        <Picker.Item label="Todas Fincas" value="" />
         {fincas?.fincas.map((finca) => (
           <Picker.Item
             key={finca.id}

@@ -4,10 +4,9 @@ import Profile from "@/presentation/components/Profile";
 import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import { ScrollView, useWindowDimensions } from "react-native";
 
-const PerfilAdminPage = () => {
+const PerfilMedico = () => {
   const { user } = useAuthStore();
   const primary = useThemeColor({}, "tint");
-  const { height } = useWindowDimensions();
 
   const handleUpdateProfileImage = async (imageUri: string) => {
     if (!user) return;
@@ -19,6 +18,7 @@ const PerfilAdminPage = () => {
     }
   };
 
+  const { height } = useWindowDimensions();
   return (
     <ScrollView style={{ flex: 1 }}>
       <Profile
@@ -31,4 +31,4 @@ const PerfilAdminPage = () => {
   );
 };
 
-export default PerfilAdminPage;
+export default PerfilMedico;

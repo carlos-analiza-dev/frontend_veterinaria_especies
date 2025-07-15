@@ -30,6 +30,15 @@ export interface Role {
   isActive: boolean;
 }
 
+export interface ProfileImage {
+  id: string;
+  url: string;
+  key: string;
+  mimeType: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface User {
   id: string;
   email: string;
@@ -45,6 +54,7 @@ export interface User {
   pais: Pais;
   departamento: Departamento;
   municipio: Municipio;
+  profileImages: ProfileImage[];
 }
 
 export type UserUpdateData = {

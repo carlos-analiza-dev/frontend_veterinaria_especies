@@ -37,7 +37,7 @@ const SelectEspecies = ({
         dropdownIconColor={colorPrimary}
         mode="dropdown"
       >
-        <Picker.Item label="Mostrar todo" value="" />
+        <Picker.Item label="Todas Especies" value="" />
         {especies?.map((especie) => (
           <Picker.Item
             key={especie.id}

@@ -13,9 +13,13 @@ interface UserCardProps {
 }
 
 const UserCard: React.FC<UserCardProps> = ({ user, onPress }) => {
+  const imageUrl = user.profileImages[0]?.url?.replace(
+    "localhost",
+    process.env.EXPO_PUBLIC_API || "192.168.0.10"
+  );
+
   const { colors } = useTheme();
   const secondary = useThemeColor({}, "textSecondary");
-  const colorCard = useThemeColor({}, "card");
   const textColor = useThemeColor({}, "text");
   const success = useThemeColor({}, "success");
   const danger = useThemeColor({}, "danger");
@@ -100,7 +104,14 @@ const UserCard: React.FC<UserCardProps> = ({ user, onPress }) => {
   return (
     <TouchableOpacity onPress={onPress} style={styles.card}>
       <ThemedView style={styles.avatarContainer}>
-        <Avatar.Image size={48} source={require("@/images/profile.png")} />
+        <Avatar.Image
+          size={48}
+          source={
+            user && user.profileImages.length > 0
+              ? { uri: imageUrl }
+              : require("@/images/profile.png")
+          }
+        />
       </ThemedView>
 
       <ThemedView style={styles.infoContainer}>
