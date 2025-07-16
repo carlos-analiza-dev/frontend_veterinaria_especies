@@ -1,4 +1,4 @@
-import { Medico } from "@/core/citas/interfaces/response-citas-user.interface";
+import { Medico } from "@/core/medicos/interfaces/obtener-medicos.interface";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import React from "react";
 import { StyleSheet } from "react-native";

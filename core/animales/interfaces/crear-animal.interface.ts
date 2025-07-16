@@ -20,6 +20,7 @@ export interface CrearAnimalByFinca {
   nombre_padre?: string;
   arete_padre?: string;
   razas_padre?: string[];
+  pureza_padre: string;
   nombre_criador_padre?: string;
   nombre_propietario_padre?: string;
   nombre_finca_origen_padre?: string;
@@ -29,6 +30,7 @@ export interface CrearAnimalByFinca {
   nombre_madre?: string;
   arete_madre?: string;
   razas_madre?: string[];
+  pureza_madre: string;
   nombre_criador_madre?: string;
   nombre_propietario_madre?: string;
   nombre_finca_origen_madre?: string;
@@ -40,6 +42,8 @@ export interface CrearAnimalByFinca {
 export interface TipoAlimentacion {
   alimento: string;
   origen: string;
+  porcentaje_comprado?: number;
+  porcentaje_producido?: number;
 }
 
 export interface TipoComplemento {

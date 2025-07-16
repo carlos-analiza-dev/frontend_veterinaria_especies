@@ -1,4 +1,9 @@
 export interface ResponseServicios {
+  servicios: Servicio[];
+  total: number;
+}
+
+export interface Servicio {
   id: string;
   nombre: string;
   descripcion: string;

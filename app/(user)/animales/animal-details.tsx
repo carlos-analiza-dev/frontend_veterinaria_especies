@@ -2,9 +2,11 @@ import { ActualizarAnimal } from "@/core/animales/accions/update-animal";
 import { CrearAnimalByFinca } from "@/core/animales/interfaces/crear-animal.interface";
 import { alimentosOptions } from "@/helpers/data/alimentos";
 import { complementosOptions } from "@/helpers/data/complementos";
+import { purezaOptions } from "@/helpers/data/purezaOptions";
 import { sexoOptions } from "@/helpers/data/sexo_animales";
 import { extractNumberFromIdentifier } from "@/helpers/funciones/extractNumberFromIdentifier ";
 import useAnimalById from "@/hooks/animales/useAnimalById";
+
 import useGetEspecies from "@/hooks/especies/useGetEspecies";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
 import useGetRazasByEspecie from "@/hooks/razas/useGetRazasByEspecie";
@@ -124,6 +126,7 @@ const AnimalDetailsPage = ({ route }: EditarAnimalProps) => {
         arete_madre: animal?.arete_madre || "",
         arete_padre: animal?.arete_padre || "",
         razaIds: animal?.razas?.map((raza) => raza.id) || [],
+        pureza: animal?.pureza,
         edad_promedio: Number(animal?.edad_promedio) || 0,
         fecha_nacimiento: animal?.fecha_nacimiento || "",
         castrado: animal?.castrado || false,
@@ -135,6 +138,7 @@ const AnimalDetailsPage = ({ route }: EditarAnimalProps) => {
         tipo_alimentacion: animal?.tipo_alimentacion || "",
         nombre_padre: animal?.nombre_padre || "",
         razas_padre: animal?.razas_padre?.map((raza) => raza.id) || [],
+        pureza_padre: animal?.pureza_padre,
         nombre_criador_padre: animal?.nombre_criador_padre || "",
         nombre_propietario_padre: animal?.nombre_propietario_padre || "",
         nombre_finca_origen_padre: animal?.nombre_finca_origen_padre || "",
@@ -143,6 +147,7 @@ const AnimalDetailsPage = ({ route }: EditarAnimalProps) => {
 
         nombre_madre: animal?.nombre_madre || "",
         razas_madre: animal?.razas_madre?.map((raza) => raza.id) || [],
+        pureza_madre: animal?.pureza_madre,
         nombre_criador_madre: animal?.nombre_criador_madre || "",
         nombre_propietario_madre: animal?.nombre_propietario_madre || "",
         nombre_finca_origen_madre: animal?.nombre_finca_origen_madre || "",
@@ -563,6 +568,15 @@ const AnimalDetailsPage = ({ route }: EditarAnimalProps) => {
               error={errors.razaIds?.message}
             />
 
+            <ThemedPicker
+              items={purezaOptions}
+              onValueChange={(value) => setValue("pureza", value)}
+              selectedValue={watch("pureza") || ""}
+              placeholder="Selecciona pureza"
+              icon="layers-outline"
+              error={errors.pureza?.message}
+            />
+
             <ThemedTextInput
               placeholder="Fecha de nacimiento"
               icon="calendar-outline"
@@ -826,6 +840,15 @@ const AnimalDetailsPage = ({ route }: EditarAnimalProps) => {
                 error={errors.razas_padre?.message}
               />
 
+              <ThemedPicker
+                items={purezaOptions}
+                onValueChange={(value) => setValue("pureza_padre", value)}
+                selectedValue={watch("pureza_padre") || ""}
+                placeholder="Selecciona pureza"
+                icon="layers-outline"
+                error={errors.pureza_padre?.message}
+              />
+
               <ThemedTextInput
                 placeholder="Nombre del criador del padre"
                 icon="person-outline"
@@ -921,6 +944,15 @@ const AnimalDetailsPage = ({ route }: EditarAnimalProps) => {
                 placeholder="Selecciona una o más razas"
                 icon="git-branch-outline"
                 error={errors.razas_madre?.message}
+              />
+
+              <ThemedPicker
+                items={purezaOptions}
+                onValueChange={(value) => setValue("pureza_madre", value)}
+                selectedValue={watch("pureza_madre") || ""}
+                placeholder="Selecciona pureza"
+                icon="layers-outline"
+                error={errors.pureza_madre?.message}
               />
 
               <ThemedTextInput

@@ -39,6 +39,7 @@ const Profile = ({ user, height, primary, onUpdateProfileImage }: Props) => {
 
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
     if (status !== "granted") {
       Alert.alert(
         "Permisos requeridos",
@@ -87,12 +88,20 @@ const Profile = ({ user, height, primary, onUpdateProfileImage }: Props) => {
       Toast.show({
         type: "success",
         text1: "Exito",
-        text2: "Imagen eliminada",
+        text2: "Foto de perfil eliminada",
       });
       queryClient.invalidateQueries({ queryKey: ["perfil-users"] });
       queryClient.invalidateQueries({ queryKey: ["all-images-perfil"] });
+      setGalleryVisible(false);
     } catch (error) {
       if (isAxiosError(error)) {
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: error.response?.data
+            ? error.response.data.message
+            : "Error al eliminiar la foto de perfil",
+        });
       }
     }
   };

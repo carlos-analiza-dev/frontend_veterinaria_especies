@@ -39,5 +39,15 @@ export interface Usuario {
   telefono: string;
   isActive: boolean;
   isAuthorized: boolean;
+  profileImages: ProfileImage[];
   createdAt: Date;
+}
+
+export interface ProfileImage {
+  id: string;
+  url: string;
+  key: string;
+  mimeType: string;
+  createdAt: Date;
+  updatedAt: Date;
 }

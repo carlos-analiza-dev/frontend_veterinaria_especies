@@ -48,7 +48,12 @@ const CrearAnimal = () => {
   const [showIdentifierHelp2, setShowIdentifierHelp2] = useState(false);
   const [expandedAlimento, setExpandedAlimento] = useState<string | null>(null);
   const [tipoAlimentacion, setTipoAlimentacion] = useState<
-    { alimento: string; origen: string }[]
+    {
+      alimento: string;
+      origen: string;
+      porcentaje_comprado?: number;
+      porcentaje_producido?: number;
+    }[]
   >([]);
   const [complementoSeleccionados, setComplementoSeleccionados] = useState<
     string[]
@@ -573,65 +578,148 @@ const CrearAnimal = () => {
                             "producido",
                             "comprado y producido",
                           ].map((origen) => (
-                            <TouchableOpacity
-                              key={origen}
-                              style={styles.subserviceItem}
-                              onPress={() =>
-                                handleOrigenSelection(
-                                  alimento.value,
-                                  origen as
-                                    | "comprado"
-                                    | "producido"
-                                    | "comprado y producido"
-                                )
-                              }
-                            >
-                              <Checkbox
-                                status={
-                                  tipoAlimentacion.find(
-                                    (a) => a.alimento === alimento.value
-                                  )?.origen === origen
-                                    ? "checked"
-                                    : "unchecked"
-                                }
+                            <View key={origen}>
+                              <TouchableOpacity
+                                style={[
+                                  styles.subserviceItem,
+                                  alimentoSeleccionado?.origen === origen &&
+                                    styles.selectedSubserviceItem,
+                                ]}
                                 onPress={() =>
-                                  handleOrigenSelection(
-                                    alimento.value,
-                                    origen as
-                                      | "comprado"
-                                      | "producido"
-                                      | "comprado y producido"
-                                  )
+                                  handleOrigenSelection(alimento.value, origen)
                                 }
-                                color={colors.primary}
-                              />
-                              <ThemedText style={styles.subserviceText}>
-                                {(() => {
-                                  switch (origen) {
-                                    case "comprado":
-                                      return "Comprado";
-                                    case "producido":
-                                      return "Producido";
-                                    case "comprado y producido":
-                                      return "Comprado y producido";
-                                    default:
-                                      return origen;
+                              >
+                                <Checkbox
+                                  status={
+                                    alimentoSeleccionado?.origen === origen
+                                      ? "checked"
+                                      : "unchecked"
                                   }
-                                })()}
-                              </ThemedText>
-                            </TouchableOpacity>
+                                  onPress={() =>
+                                    handleOrigenSelection(
+                                      alimento.value,
+                                      origen
+                                    )
+                                  }
+                                  color={colors.primary}
+                                />
+                                <ThemedText style={styles.subserviceText}>
+                                  {origen === "comprado"
+                                    ? "Comprado"
+                                    : origen === "producido"
+                                    ? "Producido"
+                                    : "Comprado y producido"}
+                                </ThemedText>
+                              </TouchableOpacity>
+
+                              {alimentoSeleccionado?.origen ===
+                                "comprado y producido" &&
+                                origen === "comprado y producido" && (
+                                  <View
+                                    style={styles.percentageInputsContainer}
+                                  >
+                                    <View style={styles.percentageInputWrapper}>
+                                      <ThemedText
+                                        style={styles.percentageLabel}
+                                      >
+                                        % Comprado:
+                                      </ThemedText>
+                                      <ThemedTextInput
+                                        placeholder="Ej: 60"
+                                        value={
+                                          alimentoSeleccionado.porcentaje_comprado?.toString() ||
+                                          ""
+                                        }
+                                        onChangeText={(text) => {
+                                          if (
+                                            text === "" ||
+                                            /^\d+$/.test(text)
+                                          ) {
+                                            const updated =
+                                              tipoAlimentacion.map((item) =>
+                                                item.alimento === alimento.value
+                                                  ? {
+                                                      ...item,
+                                                      porcentaje_comprado: text
+                                                        ? Number(text)
+                                                        : undefined,
+                                                    }
+                                                  : item
+                                              );
+                                            setTipoAlimentacion(updated);
+                                            setValue(
+                                              "tipo_alimentacion",
+                                              updated
+                                            );
+                                          }
+                                        }}
+                                        keyboardType="number-pad"
+                                        style={styles.percentageInput}
+                                        maxLength={3}
+                                      />
+                                    </View>
+
+                                    <View style={styles.percentageInputWrapper}>
+                                      <ThemedText
+                                        style={styles.percentageLabel}
+                                      >
+                                        % Producido:
+                                      </ThemedText>
+                                      <ThemedTextInput
+                                        placeholder="Ej: 40"
+                                        value={
+                                          alimentoSeleccionado.porcentaje_producido?.toString() ||
+                                          ""
+                                        }
+                                        onChangeText={(text) => {
+                                          if (
+                                            text === "" ||
+                                            /^\d+$/.test(text)
+                                          ) {
+                                            const updated =
+                                              tipoAlimentacion.map((item) =>
+                                                item.alimento === alimento.value
+                                                  ? {
+                                                      ...item,
+                                                      porcentaje_producido: text
+                                                        ? Number(text)
+                                                        : undefined,
+                                                    }
+                                                  : item
+                                              );
+                                            setTipoAlimentacion(updated);
+                                            setValue(
+                                              "tipo_alimentacion",
+                                              updated
+                                            );
+                                          }
+                                        }}
+                                        keyboardType="number-pad"
+                                        style={styles.percentageInput}
+                                        maxLength={3}
+                                      />
+                                    </View>
+
+                                    {alimentoSeleccionado.porcentaje_comprado !==
+                                      undefined &&
+                                      alimentoSeleccionado.porcentaje_producido !==
+                                        undefined &&
+                                      alimentoSeleccionado.porcentaje_comprado +
+                                        alimentoSeleccionado.porcentaje_producido !==
+                                        100 && (
+                                        <Text style={styles.errorText}>
+                                          La suma de porcentajes debe ser 100%
+                                        </Text>
+                                      )}
+                                  </View>
+                                )}
+                            </View>
                           ))}
                         </View>
                       )}
                   </View>
                 );
               })}
-
-              {errors.tipo_alimentacion?.message && (
-                <Text style={styles.errorText}>
-                  {errors.tipo_alimentacion.message}
-                </Text>
-              )}
             </View>
 
             <View style={styles.sectionContainer}>
@@ -741,6 +829,14 @@ const CrearAnimal = () => {
                 icon="git-branch-outline"
                 error={errors.razas_padre?.message}
               />
+              <ThemedPicker
+                items={purezaOptions}
+                onValueChange={(value) => setValue("pureza_padre", value)}
+                selectedValue={watch("pureza_padre")}
+                placeholder="Selecciona pureza"
+                icon="layers-outline"
+                error={errors.pureza_padre?.message}
+              />
               <ThemedTextInput
                 placeholder="Nombre Criador"
                 icon="person-outline"
@@ -839,6 +935,14 @@ const CrearAnimal = () => {
                 placeholder="Selecciona una o más razas"
                 icon="git-branch-outline"
                 error={errors.razas_madre?.message}
+              />
+              <ThemedPicker
+                items={purezaOptions}
+                onValueChange={(value) => setValue("pureza_madre", value)}
+                selectedValue={watch("pureza_madre")}
+                placeholder="Selecciona pureza"
+                icon="layers-outline"
+                error={errors.pureza_madre?.message}
               />
               <ThemedTextInput
                 placeholder="Nombre Criador"
@@ -1013,7 +1117,10 @@ const styles = StyleSheet.create({
   subserviceItem: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    marginBottom: 4,
   },
   subserviceText: {
     marginLeft: 8,
@@ -1022,6 +1129,32 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 10,
+  },
+
+  selectedSubserviceItem: {
+    backgroundColor: "#f0f0f0",
+  },
+  percentageInputsContainer: {
+    marginLeft: 40,
+    marginBottom: 12,
+    paddingHorizontal: 8,
+  },
+  percentageInputWrapper: {
+    marginBottom: 12,
+  },
+  percentageLabel: {
+    fontSize: 14,
+    marginBottom: 4,
+    color: "#333",
+  },
+  percentageInput: {
+    height: 40,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 6,
+    paddingHorizontal: 12,
+    fontSize: 16,
+    backgroundColor: "#fff",
   },
 });
 

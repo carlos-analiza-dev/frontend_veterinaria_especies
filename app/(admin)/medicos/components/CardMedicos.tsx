@@ -1,11 +1,11 @@
 import { Medico } from "@/core/medicos/interfaces/obtener-medicos.interface";
+import HorariosMedicos from "@/presentation/components/medicos/HorariosMedicos";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import { FontAwesome } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Avatar, useTheme } from "react-native-paper";
-import HorariosMedicos from "./HorariosMedicos";
 
 interface Props {
   medico: Medico;
@@ -14,6 +14,10 @@ interface Props {
 
 const CardMedicos = ({ medico, onPress }: Props) => {
   const { colors } = useTheme();
+  const imageUrl = medico.usuario.profileImages[0]?.url?.replace(
+    "localhost",
+    process.env.EXPO_PUBLIC_API || "192.168.0.10"
+  );
   const secondary = useThemeColor({}, "textSecondary");
   const textColor = useThemeColor({}, "text");
   const success = useThemeColor({}, "success");
@@ -130,7 +134,14 @@ const CardMedicos = ({ medico, onPress }: Props) => {
     <TouchableOpacity onPress={onPress} style={styles.card}>
       <View style={styles.header}>
         <View style={styles.avatarContainer}>
-          <Avatar.Image size={60} source={require("@/images/profile.png")} />
+          <Avatar.Image
+            size={48}
+            source={
+              medico && medico.usuario.profileImages.length > 0
+                ? { uri: imageUrl }
+                : require("@/images/profile.png")
+            }
+          />
         </View>
 
         <View style={styles.infoContainer}>

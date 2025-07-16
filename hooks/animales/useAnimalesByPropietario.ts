@@ -1,5 +1,7 @@
 import { ObtenerAnimalesByPropietario } from "@/core/animales/accions/get-animales-bypropietario";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
+
+const LIMIT = 5;
 
 const useAnimalesByPropietario = (
   propietarioId: string,
@@ -7,7 +9,7 @@ const useAnimalesByPropietario = (
   especieId?: string,
   identificador?: string
 ) => {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: [
       "animales-propietario",
       propietarioId,
@@ -15,14 +17,25 @@ const useAnimalesByPropietario = (
       especieId,
       identificador,
     ],
-    queryFn: () =>
+    queryFn: ({ pageParam = 0 }: { pageParam: number }) =>
       ObtenerAnimalesByPropietario(
         propietarioId,
         fincaId,
         especieId,
-        identificador
+        identificador,
+        {
+          limit: LIMIT,
+          offset: pageParam * LIMIT,
+        }
       ),
-    retry: false,
+    getNextPageParam: (lastPage, allPages) => {
+      const totalLoaded = allPages.reduce(
+        (total, page) => total + page.data.length,
+        0
+      );
+      return totalLoaded < lastPage.total ? allPages.length : undefined;
+    },
+    initialPageParam: 0,
   });
 };
 

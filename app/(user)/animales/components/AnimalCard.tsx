@@ -1,25 +1,112 @@
-import { ResponseAnimalesByPropietario } from "@/core/animales/interfaces/response-animales.interface";
-import { ThemedText } from "@/presentation/theme/components/ThemedText";
-import { ThemedView } from "@/presentation/theme/components/ThemedView";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import React, { useRef } from "react";
+import { Animal } from "@/core/animales/interfaces/response-animales.interface";
+import { eliminarImagenAnimal } from "@/core/animales_profile/core/delete-image-animal";
+import MyIcon from "@/presentation/auth/components/MyIcon";
+import AnimalComplementos from "@/presentation/components/animales/AnimalComplementos";
+import AnimalFincaByPropietarion from "@/presentation/components/animales/AnimalFincaByPropietarion";
+import AnimalMedicamento from "@/presentation/components/animales/AnimalMedicamento";
+import AnimalParentInfo from "@/presentation/components/animales/AnimalParentInfo";
+import AnimalTipoAlimentacion from "@/presentation/components/animales/AnimalTipoAlimentacion";
+import InfoAnimal from "@/presentation/components/animales/InfoAnimal";
+import ReproductiveStatus from "@/presentation/components/animales/ReproductiveStatus";
+import ImageGallery from "@/presentation/components/ImageGallery";
+import { useQueryClient } from "@tanstack/react-query";
+import { isAxiosError } from "axios";
+import * as ImagePicker from "expo-image-picker";
+import React, { useRef, useState } from "react";
 import {
+  Alert,
   Animated,
   Easing,
   StyleSheet,
+  TouchableOpacity,
   TouchableWithoutFeedback,
-  View,
 } from "react-native";
-import { Avatar, Card, Chip, Divider, useTheme } from "react-native-paper";
+import { Avatar, Card, Divider, useTheme } from "react-native-paper";
+import Toast from "react-native-toast-message";
 
 interface Props {
-  animal: ResponseAnimalesByPropietario;
+  animal: Animal;
   onPress: () => void;
+  onUpdateProfileImage: (imageUri: string, animalId: string) => Promise<void>;
 }
 
-const AnimalCard = ({ animal, onPress }: Props) => {
+const AnimalCard = ({ animal, onPress, onUpdateProfileImage }: Props) => {
   const { colors } = useTheme();
   const scaleValue = useRef(new Animated.Value(1)).current;
+  const queryClient = useQueryClient();
+  const imageUrl = animal.profileImages[0]?.url?.replace(
+    "localhost",
+    process.env.EXPO_PUBLIC_API || "192.168.0.10"
+  );
+  const [galleryVisible, setGalleryVisible] = useState(false);
+  const [localImage, setLocalImage] = useState<string | null>(null);
+
+  const pickImage = async (animalId: string) => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (status !== "granted") {
+      Alert.alert(
+        "Permisos requeridos",
+        "Necesitamos acceso a tus fotos para cambiar la imagen de perfil"
+      );
+      return;
+    }
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+      const selectedImage = result.assets[0].uri;
+      setLocalImage(selectedImage);
+
+      if (onUpdateProfileImage) {
+        try {
+          await onUpdateProfileImage(selectedImage, animalId);
+          Toast.show({
+            type: "success",
+            text1: "Exito",
+            text2: "Perfil de animal actualizado exitosamente",
+          });
+          queryClient.invalidateQueries({ queryKey: ["animales-propietario"] });
+        } catch (error) {
+          Alert.alert("Error", "No se pudo actualizar la imagen de perfil");
+          setLocalImage(null);
+        }
+      }
+    }
+  };
+
+  const openGallery = () => {
+    if (animal.profileImages && animal.profileImages.length > 0) {
+      setGalleryVisible(true);
+    }
+  };
+
+  const handleDeleteImage = async (imageId: string) => {
+    try {
+      await eliminarImagenAnimal(imageId);
+      Toast.show({
+        type: "success",
+        text1: "Exito",
+        text2: "Foto de perfil del animal eliminada",
+      });
+      queryClient.invalidateQueries({ queryKey: ["animales-propietario"] });
+      setGalleryVisible(false);
+    } catch (error) {
+      if (isAxiosError(error)) {
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: error.response?.data
+            ? error.response.data.message
+            : "Error al eliminiar la foto de perfil del animal",
+        });
+      }
+    }
+  };
 
   const handlePressIn = () => {
     Animated.spring(scaleValue, {
@@ -56,523 +143,110 @@ const AnimalCard = ({ animal, onPress }: Props) => {
     });
   };
 
-  const getIconName = () => {
-    switch (animal.especie.nombre) {
-      case "Bovino":
-        return "cow";
-      case "Porcino":
-        return "pig";
-      case "Equino":
-        return "horse";
-      default:
-        return "paw";
-    }
-  };
-
   return (
-    <TouchableWithoutFeedback
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
-      onPress={handlePress}
-      delayPressIn={0}
-    >
-      <Animated.View
-        style={[
-          styles.cardContainer,
-          {
-            transform: [{ scale: scaleValue }],
-          },
-        ]}
+    <>
+      <TouchableWithoutFeedback
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        onPress={handlePress}
+        delayPressIn={0}
       >
-        <Card style={[styles.card, { backgroundColor: colors.surface }]}>
-          <Card.Title
-            title={animal.identificador}
-            subtitle={`${animal.especie.nombre} - ${
-              animal.razas.length === 1
-                ? animal.razas[0].nombre
-                : animal.razas.length > 1
-                ? "Encaste"
-                : "Sin raza"
-            } - ${animal.sexo}`}
-            left={(props) => (
-              <Avatar.Icon
-                {...props}
-                icon={getIconName()}
-                color={colors.primary}
-                style={{ backgroundColor: colors.surfaceVariant }}
-              />
-            )}
-            titleStyle={{ color: colors.onSurface }}
-            subtitleStyle={{ color: colors.onSurfaceVariant }}
-          />
-          <Card.Content>
-            <ThemedView
-              style={[styles.infoRow, { backgroundColor: colors.background }]}
-            >
-              <MaterialCommunityIcons
-                name="calendar"
-                size={20}
-                color={colors.onSurfaceVariant}
-              />
-              <ThemedText
-                style={[styles.infoText, { color: colors.onSurface }]}
-              >
-                Nacimiento:
-                {new Date(animal.fecha_nacimiento).toLocaleDateString()}
-              </ThemedText>
-            </ThemedView>
-
-            <ThemedView
-              style={[styles.infoRow, { backgroundColor: colors.background }]}
-            >
-              <MaterialCommunityIcons
-                name="calendar-clock"
-                size={20}
-                color={colors.onSurfaceVariant}
-              />
-              <ThemedText
-                style={[styles.infoText, { color: colors.onSurface }]}
-              >
-                Registro: {new Date(animal.fecha_registro).toLocaleDateString()}
-              </ThemedText>
-            </ThemedView>
-
-            <ThemedView
-              style={[styles.infoRow, { backgroundColor: colors.background }]}
-            >
-              <MaterialCommunityIcons
-                name="palette"
-                size={20}
-                color={colors.onSurfaceVariant}
-              />
-              <ThemedText
-                style={[styles.infoText, { color: colors.onSurface }]}
-              >
-                Color: {animal.color}
-              </ThemedText>
-            </ThemedView>
-
-            <ThemedView
-              style={[styles.infoRow, { backgroundColor: colors.background }]}
-            >
-              <MaterialCommunityIcons
-                name="clock"
-                size={20}
-                color={colors.onSurfaceVariant}
-              />
-              <ThemedText
-                style={[styles.infoText, { color: colors.onSurface }]}
-              >
-                Edad: {animal.edad_promedio} años
-              </ThemedText>
-            </ThemedView>
-
-            <ThemedView
-              style={[styles.infoRow, { backgroundColor: colors.background }]}
-            >
-              <MaterialCommunityIcons
-                name="dna"
-                size={20}
-                color={colors.onSurfaceVariant}
-              />
-              <ThemedText
-                style={[styles.infoText, { color: colors.onSurface }]}
-              >
-                Pureza: {animal.pureza}
-              </ThemedText>
-            </ThemedView>
-
-            <ThemedView
-              style={[styles.infoRow, { backgroundColor: colors.background }]}
-            >
-              <MaterialCommunityIcons
-                name="baby-buggy"
-                size={20}
-                color={colors.onSurfaceVariant}
-              />
-              <ThemedText
-                style={[styles.infoText, { color: colors.onSurface }]}
-              >
-                Reproducción: {animal.tipo_reproduccion}
-              </ThemedText>
-            </ThemedView>
-
-            {animal.tipo_alimentacion.length > 0 && (
-              <ThemedView
-                style={[styles.infoRow, { backgroundColor: colors.background }]}
-              >
-                <MaterialCommunityIcons
-                  name="silverware-clean"
-                  size={20}
-                  color={colors.onSurfaceVariant}
-                  style={styles.icon}
-                />
-                <View style={styles.chipsContainer}>
-                  {animal.tipo_alimentacion.map((alimento, index) => (
-                    <Chip
-                      key={`${alimento.alimento}-${index}`}
-                      style={[
-                        styles.smallChip,
-                        {
-                          backgroundColor: colors.secondaryContainer,
-                          marginRight: 4,
-                          marginBottom: 4,
-                        },
-                      ]}
-                      textStyle={{
-                        color: colors.onSecondaryContainer,
-                        fontSize: 12,
-                      }}
-                    >
-                      {alimento.alimento}{" "}
-                      {alimento.origen ? `(${alimento.origen})` : ""}
-                    </Chip>
-                  ))}
-                </View>
-              </ThemedView>
-            )}
-            {animal.complementos && animal.complementos.length > 0 && (
-              <ThemedView
-                style={[styles.infoRow, { backgroundColor: colors.background }]}
-              >
-                <MaterialCommunityIcons
-                  name="abacus"
-                  size={20}
-                  color={colors.onSurfaceVariant}
-                  style={styles.icon}
-                />
-                <View style={styles.chipsContainer}>
-                  {animal.complementos.map((complemento, index) => (
-                    <Chip
-                      key={`${complemento.complemento}-${index}`}
-                      style={[
-                        styles.smallChip,
-                        {
-                          backgroundColor: colors.tertiaryContainer,
-                          marginRight: 4,
-                          marginBottom: 4,
-                        },
-                      ]}
-                      textStyle={{
-                        color: colors.onTertiaryContainer,
-                        fontSize: 12,
-                      }}
-                    >
-                      {complemento.complemento}
-                    </Chip>
-                  ))}
-                </View>
-              </ThemedView>
-            )}
-            {animal.medicamento && (
-              <ThemedView
-                style={[styles.infoRow, { backgroundColor: colors.background }]}
-              >
-                <MaterialCommunityIcons
-                  name="medical-bag"
-                  size={20}
-                  color={colors.onSurfaceVariant}
-                  style={styles.icon}
-                />
-                <ThemedText
-                  style={[styles.infoText, { color: colors.onSurface }]}
+        <Animated.View
+          style={[
+            styles.cardContainer,
+            {
+              transform: [{ scale: scaleValue }],
+            },
+          ]}
+        >
+          <Card style={[styles.card, { backgroundColor: colors.surface }]}>
+            <Card.Title
+              title={animal.identificador}
+              subtitle={`${animal.especie.nombre} - ${
+                animal.razas.length === 1
+                  ? animal.razas[0].nombre
+                  : animal.razas.length > 1
+                  ? "Encaste"
+                  : "Sin raza"
+              } - ${animal.sexo}`}
+              left={() => (
+                <TouchableOpacity onPress={openGallery}>
+                  <Avatar.Image
+                    size={48}
+                    source={
+                      animal && animal?.profileImages.length > 0
+                        ? { uri: imageUrl }
+                        : require("@/images/profile.png")
+                    }
+                  />
+                </TouchableOpacity>
+              )}
+              right={() => (
+                <TouchableOpacity
+                  onPress={() => pickImage(animal.id)}
+                  style={styles.editIcon}
                 >
-                  Medicamento: {animal.medicamento}
-                </ThemedText>
-              </ThemedView>
-            )}
-            {animal.sexo === "Macho" && (
-              <ThemedView
-                style={[styles.infoRow, { backgroundColor: colors.background }]}
-              >
-                <ThemedText>Castrado:</ThemedText>
-                <View style={styles.chipsContainer}>
-                  <Chip
-                    style={[
-                      styles.smallChip,
-                      { backgroundColor: colors.secondaryContainer },
-                    ]}
-                    textStyle={{ color: colors.onSecondaryContainer }}
-                  >
-                    {animal.castrado === true ? "Si" : "No"}
-                  </Chip>
-                </View>
-              </ThemedView>
-            )}
-            {animal.sexo === "Hembra" && (
-              <ThemedView
-                style={[styles.infoRow, { backgroundColor: colors.background }]}
-              >
-                <ThemedText>Esterilizado:</ThemedText>
-                <View style={styles.chipsContainer}>
-                  <Chip
-                    style={[
-                      styles.smallChip,
-                      { backgroundColor: colors.secondaryContainer },
-                    ]}
-                    textStyle={{ color: colors.onSecondaryContainer }}
-                  >
-                    {animal.esterelizado === true ? "Si" : "No"}
-                  </Chip>
-                </View>
-              </ThemedView>
-            )}
-
-            {(animal.nombre_padre ||
-              animal.arete_padre ||
-              animal.razas_padre) && (
-              <>
-                <Divider
-                  style={[styles.divider, { backgroundColor: colors.outline }]}
-                />
-                <ThemedText style={styles.sectionTitle}>
-                  Datos del Padre
-                </ThemedText>
-
-                {animal.nombre_padre && (
-                  <ThemedView
-                    style={[
-                      styles.infoRow,
-                      { backgroundColor: colors.background },
-                    ]}
-                  >
-                    <MaterialCommunityIcons
-                      name="account"
-                      size={20}
-                      color={colors.onSurfaceVariant}
-                    />
-                    <ThemedText
-                      style={[styles.infoText, { color: colors.onSurface }]}
-                    >
-                      Nombre: {animal.nombre_padre}
-                    </ThemedText>
-                  </ThemedView>
-                )}
-
-                {animal.arete_padre && (
-                  <ThemedView
-                    style={[
-                      styles.infoRow,
-                      { backgroundColor: colors.background },
-                    ]}
-                  >
-                    <MaterialCommunityIcons
-                      name="tag"
-                      size={20}
-                      color={colors.onSurfaceVariant}
-                    />
-                    <ThemedText
-                      style={[styles.infoText, { color: colors.onSurface }]}
-                    >
-                      Arete: {animal.arete_padre}
-                    </ThemedText>
-                  </ThemedView>
-                )}
-
-                {animal.razas_padre && (
-                  <ThemedView
-                    style={[
-                      styles.infoRow,
-                      { backgroundColor: colors.background },
-                    ]}
-                  >
-                    <MaterialCommunityIcons
-                      name="gender-female"
-                      size={20}
-                      color={colors.onSurfaceVariant}
-                    />
-                    <ThemedText
-                      style={[styles.infoText, { color: colors.onSurface }]}
-                    >
-                      Raza:{" "}
-                      {animal.razas_padre.length === 1
-                        ? animal.razas_padre[0].nombre
-                        : animal.razas_padre.length > 1
-                        ? "Encaste"
-                        : "Sin raza"}
-                    </ThemedText>
-                  </ThemedView>
-                )}
-
-                {animal.compra_padre && (
-                  <Chip
-                    style={{
-                      backgroundColor: colors.secondaryContainer,
-                      marginVertical: 4,
-                    }}
-                    textStyle={{ color: colors.onSecondaryContainer }}
-                  >
-                    Comprado
-                  </Chip>
-                )}
-              </>
-            )}
-
-            {(animal.nombre_madre ||
-              animal.arete_madre ||
-              animal.razas_madre) && (
-              <>
-                <Divider
-                  style={[styles.divider, { backgroundColor: colors.outline }]}
-                />
-                <ThemedText style={styles.sectionTitle}>
-                  Datos de la Madre
-                </ThemedText>
-
-                {animal.nombre_madre && (
-                  <ThemedView
-                    style={[
-                      styles.infoRow,
-                      { backgroundColor: colors.background },
-                    ]}
-                  >
-                    <MaterialCommunityIcons
-                      name="account"
-                      size={20}
-                      color={colors.onSurfaceVariant}
-                    />
-                    <ThemedText
-                      style={[styles.infoText, { color: colors.onSurface }]}
-                    >
-                      Nombre: {animal.nombre_madre}
-                    </ThemedText>
-                  </ThemedView>
-                )}
-
-                {animal.arete_madre && (
-                  <ThemedView
-                    style={[
-                      styles.infoRow,
-                      { backgroundColor: colors.background },
-                    ]}
-                  >
-                    <MaterialCommunityIcons
-                      name="tag"
-                      size={20}
-                      color={colors.onSurfaceVariant}
-                    />
-                    <ThemedText
-                      style={[styles.infoText, { color: colors.onSurface }]}
-                    >
-                      Arete: {animal.arete_madre}
-                    </ThemedText>
-                  </ThemedView>
-                )}
-
-                {animal.razas_madre && (
-                  <ThemedView
-                    style={[
-                      styles.infoRow,
-                      { backgroundColor: colors.background },
-                    ]}
-                  >
-                    <MaterialCommunityIcons
-                      name="gender-female"
-                      size={20}
-                      color={colors.onSurfaceVariant}
-                    />
-                    <ThemedText
-                      style={[styles.infoText, { color: colors.onSurface }]}
-                    >
-                      Raza:{" "}
-                      {animal.razas_madre.length === 1
-                        ? animal.razas_madre[0].nombre
-                        : animal.razas_madre.length > 1
-                        ? "Encaste"
-                        : "Sin raza"}
-                    </ThemedText>
-                  </ThemedView>
-                )}
-
-                {animal.numero_parto_madre && (
-                  <ThemedView
-                    style={[
-                      styles.infoRow,
-                      { backgroundColor: colors.background },
-                    ]}
-                  >
-                    <MaterialCommunityIcons
-                      name="counter"
-                      size={20}
-                      color={colors.onSurfaceVariant}
-                    />
-                    <ThemedText
-                      style={[styles.infoText, { color: colors.onSurface }]}
-                    >
-                      Número de parto: {animal.numero_parto_madre}
-                    </ThemedText>
-                  </ThemedView>
-                )}
-                {animal.compra_madre && (
-                  <Chip
-                    style={{
-                      backgroundColor: colors.secondaryContainer,
-                      marginVertical: 4,
-                    }}
-                    textStyle={{ color: colors.onSecondaryContainer }}
-                  >
-                    Comprado
-                  </Chip>
-                )}
-              </>
-            )}
-            <Divider
-              style={[styles.divider, { backgroundColor: colors.outline }]}
+                  <MyIcon name="camera" size={20} color="white" />
+                </TouchableOpacity>
+              )}
+              titleStyle={{ color: colors.onSurface }}
+              subtitleStyle={{ color: colors.onSurfaceVariant }}
             />
+            <Card.Content>
+              <InfoAnimal animal={animal} />
 
-            <ThemedView
-              style={[styles.infoRow, { backgroundColor: colors.background }]}
-            >
-              <MaterialCommunityIcons
-                name="home"
-                size={20}
-                color={colors.onSurfaceVariant}
+              {animal.tipo_alimentacion.length > 0 && (
+                <AnimalTipoAlimentacion animal={animal} />
+              )}
+              {animal.complementos && animal.complementos.length > 0 && (
+                <AnimalComplementos animal={animal} />
+              )}
+              {animal.medicamento && <AnimalMedicamento animal={animal} />}
+              {animal.sexo === "Macho" && (
+                <ReproductiveStatus sexo="Macho" valor={animal.castrado} />
+              )}
+              {animal.sexo === "Hembra" && (
+                <ReproductiveStatus sexo="Hembra" valor={animal.esterelizado} />
+              )}
+
+              <AnimalParentInfo
+                title="Datos del Padre"
+                nombre={animal.nombre_padre ?? undefined}
+                arete={animal.arete_padre ?? undefined}
+                razas={animal.razas_padre}
+                esComprado={animal.compra_padre}
               />
-              <ThemedText
-                style={[styles.infoText, { color: colors.onSurface }]}
-              >
-                Finca: {animal.finca.nombre_finca} ({animal.finca.abreviatura})
-              </ThemedText>
-            </ThemedView>
 
-            <ThemedView
-              style={[styles.infoRow, { backgroundColor: colors.background }]}
-            >
-              <MaterialCommunityIcons
-                name="account"
-                size={20}
-                color={colors.onSurfaceVariant}
+              <AnimalParentInfo
+                title="Datos de la Madre"
+                nombre={animal.nombre_madre ?? undefined}
+                arete={animal.arete_madre ?? undefined}
+                razas={animal.razas_madre}
+                numeroParto={animal.numero_parto_madre}
+                esComprado={animal.compra_madre}
               />
-              <ThemedText
-                style={[styles.infoText, { color: colors.onSurface }]}
-              >
-                Propietario: {animal.propietario.name}
-              </ThemedText>
-            </ThemedView>
 
-            {animal.observaciones && (
-              <ThemedView
-                style={[
-                  styles.infoColumn,
-                  { backgroundColor: colors.background },
-                ]}
-              >
-                <MaterialCommunityIcons
-                  name="note-text"
-                  size={20}
-                  color={colors.onSurfaceVariant}
-                />
-                <ThemedText
-                  style={[styles.infoText, { color: colors.onSurface }]}
-                >
-                  Caracteristicas: {animal.observaciones}
-                </ThemedText>
-              </ThemedView>
-            )}
-          </Card.Content>
-        </Card>
-      </Animated.View>
-    </TouchableWithoutFeedback>
+              <Divider
+                style={[styles.divider, { backgroundColor: colors.outline }]}
+              />
+
+              <AnimalFincaByPropietarion
+                fincaNombre={animal.finca.nombre_finca}
+                fincaAbreviatura={animal.finca.abreviatura}
+                propietarioNombre={animal.propietario.name}
+                observaciones={animal.observaciones}
+              />
+            </Card.Content>
+          </Card>
+        </Animated.View>
+      </TouchableWithoutFeedback>
+      <ImageGallery
+        visible={galleryVisible}
+        images={animal.profileImages || []}
+        onClose={() => setGalleryVisible(false)}
+        onDelete={handleDeleteImage}
+      />
+    </>
   );
 };
 
@@ -586,55 +260,18 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: "hidden",
   },
-  infoRow: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    marginVertical: 4,
-    padding: 4,
-    borderRadius: 6,
-  },
-  infoColumn: {
-    flexDirection: "column",
-    marginVertical: 4,
-    padding: 4,
-    borderRadius: 6,
-  },
-  infoText: {
-    marginLeft: 8,
-    flex: 1,
-  },
+
   divider: {
     height: 1,
     marginVertical: 8,
   },
-  statusContainer: {
-    flexDirection: "row",
-    marginRight: 8,
-  },
-  chip: {
-    marginHorizontal: 2,
-    height: 24,
-  },
-  smallChip: {
-    marginVertical: 2,
-    height: 32,
-    borderRadius: 16,
-  },
-  chipsContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    flex: 1,
-    marginLeft: 8,
-    gap: 4,
-  },
-  icon: {
-    marginTop: 4,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginVertical: 8,
-    color: "#333",
+  editIcon: {
+    position: "absolute",
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0,0,0,0.6)",
+    borderRadius: 15,
+    padding: 5,
   },
 });
 

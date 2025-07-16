@@ -4,7 +4,6 @@ import { FAB } from "@/presentation/components/FAB";
 import MessageError from "@/presentation/components/MessageError";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
-import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import { useNavigation } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
@@ -13,7 +12,6 @@ import CardMedicos from "./components/CardMedicos";
 
 const MedicosPage = () => {
   const { colors } = useTheme();
-  const textColor = useThemeColor({}, "text");
   const limit = 10;
   const [name, setName] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");

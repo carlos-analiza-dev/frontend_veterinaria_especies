@@ -5,8 +5,9 @@ export const ObtenerAnimalesByPropietario = async (
   propietarioId: string,
   fincaId?: string,
   especieId?: string,
-  identificador?: string
-) => {
+  identificador?: string,
+  pageParams?: { limit: number; offset: number }
+): Promise<ResponseAnimalesByPropietario> => {
   let url = `${process.env.EXPO_PUBLIC_API_URL}/animal-finca/propietario-animales/${propietarioId}`;
 
   const params = new URLSearchParams();
@@ -23,13 +24,15 @@ export const ObtenerAnimalesByPropietario = async (
     params.append("identificador", identificador);
   }
 
+  if (pageParams) {
+    params.append("limit", pageParams.limit.toString());
+    params.append("offset", pageParams.offset.toString());
+  }
+
   if ([...params].length > 0) {
     url += `?${params.toString()}`;
   }
 
-  const response = await veterinariaAPI.get<ResponseAnimalesByPropietario[]>(
-    url
-  );
-
-  return response;
+  const response = await veterinariaAPI.get<ResponseAnimalesByPropietario>(url);
+  return response.data;
 };

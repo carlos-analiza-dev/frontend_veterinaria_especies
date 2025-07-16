@@ -1,10 +1,10 @@
 import { veterinariaAPI } from "@/core/api/veterinariaApi";
-import { ResponseAnimalesByPropietario } from "../interfaces/response-animales.interface";
+import { Animal } from "../interfaces/response-animales.interface";
 
 export const ObtenerAnimalById = async (id: string) => {
   const url = `${process.env.EXPO_PUBLIC_API_URL}/animal-finca/${id}`;
 
-  const response = await veterinariaAPI.get<ResponseAnimalesByPropietario>(url);
+  const response = await veterinariaAPI.get<Animal>(url);
 
   return response;
 };

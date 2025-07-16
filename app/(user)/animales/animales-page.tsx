@@ -1,3 +1,5 @@
+import { Animal } from "@/core/animales/interfaces/response-animales.interface";
+import { uploadProfileImageAnimal } from "@/core/animales_profile/core/uploadProfileImageAnimal";
 import useAnimalesByPropietario from "@/hooks/animales/useAnimalesByPropietario";
 import useGetEspecies from "@/hooks/especies/useGetEspecies";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
@@ -14,6 +16,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
+  Platform,
   RefreshControl,
   StyleSheet,
   View,
@@ -31,6 +34,19 @@ const AnimalesPageGanadero = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
 
+  const handleUpdateProfileImage = async (
+    imageUri: string,
+    animalId: string
+  ) => {
+    if (!user) return;
+
+    try {
+      await uploadProfileImageAnimal(imageUri, animalId);
+    } catch (error) {
+      throw error;
+    }
+  };
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
@@ -42,9 +58,12 @@ const AnimalesPageGanadero = () => {
   const { data: especies } = useGetEspecies();
 
   const {
-    data: animales,
+    data,
     isLoading,
     isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
     refetch,
     isRefetching,
   } = useAnimalesByPropietario(
@@ -53,6 +72,12 @@ const AnimalesPageGanadero = () => {
     especieId,
     debouncedSearchTerm
   );
+
+  const loadMore = useCallback(() => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const handleFincaPress = (id: string) => {
     setFincaId((prevId) => (prevId === id ? "" : id));
@@ -65,6 +90,19 @@ const AnimalesPageGanadero = () => {
   const onRefresh = useCallback(() => {
     refetch();
   }, [refetch]);
+
+  const renderItem = useCallback(
+    ({ item }: { item: Animal }) => (
+      <AnimalCard
+        animal={item}
+        onPress={() =>
+          navigation.navigate("AnimalDetails", { animalId: item.id })
+        }
+        onUpdateProfileImage={handleUpdateProfileImage}
+      />
+    ),
+    [navigation]
+  );
 
   if (isLoading) {
     return (
@@ -117,6 +155,8 @@ const AnimalesPageGanadero = () => {
     );
   }
 
+  const animales = data?.pages.flatMap((page) => page.data) || [];
+
   return (
     <ThemedView
       style={[styles.container, { backgroundColor: colors.background }]}
@@ -147,23 +187,22 @@ const AnimalesPageGanadero = () => {
         </ThemedView>
       </View>
       <FlatList
-        data={animales?.data || []}
-        renderItem={({ item }) => (
-          <AnimalCard
-            animal={item}
-            key={item.id}
-            onPress={() =>
-              navigation.navigate("AnimalDetails", { animalId: item.id })
-            }
-          />
-        )}
+        data={animales}
+        renderItem={renderItem}
         keyExtractor={(item) => item.id}
+        initialNumToRender={10}
+        maxToRenderPerBatch={10}
+        windowSize={21}
+        updateCellsBatchingPeriod={50}
+        removeClippedSubviews={Platform.OS === "android"}
         contentContainerStyle={styles.scrollContainer}
         ListEmptyComponent={
-          <MessageError
-            titulo="Sin animales"
-            descripcion="Esta finca no tiene animales registrados."
-          />
+          !isLoading && (
+            <MessageError
+              titulo="Sin animales"
+              descripcion="Esta finca no tiene animales registrados."
+            />
+          )
         }
         refreshControl={
           <RefreshControl
@@ -173,7 +212,15 @@ const AnimalesPageGanadero = () => {
             tintColor={colorPrimary}
           />
         }
+        onEndReached={loadMore}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={
+          isFetchingNextPage ? (
+            <ActivityIndicator size="small" style={{ marginVertical: 16 }} />
+          ) : null
+        }
       />
+
       <FAB iconName="add" onPress={() => navigation.navigate("CrearAnimal")} />
     </ThemedView>
   );

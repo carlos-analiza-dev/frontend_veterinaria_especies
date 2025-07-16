@@ -1,6 +1,8 @@
 import { Finca } from "@/core/fincas/interfaces/response-fincasByPropietario.interface";
 import { getSpeciesIcon } from "@/helpers/funciones/getEspecies";
 import { getTipoExplotacionIcon } from "@/helpers/funciones/getExplotacion";
+import FincaInfoRow from "@/presentation/components/fincas/FincaInfoRow";
+import HeaderCard from "@/presentation/components/fincas/HeaderCard";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { useRef } from "react";
@@ -87,53 +89,28 @@ const CardFincas = ({ finca, onPress }: Props) => {
             },
           ]}
         >
-          <Card onPress={onPress} style={styles.card}>
+          <Card
+            onPress={onPress}
+            style={[styles.card, { backgroundColor: colors.background }]}
+          >
             <Card.Content>
-              <View style={styles.cardHeader}>
-                <MaterialCommunityIcons
-                  name="home-assistant"
-                  size={30}
-                  color={colors.onSurfaceVariant}
-                />
-                <ThemedText style={styles.fincaName}>
-                  {finca.nombre_finca} ({finca.abreviatura})
-                </ThemedText>
-              </View>
+              <HeaderCard finca={finca} />
 
               <Divider style={styles.divider} />
-              <View style={styles.infoRow}>
-                <MaterialCommunityIcons
-                  name="cow"
-                  size={20}
-                  color={colors.onSurfaceVariant}
-                />
-                <ThemedText style={styles.infoText}>
-                  {finca.cantidad_animales} animales
-                </ThemedText>
-              </View>
+              <FincaInfoRow
+                icon="cow"
+                text={`${finca.cantidad_animales} animales`}
+              />
 
-              <View style={styles.infoRow}>
-                <MaterialCommunityIcons
-                  name="map-marker"
-                  size={20}
-                  color={colors.onSurfaceVariant}
-                />
-                <ThemedText style={styles.infoText}>
-                  {finca.municipio.nombre}, {finca.departamento.nombre}
-                </ThemedText>
-              </View>
+              <FincaInfoRow
+                icon="map-marker"
+                text={`${finca.municipio.nombre}, ${finca.departamento.nombre}`}
+              />
 
-              <View style={styles.infoRow}>
-                <MaterialCommunityIcons
-                  name="texture-box"
-                  size={20}
-                  color={colors.onSurfaceVariant}
-                />
-                <ThemedText style={styles.infoText}>
-                  {finca.tamaño_total_hectarea} ha Totales -{" "}
-                  {finca.area_ganaderia_hectarea} ha para ganadería
-                </ThemedText>
-              </View>
+              <FincaInfoRow
+                icon="texture-box"
+                text={`${finca.tamaño_total_hectarea} ha Totales - ${finca.area_ganaderia_hectarea} ha para ganadería`}
+              />
 
               <View style={styles.speciesContainer}>
                 <ThemedText style={styles.infoText}>Explotacion:</ThemedText>
@@ -255,17 +232,12 @@ const styles = StyleSheet.create({
     elevation: 2,
     overflow: "hidden",
   },
-  cardHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 8,
+  divider: {
+    marginVertical: 8,
   },
   fincaName: {
     marginLeft: 8,
     flex: 1,
-  },
-  divider: {
-    marginVertical: 8,
   },
   infoRow: {
     flexDirection: "row",

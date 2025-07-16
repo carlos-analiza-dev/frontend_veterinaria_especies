@@ -16,13 +16,11 @@ import {
   Text,
   View,
 } from "react-native";
-import { useTheme } from "react-native-paper";
 
 const UsersScreenAdmin = () => {
   const limit = 10;
   const colorPrimary = useThemeColor({}, "primary");
   const textColor = useThemeColor({}, "text");
-  const { colors } = useTheme();
   const emptyTextColor = useThemeColor({}, "icon");
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("");

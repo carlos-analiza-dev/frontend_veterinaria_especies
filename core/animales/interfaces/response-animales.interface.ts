@@ -1,10 +1,19 @@
 export interface ResponseAnimalesByPropietario {
+  data: Animal[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface Animal {
   id: string;
   sexo: string;
   color: string;
   identificador: string;
   tipo_reproduccion: string;
   pureza: string;
+  pureza_padre: string;
+  pureza_madre: string;
   edad_promedio: number;
   fecha_nacimiento: string;
   observaciones: string;
@@ -13,7 +22,6 @@ export interface ResponseAnimalesByPropietario {
   medicamento: string;
   nombre_padre: string;
   arete_padre: null | string;
-  razas_padre: EspecieClass[];
   nombre_criador_padre: null | string;
   nombre_propietario_padre: null | string;
   nombre_finca_origen_padre: string;
@@ -21,20 +29,31 @@ export interface ResponseAnimalesByPropietario {
   nombre_criador_origen_padre: string;
   nombre_madre: string;
   arete_madre: null | string;
-  razas_madre: EspecieClass[];
   nombre_criador_madre: null | string;
   nombre_propietario_madre: null | string;
   nombre_finca_origen_madre: string;
   numero_parto_madre: number;
   compra_madre: boolean;
   nombre_criador_origen_madre: string;
-  fecha_registro: Date;
+  fecha_registro: string;
   castrado: boolean;
   esterelizado: boolean;
   finca: Finca;
   propietario: Propietario;
   especie: EspecieClass;
   razas: EspecieClass[];
+  razas_madre: EspecieClass[];
+  razas_padre: EspecieClass[];
+  profileImages: ProfileImage[];
+}
+
+export interface ProfileImage {
+  id: string;
+  url: string;
+  key: string;
+  mimeType: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface ComplementoElement {
