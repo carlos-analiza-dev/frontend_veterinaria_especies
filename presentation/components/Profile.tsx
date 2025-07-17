@@ -27,7 +27,7 @@ const Profile = ({ user, height, primary, onUpdateProfileImage }: Props) => {
   const [galleryVisible, setGalleryVisible] = useState(false);
   const { data: imagenes_user } = useGetAllImagesProfile(userId ?? "");
 
-  const { data: perfil } = useGetImagePerfil();
+  const { data: perfil, isLoading } = useGetImagePerfil();
   const imageUrl = perfil?.data?.url
     ? perfil.data.url.replace(
         "localhost",

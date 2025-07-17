@@ -214,7 +214,6 @@ const AnimalCard = ({ animal, onPress, onUpdateProfileImage }: Props) => {
                 nombre={animal.nombre_padre ?? undefined}
                 arete={animal.arete_padre ?? undefined}
                 razas={animal.razas_padre}
-                esComprado={animal.compra_padre}
               />
 
               <AnimalParentInfo
@@ -223,7 +222,6 @@ const AnimalCard = ({ animal, onPress, onUpdateProfileImage }: Props) => {
                 arete={animal.arete_madre ?? undefined}
                 razas={animal.razas_madre}
                 numeroParto={animal.numero_parto_madre}
-                esComprado={animal.compra_madre}
               />
 
               <Divider

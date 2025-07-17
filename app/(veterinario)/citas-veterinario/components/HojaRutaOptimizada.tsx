@@ -70,7 +70,6 @@ const HojaRutaOptimizada: React.FC<HojaRutaOptimizadaProps> = ({
         setCitasOrdenadas(ordenadas);
       } catch (err) {
         setError("Error al calcular la ruta optimizada");
-        console.error(err);
       } finally {
         setLoading(false);
       }

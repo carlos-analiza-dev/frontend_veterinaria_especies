@@ -55,9 +55,7 @@ const CrearFincaPage = () => {
   const selectedDeptoId = watch("departamentoId");
   const selectedPaisId = watch("pais_id");
 
-  const { data: deptos } = useGetDeptosActivesByPais(
-    selectedPaisId || user?.pais.id || ""
-  );
+  const { data: deptos } = useGetDeptosActivesByPais(selectedPaisId);
   const { data: municipios } = useGetMunicipiosActivosByDepto(selectedDeptoId);
   const { data: paises } = useGetPaisesActivos();
 
@@ -303,16 +301,18 @@ const CrearFincaPage = () => {
                 onValueChange={(value) => setValue("pais_id", value)}
               />
 
-              <ThemedPicker
-                items={departmentItems}
-                icon="map"
-                placeholder="Departamento"
-                selectedValue={selectedDeptoId}
-                onValueChange={(value) => {
-                  setValue("departamentoId", value);
-                  setValue("municipioId", "");
-                }}
-              />
+              {selectedPaisId && (
+                <ThemedPicker
+                  items={departmentItems}
+                  icon="map"
+                  placeholder="Departamento"
+                  selectedValue={selectedDeptoId}
+                  onValueChange={(value) => {
+                    setValue("departamentoId", value);
+                    setValue("municipioId", "");
+                  }}
+                />
+              )}
 
               {selectedDeptoId && (
                 <ThemedPicker

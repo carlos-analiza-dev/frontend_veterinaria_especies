@@ -17,4 +17,13 @@ export const alimentosOptions = [
       { label: "Comprado y producido", value: "comprado y producido" },
     ],
   },
+  {
+    label: "Nucleos",
+    value: "Nucleos",
+    origenes: [
+      { label: "Comprado", value: "comprado" },
+      { label: "Producido", value: "producido" },
+      { label: "Comprado y producido", value: "comprado y producido" },
+    ],
+  },
 ];

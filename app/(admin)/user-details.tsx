@@ -273,7 +273,7 @@ const UsersDetailsScreen = ({ route }: UserDetailsScreenProps) => {
             items={sexos}
             selectedValue={watch("sexo")}
             onValueChange={(text) => setValue("sexo", text)}
-            placeholder="Selecciona un país"
+            placeholder="Selecciona un sexo"
             error={errors.sexo?.message}
             enabled={isEditing}
           />

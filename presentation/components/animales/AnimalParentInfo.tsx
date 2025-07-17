@@ -3,7 +3,7 @@ import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet } from "react-native";
-import { Chip, Divider, useTheme } from "react-native-paper";
+import { Divider, useTheme } from "react-native-paper";
 
 interface Raza {
   nombre: string;
@@ -15,7 +15,6 @@ interface Props {
   arete?: string;
   razas?: Raza[];
   numeroParto?: number;
-  esComprado?: boolean;
 }
 
 const AnimalParentInfo = ({
@@ -24,7 +23,6 @@ const AnimalParentInfo = ({
   arete,
   razas,
   numeroParto,
-  esComprado,
 }: Props) => {
   const { colors } = useTheme();
 
@@ -99,18 +97,6 @@ const AnimalParentInfo = ({
             Número de parto: {numeroParto}
           </ThemedText>
         </ThemedView>
-      )}
-
-      {esComprado && (
-        <Chip
-          style={{
-            backgroundColor: colors.secondaryContainer,
-            marginVertical: 4,
-          }}
-          textStyle={{ color: colors.onSecondaryContainer }}
-        >
-          Comprado
-        </Chip>
       )}
     </>
   );

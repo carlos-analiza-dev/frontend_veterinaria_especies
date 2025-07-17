@@ -12,5 +12,5 @@ export const getServicios = async () => {
   const url = `${process.env.EXPO_PUBLIC_API_URL}/servicios`;
 
   const response = await veterinariaAPI.get<ResponseServicios>(url);
-  return response;
+  return response.data.servicios;
 };

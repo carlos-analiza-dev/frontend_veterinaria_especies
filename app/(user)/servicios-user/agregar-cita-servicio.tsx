@@ -4,7 +4,8 @@ import useGetAnimalesByFincaEspRaza from "@/hooks/animales/useGetAnimalesByFinca
 import useGetEspecies from "@/hooks/especies/useGetEspecies";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
 import useGetHorasMedicoByFecha from "@/hooks/horarios/useGetHorasMedicoByFecha";
-import userGetMedicoByEspecialidadesByPais from "@/hooks/medicos/userGetMedicoByEspecialidad";
+import userGetMedicoByEspecialidadesByPais from "@/hooks/medicos/userGetMedicoByEspecialidadesByPais";
+
 import useGetRazasByEspecie from "@/hooks/razas/useGetRazasByEspecie";
 import useGetSubServiciosByServicioId from "@/hooks/sub-servicios/useGetSubServiciosByServicioId";
 import { useAuthStore } from "@/presentation/auth/store/useAuthStore";
@@ -212,7 +213,7 @@ const AgregarCitaServicio = ({ route }: DetailsCitaServicioProps) => {
     })) || [];
 
   const allAnimales =
-    animales?.map((animal) => ({
+    animales?.data.map((animal) => ({
       value: animal.id,
       label: animal.identificador,
     })) || [];

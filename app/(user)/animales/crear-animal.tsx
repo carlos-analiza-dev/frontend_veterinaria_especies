@@ -58,8 +58,7 @@ const CrearAnimal = () => {
   const [complementoSeleccionados, setComplementoSeleccionados] = useState<
     string[]
   >([]);
-  const [checkedPadre, setCheckedPadre] = useState(false);
-  const [checkedMadre, setCheckedMadre] = useState(false);
+  const [checkAnimal, setcheckAnimal] = useState(false);
 
   const toggleAlimentoExpand = (alimento: string) => {
     setExpandedAlimento((prev) => (prev === alimento ? null : alimento));
@@ -470,7 +469,7 @@ const CrearAnimal = () => {
               items={purezaOptions}
               onValueChange={(value) => setValue("pureza", value)}
               selectedValue={watch("pureza")}
-              placeholder="Selecciona pureza"
+              placeholder="Nivel de pureza"
               icon="layers-outline"
               error={errors.pureza?.message}
             />
@@ -786,6 +785,34 @@ const CrearAnimal = () => {
               error={errors.fincaId?.message}
             />
 
+            <View style={styles.switchContainer}>
+              <TouchableOpacity
+                onPress={() => {
+                  setcheckAnimal((prev) => {
+                    setValue("compra_animal", !prev);
+                    return !prev;
+                  });
+                }}
+                style={styles.radioItem}
+              >
+                <Checkbox status={checkAnimal ? "checked" : "unchecked"} />
+                <Text>¿Animal fue comprado?</Text>
+              </TouchableOpacity>
+            </View>
+
+            {checkAnimal && (
+              <ThemedTextInput
+                placeholder="Nombre del criador (origen)"
+                icon="person-outline"
+                value={watch("nombre_criador_origen_animal")}
+                onChangeText={(text) =>
+                  setValue("nombre_criador_origen_animal", text)
+                }
+                error={errors.nombre_criador_origen_animal?.message}
+                style={styles.input}
+              />
+            )}
+
             {/* DATOS PADRE */}
 
             <View style={styles.sectionContainer}>
@@ -833,7 +860,7 @@ const CrearAnimal = () => {
                 items={purezaOptions}
                 onValueChange={(value) => setValue("pureza_padre", value)}
                 selectedValue={watch("pureza_padre")}
-                placeholder="Selecciona pureza"
+                placeholder="Nivel de pureza"
                 icon="layers-outline"
                 error={errors.pureza_padre?.message}
               />
@@ -865,34 +892,6 @@ const CrearAnimal = () => {
                 error={errors.nombre_finca_origen_padre?.message}
                 style={styles.input}
               />
-
-              <View style={styles.switchContainer}>
-                <TouchableOpacity
-                  onPress={() => {
-                    setCheckedPadre((prev) => {
-                      setValue("compra_padre", !prev);
-                      return !prev;
-                    });
-                  }}
-                  style={styles.radioItem}
-                >
-                  <Checkbox status={checkedPadre ? "checked" : "unchecked"} />
-                  <Text>Comprado</Text>
-                </TouchableOpacity>
-              </View>
-
-              {checkedPadre && (
-                <ThemedTextInput
-                  placeholder="Nombre del criador (origen)"
-                  icon="person-outline"
-                  value={watch("nombre_criador_origen_padre")}
-                  onChangeText={(text) =>
-                    setValue("nombre_criador_origen_padre", text)
-                  }
-                  error={errors.nombre_criador_origen_padre?.message}
-                  style={styles.input}
-                />
-              )}
             </View>
 
             <View style={styles.sectionContainer}>
@@ -940,7 +939,7 @@ const CrearAnimal = () => {
                 items={purezaOptions}
                 onValueChange={(value) => setValue("pureza_madre", value)}
                 selectedValue={watch("pureza_madre")}
-                placeholder="Selecciona pureza"
+                placeholder="Nivel de pureza"
                 icon="layers-outline"
                 error={errors.pureza_madre?.message}
               />
@@ -983,32 +982,6 @@ const CrearAnimal = () => {
                 }
                 style={styles.input}
               />
-              <View style={styles.switchContainer}>
-                <TouchableOpacity
-                  onPress={() => {
-                    setCheckedMadre((prev) => {
-                      setValue("compra_madre", !prev);
-                      return !prev;
-                    });
-                  }}
-                  style={styles.radioItem}
-                >
-                  <Checkbox status={checkedMadre ? "checked" : "unchecked"} />
-                  <Text>Comprado</Text>
-                </TouchableOpacity>
-              </View>
-
-              {checkedMadre && (
-                <ThemedTextInput
-                  placeholder="Nombre del criador (origen)"
-                  icon="person-outline"
-                  value={watch("nombre_criador_origen_madre")}
-                  onChangeText={(text) =>
-                    setValue("nombre_criador_origen_madre", text)
-                  }
-                  style={styles.input}
-                />
-              )}
             </View>
 
             <ThemedButton

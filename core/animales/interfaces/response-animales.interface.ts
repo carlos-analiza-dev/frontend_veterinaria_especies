@@ -20,21 +20,19 @@ export interface Animal {
   tipo_alimentacion: TipoAlimentacion[];
   complementos: ComplementoElement[] | null;
   medicamento: string;
+  compra_animal: boolean;
+  nombre_criador_origen_animal: string;
   nombre_padre: string;
   arete_padre: null | string;
   nombre_criador_padre: null | string;
   nombre_propietario_padre: null | string;
   nombre_finca_origen_padre: string;
-  compra_padre: boolean;
-  nombre_criador_origen_padre: string;
   nombre_madre: string;
   arete_madre: null | string;
   nombre_criador_madre: null | string;
   nombre_propietario_madre: null | string;
   nombre_finca_origen_madre: string;
   numero_parto_madre: number;
-  compra_madre: boolean;
-  nombre_criador_origen_madre: string;
   fecha_registro: string;
   castrado: boolean;
   esterelizado: boolean;
@@ -108,4 +106,6 @@ export interface Propietario {
 export interface TipoAlimentacion {
   origen: string;
   alimento: string;
+  porcentaje_comprado?: number;
+  porcentaje_producido?: number;
 }

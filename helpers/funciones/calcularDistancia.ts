@@ -24,7 +24,6 @@ export async function obtenerDistanciaGoogleMaps(
 
     return null;
   } catch (error) {
-    console.error("Error al obtener distancia desde Google Maps:", error);
     return null;
   }
 }
@@ -66,7 +65,6 @@ export async function obtenerTiempoViajeGoogleMaps(
 
     return null;
   } catch (error) {
-    console.error("Error al obtener tiempo de viaje desde Google Maps:", error);
     return null;
   }
 }

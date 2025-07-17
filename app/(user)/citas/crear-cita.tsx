@@ -4,7 +4,7 @@ import useGetAnimalesByFincaEspRaza from "@/hooks/animales/useGetAnimalesByFinca
 import useGetEspecies from "@/hooks/especies/useGetEspecies";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
 import useGetHorasMedicoByFecha from "@/hooks/horarios/useGetHorasMedicoByFecha";
-import userGetMedicoByEspecialidadesByPais from "@/hooks/medicos/userGetMedicoByEspecialidad";
+import userGetMedicoByEspecialidadesByPais from "@/hooks/medicos/userGetMedicoByEspecialidadesByPais";
 import useGetRazasByEspecie from "@/hooks/razas/useGetRazasByEspecie";
 import useGetServiciosActivos from "@/hooks/servicios/useGetServiciosActivos";
 import useGetSubServiciosByServicioId from "@/hooks/sub-servicios/useGetSubServiciosByServicioId";
@@ -208,7 +208,7 @@ const CrearCita = () => {
     })) || [];
 
   const allAnimales =
-    animales?.map((animal) => ({
+    animales?.data.map((animal) => ({
       value: animal.id,
       label: animal.identificador,
     })) || [];
