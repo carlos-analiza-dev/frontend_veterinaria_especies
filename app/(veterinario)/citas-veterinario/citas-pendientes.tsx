@@ -149,13 +149,15 @@ const CitasPendientesVeterinario = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Citas</Text>
 
-      <TouchableOpacity
-        style={[styles.button, { backgroundColor: colorPrimary }]}
-        onPress={() => setMostrarHojaRuta(true)}
-      >
-        <MaterialIcons name="zoom-in-map" size={20} color="white" />
-        <Text style={styles.buttonText}>Ver Ruta Optimizada</Text>
-      </TouchableOpacity>
+      {allCitas && allCitas.length > 0 && (
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: colorPrimary }]}
+          onPress={() => setMostrarHojaRuta(true)}
+        >
+          <MaterialIcons name="zoom-in-map" size={20} color="white" />
+          <Text style={styles.buttonText}>Ver Ruta Optimizada</Text>
+        </TouchableOpacity>
+      )}
 
       <FlatList
         data={allCitas}

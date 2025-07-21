@@ -70,6 +70,7 @@ const ServicioPageAdmin = () => {
           titulo="No se encontraron servicios"
           descripcion=" No se encontraron datos de los servicios en este módulo. Por favor, verifica más tarde o vuelve a intentar."
         />
+        <ModalAddService visible={visible} setVisible={setVisible} />
       </ThemedView>
     );
   }
