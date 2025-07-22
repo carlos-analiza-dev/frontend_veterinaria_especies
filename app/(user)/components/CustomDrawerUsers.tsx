@@ -2,15 +2,22 @@ import MyIcon from "@/presentation/auth/components/MyIcon";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import { DrawerContentComponentProps } from "@react-navigation/drawer";
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
-import { useTheme } from "react-native-paper";
+import { List, useTheme } from "react-native-paper";
 
 type Props = DrawerContentComponentProps & {
   logout: () => void;
 };
 
 const CustomDrawerUsers = ({ navigation, logout }: Props) => {
+  const [expanded, setExpanded] = useState(false);
+
+  const handleItemPress = (route: any) => {
+    setExpanded(false);
+    navigation.navigate(route);
+  };
+
   const { colors } = useTheme();
 
   return (
@@ -62,6 +69,70 @@ const CustomDrawerUsers = ({ navigation, logout }: Props) => {
         <MyIcon name="paw-outline" size={24} color={colors.primary} />
         <ThemedText style={[styles.itemText]}>Animales</ThemedText>
       </TouchableOpacity>
+
+      <List.Section>
+        <List.Accordion
+          title="Agricultura"
+          titleStyle={[styles.itemText, { fontWeight: "bold" }]}
+          style={styles.drawerItem}
+          left={() => (
+            <MyIcon name="options-outline" size={24} color={colors.primary} />
+          )}
+          expanded={expanded}
+          onPress={() => setExpanded(!expanded)}
+        >
+          <List.Item
+            title="Producción Ganadero"
+            titleStyle={styles.itemText}
+            style={styles.drawerItem}
+            onPress={() =>
+              handleItemPress({
+                name: "produccion-ganadero",
+                params: { screen: "ProduccionPage" },
+              })
+            }
+            left={() => (
+              <MyIcon
+                name="construct-outline"
+                size={24}
+                color={colors.primary}
+              />
+            )}
+          />
+          <List.Item
+            title="Insumos Ganadero"
+            titleStyle={styles.itemText}
+            style={styles.drawerItem}
+            onPress={() =>
+              handleItemPress({
+                name: "produccion-ganadero",
+                params: { screen: "InsumosGanaderoPage" },
+              })
+            }
+            left={() => (
+              <MyIcon name="bag-add-outline" size={24} color={colors.primary} />
+            )}
+          />
+          <List.Item
+            title="Análisis y Eficiencia"
+            titleStyle={styles.itemText}
+            style={styles.drawerItem}
+            onPress={() =>
+              handleItemPress({
+                name: "produccion-ganadero",
+                params: { screen: "AnalisisGanaderoPage" },
+              })
+            }
+            left={() => (
+              <MyIcon
+                name="stats-chart-outline"
+                size={24}
+                color={colors.primary}
+              />
+            )}
+          />
+        </List.Accordion>
+      </List.Section>
 
       <TouchableOpacity
         style={styles.drawerItem}

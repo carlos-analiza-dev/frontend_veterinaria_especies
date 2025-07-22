@@ -18,12 +18,15 @@ import AnimalDetailsPage from "./animales/animal-details";
 import AnimalesPageGanadero from "./animales/animales-page";
 import CrearAnimal from "./animales/crear-animal";
 
+import AnalisisEficienciaPage from "./analisis/analisis-eficiencia";
 import CrearCita from "./citas/crear-cita";
 import HomeUser from "./citas/home";
 import CustomDrawerUsers from "./components/CustomDrawerUsers";
 import CrearFincaPage from "./finca/crear-finca";
 import FincaDetailsPage from "./finca/finca-details";
 import FincasPageGanaderos from "./finca/fincas-page";
+import InsumosCapexPage from "./insumos/insumos-user";
+import ProduccionGanaderoPage from "./produccion/produccion-ganadero";
 import ProfileUser from "./profile";
 import AgregarCitaServicio from "./servicios-user/agregar-cita-servicio";
 import ServicesUser from "./servicios-user/servicios-user";
@@ -187,6 +190,43 @@ export default function UserLayout() {
     );
   };
 
+  const UsersAgriculturaStackScreen = () => {
+    return (
+      <UsersStack.Navigator screenOptions={{ headerShown: false }}>
+        <UsersStack.Screen
+          name="ProduccionPage"
+          component={ProduccionGanaderoPage}
+          options={{
+            headerShown: true,
+            headerTitle: "Produccion Ganadero",
+            headerRight: () => <LogoutIconButton />,
+            headerLeft: () => <DrawerToggleButton tintColor={iconColor} />,
+          }}
+        />
+        <UsersStack.Screen
+          name="InsumosGanaderoPage"
+          component={InsumosCapexPage}
+          options={{
+            headerShown: true,
+            headerTitle: "Insumos Ganadero",
+            headerRight: () => <LogoutIconButton />,
+            headerLeft: () => <DrawerToggleButton tintColor={iconColor} />,
+          }}
+        />
+        <UsersStack.Screen
+          name="AnalisisGanaderoPage"
+          component={AnalisisEficienciaPage}
+          options={{
+            headerShown: true,
+            headerTitle: "Analisis y Eficiencia",
+            headerRight: () => <LogoutIconButton />,
+            headerLeft: () => <DrawerToggleButton tintColor={iconColor} />,
+          }}
+        />
+      </UsersStack.Navigator>
+    );
+  };
+
   return (
     <>
       <Drawer.Navigator
@@ -204,6 +244,10 @@ export default function UserLayout() {
         <Drawer.Screen
           name="animales-page"
           component={UsersAnimalesStackScreen}
+        />
+        <Drawer.Screen
+          name="produccion-ganadero"
+          component={UsersAgriculturaStackScreen}
         />
         <Drawer.Screen
           name="profile"
