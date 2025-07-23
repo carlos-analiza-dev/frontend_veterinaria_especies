@@ -25,6 +25,8 @@ import CustomDrawerUsers from "./components/CustomDrawerUsers";
 import CrearFincaPage from "./finca/crear-finca";
 import FincaDetailsPage from "./finca/finca-details";
 import FincasPageGanaderos from "./finca/fincas-page";
+import CrearInsumoPage from "./insumos/crear-insumo";
+import DetallesInsumosPage from "./insumos/details-insumos";
 import InsumosCapexPage from "./insumos/insumos-user";
 import ProduccionGanaderoPage from "./produccion/produccion-ganadero";
 import ProfileUser from "./profile";
@@ -211,6 +213,26 @@ export default function UserLayout() {
             headerTitle: "Insumos Ganadero",
             headerRight: () => <LogoutIconButton />,
             headerLeft: () => <DrawerToggleButton tintColor={iconColor} />,
+          }}
+        />
+        <UsersStack.Screen
+          name="CrearInsumoPage"
+          component={CrearInsumoPage}
+          options={{
+            headerShown: true,
+            headerTitle: "Crear Insumo",
+            headerRight: () => <LogoutIconButton />,
+            headerLeft: () => <GoBack />,
+          }}
+        />
+        <UsersStack.Screen
+          name="DetailsInsumosPage"
+          component={DetallesInsumosPage}
+          options={{
+            headerShown: true,
+            headerTitle: "Detalles Insumo",
+            headerRight: () => <LogoutIconButton />,
+            headerLeft: () => <GoBack />,
           }}
         />
         <UsersStack.Screen

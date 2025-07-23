@@ -70,16 +70,21 @@ const CustomDrawerUsers = ({ navigation, logout }: Props) => {
         <ThemedText style={[styles.itemText]}>Animales</ThemedText>
       </TouchableOpacity>
 
-      <List.Section>
+      <List.Section style={styles.listSection}>
         <List.Accordion
           title="Agricultura"
-          titleStyle={[styles.itemText, { fontWeight: "bold" }]}
-          style={styles.drawerItem}
-          left={() => (
-            <MyIcon name="options-outline" size={24} color={colors.primary} />
-          )}
+          titleStyle={styles.itemText}
+          style={styles.accordion}
           expanded={expanded}
           onPress={() => setExpanded(!expanded)}
+          left={(props) => (
+            <List.Icon
+              {...props}
+              icon={() => (
+                <MyIcon name="leaf-outline" size={24} color={colors.primary} />
+              )}
+            />
+          )}
         >
           <List.Item
             title="Producción Ganadero"
@@ -176,6 +181,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 15,
+    paddingLeft: 16,
   },
   itemText: {
     fontSize: 16,
@@ -184,9 +190,17 @@ const styles = StyleSheet.create({
   logoutButton: {
     marginTop: "auto",
     marginBottom: 30,
-    justifyContent: "center",
   },
   logoutText: {
     color: "#ff4444",
+  },
+  listSection: {
+    marginVertical: 0,
+    paddingVertical: 0,
+  },
+  accordion: {
+    padding: 0,
+    margin: 0,
+    backgroundColor: "transparent",
   },
 });
