@@ -33,6 +33,7 @@ export type UsersStackParamList = {
   AnalisisGanaderoPage: undefined;
   CrearInsumoPage: undefined;
   DetailsInsumosPage: { insumoId: string };
+  CrearProduccionPage: undefined;
 };
 
 declare global {

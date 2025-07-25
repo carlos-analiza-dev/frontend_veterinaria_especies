@@ -15,6 +15,8 @@ export interface CrearAnimalByFinca {
   castrado: boolean;
   esterelizado: boolean;
   pureza: string;
+  produccion: string;
+  tipo_produccion: string;
   tipo_reproduccion: string;
   compra_animal?: boolean;
   nombre_criador_origen_animal?: string;

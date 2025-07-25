@@ -5,6 +5,7 @@ import AnimalComplementos from "@/presentation/components/animales/AnimalComplem
 import AnimalFincaByPropietarion from "@/presentation/components/animales/AnimalFincaByPropietarion";
 import AnimalMedicamento from "@/presentation/components/animales/AnimalMedicamento";
 import AnimalParentInfo from "@/presentation/components/animales/AnimalParentInfo";
+import AnimalProductionInfo from "@/presentation/components/animales/AnimalProductionInfo";
 import AnimalTipoAlimentacion from "@/presentation/components/animales/AnimalTipoAlimentacion";
 import InfoAnimal from "@/presentation/components/animales/InfoAnimal";
 import ReproductiveStatus from "@/presentation/components/animales/ReproductiveStatus";
@@ -234,6 +235,24 @@ const AnimalCard = ({ animal, onPress, onUpdateProfileImage }: Props) => {
                 propietarioNombre={animal.propietario.name}
                 observaciones={animal.observaciones}
               />
+              {animal.produccion ||
+              animal.tipo_produccion ||
+              animal.animal_muerte ? (
+                <>
+                  <Divider
+                    style={[
+                      styles.divider,
+                      { backgroundColor: colors.outline },
+                    ]}
+                  />
+                  <AnimalProductionInfo
+                    produccion={animal.produccion}
+                    tipoProduccion={animal.tipo_produccion}
+                    animalMuerto={animal.animal_muerte}
+                    razonMuerte={animal.razon_muerte}
+                  />
+                </>
+              ) : null}
             </Card.Content>
           </Card>
         </Animated.View>

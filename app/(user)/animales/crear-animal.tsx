@@ -2,6 +2,8 @@ import { CreateAnimal } from "@/core/animales/accions/crear-animal";
 import { CrearAnimalByFinca } from "@/core/animales/interfaces/crear-animal.interface";
 import { alimentosOptions } from "@/helpers/data/alimentos";
 import { complementosOptions } from "@/helpers/data/complementos";
+import { dataProduccion } from "@/helpers/data/dataProduccion";
+import { dataTipoProduccion } from "@/helpers/data/dataTipoProduccion";
 import { purezaOptions } from "@/helpers/data/purezaOptions";
 import { sexoOptions } from "@/helpers/data/sexo_animales";
 import { tipoReproduccionOptions } from "@/helpers/data/tipoReproduccionOptions";
@@ -9,6 +11,7 @@ import useGetEspecies from "@/hooks/especies/useGetEspecies";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
 import useGetRazasByEspecie from "@/hooks/razas/useGetRazasByEspecie";
 import { useAuthStore } from "@/presentation/auth/store/useAuthStore";
+import ButtonNext from "@/presentation/components/animales/ButtonNext";
 import ThemedButton from "@/presentation/theme/components/ThemedButton";
 import ThemedCheckbox from "@/presentation/theme/components/ThemedCheckbox";
 import ThemedMultiPicker from "@/presentation/theme/components/ThemedMultiPicker";
@@ -33,13 +36,19 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
-import { Checkbox, Switch, useTheme } from "react-native-paper";
+import {
+  Checkbox,
+  SegmentedButtons,
+  Switch,
+  useTheme,
+} from "react-native-paper";
 import Toast from "react-native-toast-message";
 
 const CrearAnimal = () => {
   const { user } = useAuthStore();
   const { colors } = useTheme();
   const { height, width } = useWindowDimensions();
+  const [valor, setValor] = useState<"animal" | "padre" | "madre">("animal");
   const navigation = useNavigation();
   const queryClient = useQueryClient();
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -124,6 +133,16 @@ const CrearAnimal = () => {
   const sexoItems = sexoOptions.map((sexo) => ({
     label: sexo.label,
     value: sexo.value,
+  }));
+
+  const produccionItems = dataProduccion.map((produccion) => ({
+    label: produccion.label,
+    value: produccion.value,
+  }));
+
+  const tipoProduccionItems = dataTipoProduccion.map((produccion) => ({
+    label: produccion.label,
+    value: produccion.value,
   }));
 
   const selectedSexo = watch("sexo");
@@ -404,593 +423,692 @@ const CrearAnimal = () => {
           contentContainerStyle={[styles.scrollContainer]}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={[styles.formContainer, { width: width * 0.9 }]}>
-            <ThemedPicker
-              items={especiesItmes}
-              onValueChange={(value) => setValue("especie", value)}
-              selectedValue={watch("especie")}
-              placeholder="Selecciona una especie"
-              icon="paw-outline"
-              error={errors.especie?.message}
-            />
-
-            <ThemedPicker
-              items={sexoItems}
-              onValueChange={(value) => setValue("sexo", value)}
-              selectedValue={watch("sexo")}
-              placeholder="Selecciona un sexo"
-              icon="transgender-outline"
-              error={errors.sexo?.message}
-            />
-
-            <ThemedTextInput
-              placeholder="Color del animal"
-              icon="color-palette-outline"
-              value={watch("color")}
-              onChangeText={(text) => setValue("color", text)}
-              error={errors.color?.message}
-              style={styles.input}
-            />
-
-            <ThemedTextInput
-              placeholder="Arete (ingrese 6 dígitos)"
-              icon="warning-outline"
-              value={watch("identificador_temp") || ""}
-              onChangeText={handleIdentifierChange}
-              onFocus={() => setShowIdentifierHelp(true)}
-              onBlur={() => setShowIdentifierHelp(false)}
-              error={errors.identificador?.message}
-              style={styles.input}
-              keyboardType="numeric"
-              maxLength={6}
-            />
-
-            {showIdentifierHelp && (
-              <Text style={styles.helpText}>
-                PRIMEROS SEIS DIGITOS DE IDENTIFICACIÓN DEL ARETE
-              </Text>
-            )}
-
-            <ThemedMultiPicker
-              items={
-                razas?.data.map((raza) => ({
-                  label: raza.nombre,
-                  value: raza.id,
-                })) || []
+          <ThemedView style={{ marginBottom: 12 }}>
+            <SegmentedButtons
+              value={valor}
+              onValueChange={(value) =>
+                setValor(value as "animal" | "padre" | "madre")
               }
-              onValuesChange={(values) => setValue("razaIds", values)}
-              selectedValues={(watch("razaIds") as string[]) || []}
-              placeholder="Selecciona una o más razas"
-              icon="git-branch-outline"
-              error={errors.razaIds?.message}
+              buttons={[
+                {
+                  value: "animal",
+                  label: "Animal",
+                  icon: "paw",
+                  style:
+                    valor === "animal"
+                      ? { backgroundColor: colors.primary }
+                      : {},
+                },
+                {
+                  value: "padre",
+                  label: "Padre",
+                  icon: "gender-male",
+                  style:
+                    valor === "padre"
+                      ? { backgroundColor: colors.primary }
+                      : {},
+                },
+                {
+                  value: "madre",
+                  label: "Madre",
+                  icon: "gender-female",
+                  style:
+                    valor === "madre"
+                      ? { backgroundColor: colors.primary }
+                      : {},
+                },
+              ]}
             />
-
-            <ThemedPicker
-              items={purezaOptions}
-              onValueChange={(value) => setValue("pureza", value)}
-              selectedValue={watch("pureza")}
-              placeholder="Nivel de pureza"
-              icon="layers-outline"
-              error={errors.pureza?.message}
-            />
-
-            <ThemedPicker
-              items={tipoReproduccionOptions}
-              onValueChange={(value) => setValue("tipo_reproduccion", value)}
-              selectedValue={watch("tipo_reproduccion")}
-              placeholder="Selecciona tipo de reproducción"
-              icon="git-compare-outline"
-              error={errors.tipo_reproduccion?.message}
-            />
-
-            <ThemedTextInput
-              placeholder="Fecha de nacimiento"
-              icon="calendar-outline"
-              value={watch("fecha_nacimiento")}
-              onFocus={() => setShowDatePicker(true)}
-              showSoftInputOnFocus={false}
-              error={errors.fecha_nacimiento?.message}
-              style={styles.input}
-            />
-
-            {showDatePicker && (
-              <DateTimePicker
-                value={
-                  watch("fecha_nacimiento")
-                    ? new Date(
-                        Number(watch("fecha_nacimiento").split("-")[0]),
-                        Number(watch("fecha_nacimiento").split("-")[1]) - 1,
-                        Number(watch("fecha_nacimiento").split("-")[2])
-                      )
-                    : new Date()
-                }
-                mode="date"
-                display="spinner"
-                onChange={handleDateChange}
-              />
-            )}
-
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Tipo de alimentación</Text>
-              {alimentosOptions.map((alimento) => {
-                const alimentoSeleccionado = tipoAlimentacion.find(
-                  (a) => a.alimento === alimento.value
-                );
-
-                return (
-                  <View key={alimento.value} style={styles.categoryContainer}>
-                    <TouchableOpacity
-                      style={styles.categoryHeader}
-                      onPress={() => toggleAlimentoExpand(alimento.value)}
-                    >
-                      <View
-                        style={{ flexDirection: "row", alignItems: "center" }}
-                      >
-                        <Checkbox
-                          status={
-                            isAlimentoSeleccionado(alimento.value)
-                              ? "checked"
-                              : "unchecked"
-                          }
-                          onPress={() => {
-                            if (isAlimentoSeleccionado(alimento.value)) {
-                              const updated = tipoAlimentacion.filter(
-                                (a) => a.alimento !== alimento.value
-                              );
-                              setTipoAlimentacion(updated);
-                              setValue("tipo_alimentacion", updated);
-                            } else {
-                              const updated = [
-                                ...tipoAlimentacion,
-                                {
-                                  alimento: alimento.value,
-                                  origen: "comprado",
-                                },
-                              ];
-                              setTipoAlimentacion(updated);
-                              setValue("tipo_alimentacion", updated);
-                            }
-                          }}
-                          color={colors.primary}
-                        />
-                        <ThemedText style={styles.categoryTitle}>
-                          {alimento.label}
-                        </ThemedText>
-                      </View>
-
-                      <FontAwesome
-                        name={
-                          expandedAlimento === alimento.value
-                            ? "chevron-up"
-                            : "chevron-down"
-                        }
-                        size={16}
-                        color={colors.primary}
-                      />
-                    </TouchableOpacity>
-
-                    {expandedAlimento === alimento.value &&
-                      isAlimentoSeleccionado(alimento.value) && (
-                        <View style={styles.subservicesContainer}>
-                          {[
-                            "comprado",
-                            "producido",
-                            "comprado y producido",
-                          ].map((origen) => (
-                            <View key={origen}>
-                              <TouchableOpacity
-                                style={[
-                                  styles.subserviceItem,
-                                  alimentoSeleccionado?.origen === origen &&
-                                    styles.selectedSubserviceItem,
-                                ]}
-                                onPress={() =>
-                                  handleOrigenSelection(alimento.value, origen)
-                                }
-                              >
-                                <Checkbox
-                                  status={
-                                    alimentoSeleccionado?.origen === origen
-                                      ? "checked"
-                                      : "unchecked"
-                                  }
-                                  onPress={() =>
-                                    handleOrigenSelection(
-                                      alimento.value,
-                                      origen
-                                    )
-                                  }
-                                  color={colors.primary}
-                                />
-                                <ThemedText style={styles.subserviceText}>
-                                  {origen === "comprado"
-                                    ? "Comprado"
-                                    : origen === "producido"
-                                    ? "Producido"
-                                    : "Comprado y producido"}
-                                </ThemedText>
-                              </TouchableOpacity>
-
-                              {alimentoSeleccionado?.origen ===
-                                "comprado y producido" &&
-                                origen === "comprado y producido" && (
-                                  <View
-                                    style={styles.percentageInputsContainer}
-                                  >
-                                    <View style={styles.percentageInputWrapper}>
-                                      <ThemedText
-                                        style={styles.percentageLabel}
-                                      >
-                                        % Comprado:
-                                      </ThemedText>
-                                      <ThemedTextInput
-                                        placeholder="Ej: 60"
-                                        value={
-                                          alimentoSeleccionado.porcentaje_comprado?.toString() ||
-                                          ""
-                                        }
-                                        onChangeText={(text) => {
-                                          if (
-                                            text === "" ||
-                                            /^\d+$/.test(text)
-                                          ) {
-                                            const updated =
-                                              tipoAlimentacion.map((item) =>
-                                                item.alimento === alimento.value
-                                                  ? {
-                                                      ...item,
-                                                      porcentaje_comprado: text
-                                                        ? Number(text)
-                                                        : undefined,
-                                                    }
-                                                  : item
-                                              );
-                                            setTipoAlimentacion(updated);
-                                            setValue(
-                                              "tipo_alimentacion",
-                                              updated
-                                            );
-                                          }
-                                        }}
-                                        keyboardType="number-pad"
-                                        style={styles.percentageInput}
-                                        maxLength={3}
-                                      />
-                                    </View>
-
-                                    <View style={styles.percentageInputWrapper}>
-                                      <ThemedText
-                                        style={styles.percentageLabel}
-                                      >
-                                        % Producido:
-                                      </ThemedText>
-                                      <ThemedTextInput
-                                        placeholder="Ej: 40"
-                                        value={
-                                          alimentoSeleccionado.porcentaje_producido?.toString() ||
-                                          ""
-                                        }
-                                        onChangeText={(text) => {
-                                          if (
-                                            text === "" ||
-                                            /^\d+$/.test(text)
-                                          ) {
-                                            const updated =
-                                              tipoAlimentacion.map((item) =>
-                                                item.alimento === alimento.value
-                                                  ? {
-                                                      ...item,
-                                                      porcentaje_producido: text
-                                                        ? Number(text)
-                                                        : undefined,
-                                                    }
-                                                  : item
-                                              );
-                                            setTipoAlimentacion(updated);
-                                            setValue(
-                                              "tipo_alimentacion",
-                                              updated
-                                            );
-                                          }
-                                        }}
-                                        keyboardType="number-pad"
-                                        style={styles.percentageInput}
-                                        maxLength={3}
-                                      />
-                                    </View>
-
-                                    {alimentoSeleccionado.porcentaje_comprado !==
-                                      undefined &&
-                                      alimentoSeleccionado.porcentaje_producido !==
-                                        undefined &&
-                                      alimentoSeleccionado.porcentaje_comprado +
-                                        alimentoSeleccionado.porcentaje_producido !==
-                                        100 && (
-                                        <Text style={styles.errorText}>
-                                          La suma de porcentajes debe ser 100%
-                                        </Text>
-                                      )}
-                                  </View>
-                                )}
-                            </View>
-                          ))}
-                        </View>
-                      )}
-                  </View>
-                );
-              })}
-            </View>
-
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Tipo de complemento</Text>
-              {complementosOptions.map((complemento) => (
-                <ThemedCheckbox
-                  key={complemento.value}
-                  label={complemento.label}
-                  value={complemento.value}
-                  onPress={handleAlimentoChange}
-                  isSelected={complementoSeleccionados.includes(
-                    complemento.value
-                  )}
-                />
-              ))}
-            </View>
-
-            <ThemedTextInput
-              placeholder="Medicamentos (opcional)"
-              icon="medical-outline"
-              value={watch("medicamento")}
-              onChangeText={(text) => setValue("medicamento", text)}
-              error={errors.medicamento?.message}
-              style={styles.input}
-            />
-
-            {selectedSexo === "Macho" && (
-              <View style={styles.switchContainer}>
-                <Text style={styles.switchLabel}>Castrado</Text>
-                <Switch
-                  value={watch("castrado") || false}
-                  onValueChange={(value) => setValue("castrado", value)}
-                  color={colors.primary}
-                />
-              </View>
-            )}
-
-            {selectedSexo === "Hembra" && (
-              <View style={styles.switchContainer}>
-                <Text style={styles.switchLabel}>Esterilizado</Text>
-                <Switch
-                  value={watch("esterelizado") || false}
-                  onValueChange={(value) => setValue("esterelizado", value)}
-                  color={colors.primary}
-                />
-              </View>
-            )}
-
-            <ThemedTextInput
-              placeholder="Caracteristicas"
-              icon="clipboard-outline"
-              value={watch("observaciones")}
-              onChangeText={(text) => setValue("observaciones", text)}
-              error={errors.observaciones?.message}
-              style={[styles.input, styles.multilineInput]}
-            />
-
-            <ThemedPicker
-              items={fincasItems}
-              onValueChange={(value) => setValue("fincaId", value)}
-              selectedValue={watch("fincaId")}
-              placeholder="Selecciona una finca"
-              icon="podium-outline"
-              error={errors.fincaId?.message}
-            />
-
-            <View style={styles.switchContainer}>
-              <TouchableOpacity
-                onPress={() => {
-                  setcheckAnimal((prev) => {
-                    setValue("compra_animal", !prev);
-                    return !prev;
-                  });
-                }}
-                style={styles.radioItem}
+          </ThemedView>
+          <View style={[styles.formContainer, { width: width * 0.9 }]}>
+            {valor === "animal" && (
+              <ThemedView
+                style={{ marginBottom: 20, backgroundColor: colors.background }}
               >
-                <Checkbox status={checkAnimal ? "checked" : "unchecked"} />
-                <Text>¿Animal fue comprado?</Text>
-              </TouchableOpacity>
-            </View>
+                <Text style={styles.sectionTitle}>Datos del animal</Text>
+                <ThemedPicker
+                  items={especiesItmes}
+                  onValueChange={(value) => setValue("especie", value)}
+                  selectedValue={watch("especie")}
+                  placeholder="Selecciona una especie"
+                  icon="paw-outline"
+                  error={errors.especie?.message}
+                />
 
-            {checkAnimal && (
-              <ThemedTextInput
-                placeholder="Nombre del criador (origen)"
-                icon="person-outline"
-                value={watch("nombre_criador_origen_animal")}
-                onChangeText={(text) =>
-                  setValue("nombre_criador_origen_animal", text)
-                }
-                error={errors.nombre_criador_origen_animal?.message}
-                style={styles.input}
-              />
+                <ThemedPicker
+                  items={sexoItems}
+                  onValueChange={(value) => setValue("sexo", value)}
+                  selectedValue={watch("sexo")}
+                  placeholder="Selecciona un sexo"
+                  icon="transgender-outline"
+                  error={errors.sexo?.message}
+                />
+
+                <ThemedTextInput
+                  placeholder="Color del animal"
+                  icon="color-palette-outline"
+                  value={watch("color")}
+                  onChangeText={(text) => setValue("color", text)}
+                  error={errors.color?.message}
+                  style={styles.input}
+                />
+
+                <ThemedTextInput
+                  placeholder="Arete (ingrese 6 dígitos)"
+                  icon="warning-outline"
+                  value={watch("identificador_temp") || ""}
+                  onChangeText={handleIdentifierChange}
+                  onFocus={() => setShowIdentifierHelp(true)}
+                  onBlur={() => setShowIdentifierHelp(false)}
+                  error={errors.identificador?.message}
+                  style={styles.input}
+                  keyboardType="numeric"
+                  maxLength={6}
+                />
+
+                {showIdentifierHelp && (
+                  <Text style={styles.helpText}>
+                    PRIMEROS SEIS DIGITOS DE IDENTIFICACIÓN DEL ARETE
+                  </Text>
+                )}
+
+                <ThemedMultiPicker
+                  items={
+                    razas?.data.map((raza) => ({
+                      label: raza.nombre,
+                      value: raza.id,
+                    })) || []
+                  }
+                  onValuesChange={(values) => setValue("razaIds", values)}
+                  selectedValues={(watch("razaIds") as string[]) || []}
+                  placeholder="Selecciona una o más razas"
+                  icon="git-branch-outline"
+                  error={errors.razaIds?.message}
+                />
+
+                <ThemedPicker
+                  items={purezaOptions}
+                  onValueChange={(value) => setValue("pureza", value)}
+                  selectedValue={watch("pureza")}
+                  placeholder="Nivel de pureza"
+                  icon="layers-outline"
+                  error={errors.pureza?.message}
+                />
+
+                <ThemedPicker
+                  items={tipoReproduccionOptions}
+                  onValueChange={(value) =>
+                    setValue("tipo_reproduccion", value)
+                  }
+                  selectedValue={watch("tipo_reproduccion")}
+                  placeholder="Selecciona tipo de reproducción"
+                  icon="git-compare-outline"
+                  error={errors.tipo_reproduccion?.message}
+                />
+
+                <ThemedPicker
+                  items={produccionItems}
+                  onValueChange={(value) => setValue("produccion", value)}
+                  selectedValue={watch("produccion")}
+                  placeholder="Selecciona la produccion"
+                  icon="options-outline"
+                  error={errors.produccion?.message}
+                />
+                <ThemedPicker
+                  items={tipoProduccionItems}
+                  onValueChange={(value) => setValue("tipo_produccion", value)}
+                  selectedValue={watch("tipo_produccion")}
+                  placeholder="Selecciona el tipo produccion"
+                  icon="options-outline"
+                  error={errors.tipo_produccion?.message}
+                />
+
+                <ThemedTextInput
+                  placeholder="Fecha de nacimiento"
+                  icon="calendar-outline"
+                  value={watch("fecha_nacimiento")}
+                  onFocus={() => setShowDatePicker(true)}
+                  showSoftInputOnFocus={false}
+                  error={errors.fecha_nacimiento?.message}
+                  style={styles.input}
+                />
+
+                {showDatePicker && (
+                  <DateTimePicker
+                    value={
+                      watch("fecha_nacimiento")
+                        ? new Date(
+                            Number(watch("fecha_nacimiento").split("-")[0]),
+                            Number(watch("fecha_nacimiento").split("-")[1]) - 1,
+                            Number(watch("fecha_nacimiento").split("-")[2])
+                          )
+                        : new Date()
+                    }
+                    mode="date"
+                    display="spinner"
+                    onChange={handleDateChange}
+                  />
+                )}
+
+                <View style={styles.sectionContainer}>
+                  <Text style={styles.sectionTitle}>Tipo de alimentación</Text>
+                  {alimentosOptions.map((alimento) => {
+                    const alimentoSeleccionado = tipoAlimentacion.find(
+                      (a) => a.alimento === alimento.value
+                    );
+
+                    return (
+                      <View
+                        key={alimento.value}
+                        style={styles.categoryContainer}
+                      >
+                        <TouchableOpacity
+                          style={styles.categoryHeader}
+                          onPress={() => toggleAlimentoExpand(alimento.value)}
+                        >
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              alignItems: "center",
+                            }}
+                          >
+                            <Checkbox
+                              status={
+                                isAlimentoSeleccionado(alimento.value)
+                                  ? "checked"
+                                  : "unchecked"
+                              }
+                              onPress={() => {
+                                if (isAlimentoSeleccionado(alimento.value)) {
+                                  const updated = tipoAlimentacion.filter(
+                                    (a) => a.alimento !== alimento.value
+                                  );
+                                  setTipoAlimentacion(updated);
+                                  setValue("tipo_alimentacion", updated);
+                                } else {
+                                  const updated = [
+                                    ...tipoAlimentacion,
+                                    {
+                                      alimento: alimento.value,
+                                      origen: "comprado",
+                                    },
+                                  ];
+                                  setTipoAlimentacion(updated);
+                                  setValue("tipo_alimentacion", updated);
+                                }
+                              }}
+                              color={colors.primary}
+                            />
+                            <ThemedText style={styles.categoryTitle}>
+                              {alimento.label}
+                            </ThemedText>
+                          </View>
+
+                          <FontAwesome
+                            name={
+                              expandedAlimento === alimento.value
+                                ? "chevron-up"
+                                : "chevron-down"
+                            }
+                            size={16}
+                            color={colors.primary}
+                          />
+                        </TouchableOpacity>
+
+                        {expandedAlimento === alimento.value &&
+                          isAlimentoSeleccionado(alimento.value) && (
+                            <View style={styles.subservicesContainer}>
+                              {[
+                                "comprado",
+                                "producido",
+                                "comprado y producido",
+                              ].map((origen) => (
+                                <View key={origen}>
+                                  <TouchableOpacity
+                                    style={[
+                                      styles.subserviceItem,
+                                      alimentoSeleccionado?.origen === origen &&
+                                        styles.selectedSubserviceItem,
+                                    ]}
+                                    onPress={() =>
+                                      handleOrigenSelection(
+                                        alimento.value,
+                                        origen
+                                      )
+                                    }
+                                  >
+                                    <Checkbox
+                                      status={
+                                        alimentoSeleccionado?.origen === origen
+                                          ? "checked"
+                                          : "unchecked"
+                                      }
+                                      onPress={() =>
+                                        handleOrigenSelection(
+                                          alimento.value,
+                                          origen
+                                        )
+                                      }
+                                      color={colors.primary}
+                                    />
+                                    <ThemedText style={styles.subserviceText}>
+                                      {origen === "comprado"
+                                        ? "Comprado"
+                                        : origen === "producido"
+                                        ? "Producido"
+                                        : "Comprado y producido"}
+                                    </ThemedText>
+                                  </TouchableOpacity>
+
+                                  {alimentoSeleccionado?.origen ===
+                                    "comprado y producido" &&
+                                    origen === "comprado y producido" && (
+                                      <View
+                                        style={styles.percentageInputsContainer}
+                                      >
+                                        <View
+                                          style={styles.percentageInputWrapper}
+                                        >
+                                          <ThemedText
+                                            style={styles.percentageLabel}
+                                          >
+                                            % Comprado:
+                                          </ThemedText>
+                                          <ThemedTextInput
+                                            placeholder="Ej: 60"
+                                            value={
+                                              alimentoSeleccionado.porcentaje_comprado?.toString() ||
+                                              ""
+                                            }
+                                            onChangeText={(text) => {
+                                              if (
+                                                text === "" ||
+                                                /^\d+$/.test(text)
+                                              ) {
+                                                const updated =
+                                                  tipoAlimentacion.map((item) =>
+                                                    item.alimento ===
+                                                    alimento.value
+                                                      ? {
+                                                          ...item,
+                                                          porcentaje_comprado:
+                                                            text
+                                                              ? Number(text)
+                                                              : undefined,
+                                                        }
+                                                      : item
+                                                  );
+                                                setTipoAlimentacion(updated);
+                                                setValue(
+                                                  "tipo_alimentacion",
+                                                  updated
+                                                );
+                                              }
+                                            }}
+                                            keyboardType="number-pad"
+                                            style={styles.percentageInput}
+                                            maxLength={3}
+                                          />
+                                        </View>
+
+                                        <View
+                                          style={styles.percentageInputWrapper}
+                                        >
+                                          <ThemedText
+                                            style={styles.percentageLabel}
+                                          >
+                                            % Producido:
+                                          </ThemedText>
+                                          <ThemedTextInput
+                                            placeholder="Ej: 40"
+                                            value={
+                                              alimentoSeleccionado.porcentaje_producido?.toString() ||
+                                              ""
+                                            }
+                                            onChangeText={(text) => {
+                                              if (
+                                                text === "" ||
+                                                /^\d+$/.test(text)
+                                              ) {
+                                                const updated =
+                                                  tipoAlimentacion.map((item) =>
+                                                    item.alimento ===
+                                                    alimento.value
+                                                      ? {
+                                                          ...item,
+                                                          porcentaje_producido:
+                                                            text
+                                                              ? Number(text)
+                                                              : undefined,
+                                                        }
+                                                      : item
+                                                  );
+                                                setTipoAlimentacion(updated);
+                                                setValue(
+                                                  "tipo_alimentacion",
+                                                  updated
+                                                );
+                                              }
+                                            }}
+                                            keyboardType="number-pad"
+                                            style={styles.percentageInput}
+                                            maxLength={3}
+                                          />
+                                        </View>
+
+                                        {alimentoSeleccionado.porcentaje_comprado !==
+                                          undefined &&
+                                          alimentoSeleccionado.porcentaje_producido !==
+                                            undefined &&
+                                          alimentoSeleccionado.porcentaje_comprado +
+                                            alimentoSeleccionado.porcentaje_producido !==
+                                            100 && (
+                                            <Text style={styles.errorText}>
+                                              La suma de porcentajes debe ser
+                                              100%
+                                            </Text>
+                                          )}
+                                      </View>
+                                    )}
+                                </View>
+                              ))}
+                            </View>
+                          )}
+                      </View>
+                    );
+                  })}
+                </View>
+
+                <View style={styles.sectionContainer}>
+                  <Text style={styles.sectionTitle}>Tipo de complemento</Text>
+                  {complementosOptions.map((complemento) => (
+                    <ThemedCheckbox
+                      key={complemento.value}
+                      label={complemento.label}
+                      value={complemento.value}
+                      onPress={handleAlimentoChange}
+                      isSelected={complementoSeleccionados.includes(
+                        complemento.value
+                      )}
+                    />
+                  ))}
+                </View>
+
+                <ThemedTextInput
+                  placeholder="Medicamentos (opcional)"
+                  icon="medical-outline"
+                  value={watch("medicamento")}
+                  onChangeText={(text) => setValue("medicamento", text)}
+                  error={errors.medicamento?.message}
+                  style={styles.input}
+                />
+
+                {selectedSexo === "Macho" && (
+                  <View style={styles.switchContainer}>
+                    <Text style={styles.switchLabel}>Castrado</Text>
+                    <Switch
+                      value={watch("castrado") || false}
+                      onValueChange={(value) => setValue("castrado", value)}
+                      color={colors.primary}
+                    />
+                  </View>
+                )}
+
+                {selectedSexo === "Hembra" && (
+                  <View style={styles.switchContainer}>
+                    <Text style={styles.switchLabel}>Esterilizado</Text>
+                    <Switch
+                      value={watch("esterelizado") || false}
+                      onValueChange={(value) => setValue("esterelizado", value)}
+                      color={colors.primary}
+                    />
+                  </View>
+                )}
+
+                <ThemedTextInput
+                  placeholder="Caracteristicas"
+                  icon="clipboard-outline"
+                  value={watch("observaciones")}
+                  onChangeText={(text) => setValue("observaciones", text)}
+                  error={errors.observaciones?.message}
+                  style={[styles.input, styles.multilineInput]}
+                />
+
+                <ThemedPicker
+                  items={fincasItems}
+                  onValueChange={(value) => setValue("fincaId", value)}
+                  selectedValue={watch("fincaId")}
+                  placeholder="Selecciona una finca"
+                  icon="podium-outline"
+                  error={errors.fincaId?.message}
+                />
+
+                <View style={styles.switchContainer}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setcheckAnimal((prev) => {
+                        setValue("compra_animal", !prev);
+                        return !prev;
+                      });
+                    }}
+                    style={styles.radioItem}
+                  >
+                    <Checkbox status={checkAnimal ? "checked" : "unchecked"} />
+                    <Text>¿Animal fue comprado?</Text>
+                  </TouchableOpacity>
+                </View>
+
+                {checkAnimal && (
+                  <ThemedTextInput
+                    placeholder="Nombre del criador (origen)"
+                    icon="person-outline"
+                    value={watch("nombre_criador_origen_animal")}
+                    onChangeText={(text) =>
+                      setValue("nombre_criador_origen_animal", text)
+                    }
+                    error={errors.nombre_criador_origen_animal?.message}
+                    style={styles.input}
+                  />
+                )}
+                <ButtonNext onPress={() => setValor("padre")} />
+              </ThemedView>
             )}
-
             {/* DATOS PADRE */}
 
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Datos padre</Text>
-              <ThemedTextInput
-                placeholder="Nombre Padre (opcional)"
-                icon="aperture-outline"
-                value={watch("nombre_padre")}
-                onChangeText={(text) => setValue("nombre_padre", text)}
-                error={errors.nombre_padre?.message}
-                style={[styles.input, styles.multilineInput]}
-              />
-              <ThemedTextInput
-                placeholder="Arete Padre (ingrese 6 dígitos)"
-                icon="warning-outline"
-                value={watch("identificador_temp_padre") || ""}
-                onChangeText={handleIdentifierChangePadre}
-                onFocus={() => setShowIdentifierHelp1(true)}
-                onBlur={() => setShowIdentifierHelp1(false)}
-                error={errors.arete_padre?.message}
-                style={styles.input}
-                keyboardType="numeric"
-                maxLength={6}
-              />
-              {showIdentifierHelp1 && (
-                <Text style={styles.helpText}>
-                  PRIMEROS SEIS DIGITOS DE IDENTIFICACIÓN DEL ARETE
-                </Text>
-              )}
+            {valor === "padre" && (
+              <View
+                style={[
+                  styles.sectionContainer,
+                  { backgroundColor: colors.background },
+                ]}
+              >
+                <Text style={styles.sectionTitle}>Datos del padre</Text>
+                <ThemedTextInput
+                  placeholder="Nombre Padre (opcional)"
+                  icon="aperture-outline"
+                  value={watch("nombre_padre")}
+                  onChangeText={(text) => setValue("nombre_padre", text)}
+                  error={errors.nombre_padre?.message}
+                  style={[styles.input, styles.multilineInput]}
+                />
+                <ThemedTextInput
+                  placeholder="Arete Padre (ingrese 6 dígitos)"
+                  icon="warning-outline"
+                  value={watch("identificador_temp_padre") || ""}
+                  onChangeText={handleIdentifierChangePadre}
+                  onFocus={() => setShowIdentifierHelp1(true)}
+                  onBlur={() => setShowIdentifierHelp1(false)}
+                  error={errors.arete_padre?.message}
+                  style={styles.input}
+                  keyboardType="numeric"
+                  maxLength={6}
+                />
+                {showIdentifierHelp1 && (
+                  <Text style={styles.helpText}>
+                    PRIMEROS SEIS DIGITOS DE IDENTIFICACIÓN DEL ARETE
+                  </Text>
+                )}
 
-              <ThemedMultiPicker
-                items={
-                  razas?.data.map((raza) => ({
-                    label: raza.nombre,
-                    value: raza.id,
-                  })) || []
-                }
-                onValuesChange={(values) => setValue("razas_padre", values)}
-                selectedValues={(watch("razas_padre") as string[]) || []}
-                placeholder="Selecciona una o más razas"
-                icon="git-branch-outline"
-                error={errors.razas_padre?.message}
-              />
-              <ThemedPicker
-                items={purezaOptions}
-                onValueChange={(value) => setValue("pureza_padre", value)}
-                selectedValue={watch("pureza_padre")}
-                placeholder="Nivel de pureza"
-                icon="layers-outline"
-                error={errors.pureza_padre?.message}
-              />
-              <ThemedTextInput
-                placeholder="Nombre Criador"
-                icon="person-outline"
-                value={watch("nombre_criador_padre")}
-                onChangeText={(text) => setValue("nombre_criador_padre", text)}
-                error={errors.nombre_criador_padre?.message}
-                style={[styles.input, styles.multilineInput]}
-              />
-              <ThemedTextInput
-                placeholder="Nombre Propietario"
-                icon="person-outline"
-                value={watch("nombre_propietario_padre")}
-                onChangeText={(text) =>
-                  setValue("nombre_propietario_padre", text)
-                }
-                error={errors.nombre_propietario_padre?.message}
-                style={[styles.input, styles.multilineInput]}
-              />
-              <ThemedTextInput
-                placeholder="Nombre de la finca"
-                icon="home-outline"
-                value={watch("nombre_finca_origen_padre")}
-                onChangeText={(text) =>
-                  setValue("nombre_finca_origen_padre", text)
-                }
-                error={errors.nombre_finca_origen_padre?.message}
-                style={styles.input}
-              />
-            </View>
+                <ThemedMultiPicker
+                  items={
+                    razas?.data.map((raza) => ({
+                      label: raza.nombre,
+                      value: raza.id,
+                    })) || []
+                  }
+                  onValuesChange={(values) => setValue("razas_padre", values)}
+                  selectedValues={(watch("razas_padre") as string[]) || []}
+                  placeholder="Selecciona una o más razas"
+                  icon="git-branch-outline"
+                  error={errors.razas_padre?.message}
+                />
+                <ThemedPicker
+                  items={purezaOptions}
+                  onValueChange={(value) => setValue("pureza_padre", value)}
+                  selectedValue={watch("pureza_padre")}
+                  placeholder="Nivel de pureza"
+                  icon="layers-outline"
+                  error={errors.pureza_padre?.message}
+                />
+                <ThemedTextInput
+                  placeholder="Nombre Criador"
+                  icon="person-outline"
+                  value={watch("nombre_criador_padre")}
+                  onChangeText={(text) =>
+                    setValue("nombre_criador_padre", text)
+                  }
+                  error={errors.nombre_criador_padre?.message}
+                  style={[styles.input, styles.multilineInput]}
+                />
+                <ThemedTextInput
+                  placeholder="Nombre Propietario"
+                  icon="person-outline"
+                  value={watch("nombre_propietario_padre")}
+                  onChangeText={(text) =>
+                    setValue("nombre_propietario_padre", text)
+                  }
+                  error={errors.nombre_propietario_padre?.message}
+                  style={[styles.input, styles.multilineInput]}
+                />
+                <ThemedTextInput
+                  placeholder="Nombre de la finca"
+                  icon="home-outline"
+                  value={watch("nombre_finca_origen_padre")}
+                  onChangeText={(text) =>
+                    setValue("nombre_finca_origen_padre", text)
+                  }
+                  error={errors.nombre_finca_origen_padre?.message}
+                  style={styles.input}
+                />
+                <ButtonNext onPress={() => setValor("madre")} />
+              </View>
+            )}
 
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Datos madre</Text>
-              <ThemedTextInput
-                placeholder="Nombre Madre (opcional)"
-                icon="aperture-outline"
-                value={watch("nombre_madre")}
-                onChangeText={(text) => setValue("nombre_madre", text)}
-                error={errors.nombre_madre?.message}
-                style={[styles.input, styles.multilineInput]}
-              />
-              <ThemedTextInput
-                placeholder="Arete Madre (ingrese 6 dígitos)"
-                icon="warning-outline"
-                value={watch("identificador_temp_madre") || ""}
-                onChangeText={handleIdentifierChangeMadre}
-                onFocus={() => setShowIdentifierHelp2(true)}
-                onBlur={() => setShowIdentifierHelp2(false)}
-                error={errors.arete_madre?.message}
-                style={styles.input}
-                keyboardType="numeric"
-                maxLength={6}
-              />
-              {showIdentifierHelp2 && (
-                <Text style={styles.helpText}>
-                  PRIMEROS SEIS DIGITOS DE IDENTIFICACIÓN DEL ARETE
-                </Text>
-              )}
+            {valor === "madre" && (
+              <View
+                style={[
+                  styles.sectionContainer,
+                  { backgroundColor: colors.background },
+                ]}
+              >
+                <Text style={styles.sectionTitle}>Datos de la madre</Text>
+                <ThemedTextInput
+                  placeholder="Nombre Madre (opcional)"
+                  icon="aperture-outline"
+                  value={watch("nombre_madre")}
+                  onChangeText={(text) => setValue("nombre_madre", text)}
+                  error={errors.nombre_madre?.message}
+                  style={[styles.input, styles.multilineInput]}
+                />
+                <ThemedTextInput
+                  placeholder="Arete Madre (ingrese 6 dígitos)"
+                  icon="warning-outline"
+                  value={watch("identificador_temp_madre") || ""}
+                  onChangeText={handleIdentifierChangeMadre}
+                  onFocus={() => setShowIdentifierHelp2(true)}
+                  onBlur={() => setShowIdentifierHelp2(false)}
+                  error={errors.arete_madre?.message}
+                  style={styles.input}
+                  keyboardType="numeric"
+                  maxLength={6}
+                />
+                {showIdentifierHelp2 && (
+                  <Text style={styles.helpText}>
+                    PRIMEROS SEIS DIGITOS DE IDENTIFICACIÓN DEL ARETE
+                  </Text>
+                )}
 
-              <ThemedMultiPicker
-                items={
-                  razas?.data.map((raza) => ({
-                    label: raza.nombre,
-                    value: raza.id,
-                  })) || []
-                }
-                onValuesChange={(values) => setValue("razas_madre", values)}
-                selectedValues={(watch("razas_madre") as string[]) || []}
-                placeholder="Selecciona una o más razas"
-                icon="git-branch-outline"
-                error={errors.razas_madre?.message}
-              />
-              <ThemedPicker
-                items={purezaOptions}
-                onValueChange={(value) => setValue("pureza_madre", value)}
-                selectedValue={watch("pureza_madre")}
-                placeholder="Nivel de pureza"
-                icon="layers-outline"
-                error={errors.pureza_madre?.message}
-              />
-              <ThemedTextInput
-                placeholder="Nombre Criador"
-                icon="person-outline"
-                value={watch("nombre_criador_madre")}
-                onChangeText={(text) => setValue("nombre_criador_madre", text)}
-                error={errors.nombre_criador_madre?.message}
-                style={[styles.input, styles.multilineInput]}
-              />
-              <ThemedTextInput
-                placeholder="Nombre Propietario"
-                icon="person-outline"
-                value={watch("nombre_propietario_madre")}
-                onChangeText={(text) =>
-                  setValue("nombre_propietario_madre", text)
-                }
-                error={errors.nombre_propietario_madre?.message}
-                style={[styles.input, styles.multilineInput]}
-              />
-              <ThemedTextInput
-                placeholder="Numero de parto"
-                icon="warning-outline"
-                value={watch("numero_parto_madre")?.toString() || ""}
-                onChangeText={(text) =>
-                  setValue("numero_parto_madre", Number(text))
-                }
-                error={errors.numero_parto_madre?.message}
-                style={styles.input}
-                keyboardType="numeric"
-                maxLength={2}
-              />
-              <ThemedTextInput
-                placeholder="Nombre de la finca"
-                icon="home-outline"
-                value={watch("nombre_finca_origen_madre")}
-                onChangeText={(text) =>
-                  setValue("nombre_finca_origen_madre", text)
-                }
-                style={styles.input}
-              />
-            </View>
-
-            <ThemedButton
-              title="Crear Animal"
-              onPress={handleSubmit(onSubmit)}
-              icon="arrow-forward-outline"
-              loading={mutation.isPending}
-              style={styles.submitButton}
-            />
+                <ThemedMultiPicker
+                  items={
+                    razas?.data.map((raza) => ({
+                      label: raza.nombre,
+                      value: raza.id,
+                    })) || []
+                  }
+                  onValuesChange={(values) => setValue("razas_madre", values)}
+                  selectedValues={(watch("razas_madre") as string[]) || []}
+                  placeholder="Selecciona una o más razas"
+                  icon="git-branch-outline"
+                  error={errors.razas_madre?.message}
+                />
+                <ThemedPicker
+                  items={purezaOptions}
+                  onValueChange={(value) => setValue("pureza_madre", value)}
+                  selectedValue={watch("pureza_madre")}
+                  placeholder="Nivel de pureza"
+                  icon="layers-outline"
+                  error={errors.pureza_madre?.message}
+                />
+                <ThemedTextInput
+                  placeholder="Nombre Criador"
+                  icon="person-outline"
+                  value={watch("nombre_criador_madre")}
+                  onChangeText={(text) =>
+                    setValue("nombre_criador_madre", text)
+                  }
+                  error={errors.nombre_criador_madre?.message}
+                  style={[styles.input, styles.multilineInput]}
+                />
+                <ThemedTextInput
+                  placeholder="Nombre Propietario"
+                  icon="person-outline"
+                  value={watch("nombre_propietario_madre")}
+                  onChangeText={(text) =>
+                    setValue("nombre_propietario_madre", text)
+                  }
+                  error={errors.nombre_propietario_madre?.message}
+                  style={[styles.input, styles.multilineInput]}
+                />
+                <ThemedTextInput
+                  placeholder="Numero de parto"
+                  icon="warning-outline"
+                  value={watch("numero_parto_madre")?.toString() || ""}
+                  onChangeText={(text) =>
+                    setValue("numero_parto_madre", Number(text))
+                  }
+                  error={errors.numero_parto_madre?.message}
+                  style={styles.input}
+                  keyboardType="numeric"
+                  maxLength={2}
+                />
+                <ThemedTextInput
+                  placeholder="Nombre de la finca"
+                  icon="home-outline"
+                  value={watch("nombre_finca_origen_madre")}
+                  onChangeText={(text) =>
+                    setValue("nombre_finca_origen_madre", text)
+                  }
+                  style={styles.input}
+                />
+                <ThemedButton
+                  title="Crear Animal"
+                  onPress={handleSubmit(onSubmit)}
+                  icon="arrow-forward-outline"
+                  loading={mutation.isPending}
+                  style={styles.submitButton}
+                />
+              </View>
+            )}
           </View>
         </ScrollView>
       </ThemedView>

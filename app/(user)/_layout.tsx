@@ -28,6 +28,7 @@ import FincasPageGanaderos from "./finca/fincas-page";
 import CrearInsumoPage from "./insumos/crear-insumo";
 import DetallesInsumosPage from "./insumos/details-insumos";
 import InsumosCapexPage from "./insumos/insumos-user";
+import CrearProduccionPage from "./produccion/crear-produccion";
 import ProduccionGanaderoPage from "./produccion/produccion-ganadero";
 import ProfileUser from "./profile";
 import AgregarCitaServicio from "./servicios-user/agregar-cita-servicio";
@@ -203,6 +204,16 @@ export default function UserLayout() {
             headerTitle: "Produccion Ganadero",
             headerRight: () => <LogoutIconButton />,
             headerLeft: () => <DrawerToggleButton tintColor={iconColor} />,
+          }}
+        />
+        <UsersStack.Screen
+          name="CrearProduccionPage"
+          component={CrearProduccionPage}
+          options={{
+            headerShown: true,
+            headerTitle: "Crear Produccion",
+            headerRight: () => <LogoutIconButton />,
+            headerLeft: () => <GoBack />,
           }}
         />
         <UsersStack.Screen

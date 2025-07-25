@@ -201,7 +201,7 @@ const ModalAgregarAnalisis = ({
             />
           </ThemedView>
           <ThemedTextInput
-            placeholder="Selecciona una fecha"
+            placeholder="Ultima fecha de tipo de suelo"
             icon="calendar-outline"
             value={watch("fechaAnalisis")}
             onFocus={() => setShowDatePicker(true)}

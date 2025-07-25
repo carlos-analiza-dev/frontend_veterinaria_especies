@@ -12,6 +12,10 @@ export interface Animal {
   identificador: string;
   tipo_reproduccion: string;
   pureza: string;
+  produccion: string;
+  tipo_produccion: string;
+  animal_muerte: boolean;
+  razon_muerte: string;
   pureza_padre: string;
   pureza_madre: string;
   edad_promedio: number;
