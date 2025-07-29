@@ -1,4 +1,5 @@
 import { ForrajesInsumo } from "@/core/produccion/interface/obter-producciones-userId.interface";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { Divider, useTheme } from "react-native-paper";
@@ -17,7 +18,10 @@ const ProduccionForrajesCard: React.FC<ProduccionForrajesCardProps> = ({
     <View
       style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
-      <ThemedText style={styles.title}>Forrajes e Insumos</ThemedText>
+      <ThemedText style={styles.title}>
+        <MaterialCommunityIcons name="grass" size={20} />
+        Forrajes e Insumos
+      </ThemedText>
 
       {forrajesInsumo.insumos.map((insumo, index) => (
         <View key={index}>
@@ -84,7 +88,9 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 16,
+    marginBottom: 12,
+    flexDirection: "row",
+    alignItems: "center",
   },
   insumoHeader: {
     marginBottom: 8,

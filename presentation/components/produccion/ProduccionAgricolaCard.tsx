@@ -31,7 +31,9 @@ export const ProduccionAgricolaCard: React.FC<ProduccionAgricolaProps> = ({
 
   return (
     <ThemedView style={[styles.container, { backgroundColor: colors.surface }]}>
-      <ThemedText style={styles.title}>Producción Agrícola</ThemedText>
+      <ThemedText style={styles.title}>
+        <MaterialCommunityIcons name="sprout" size={20} /> Producción Agrícola
+      </ThemedText>
 
       {agricola.cultivos.map((cultivo, index) => (
         <View key={`${agricola.id}-${index}`} style={styles.cultivoContainer}>
@@ -109,6 +111,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: "bold",
+    flexDirection: "row",
     marginBottom: 16,
   },
   cultivoContainer: {

@@ -26,7 +26,6 @@ const ProduccionGanaderaCard: React.FC<ProduccionGanaderaCardProps> = ({
           <MaterialCommunityIcons name="cow" size={20} /> Producción Ganadera
         </ThemedText>
 
-        {/* Tipos de producción */}
         <View style={styles.chipContainer}>
           {ganadera.tiposProduccion.map((tipo, index) => (
             <Chip
@@ -41,7 +40,6 @@ const ProduccionGanaderaCard: React.FC<ProduccionGanaderaCardProps> = ({
 
         <Divider style={styles.divider} />
 
-        {/* Información general del hato */}
         <ThemedText style={styles.subtitle}>Hato Ganadero</ThemedText>
         <View style={styles.row}>
           <Text style={styles.label}>Vacas en ordeño:</Text>
@@ -62,7 +60,6 @@ const ProduccionGanaderaCard: React.FC<ProduccionGanaderaCardProps> = ({
           </Text>
         </View>
 
-        {/* Producción de leche */}
         {ganadera.tiposProduccion.includes("Leche") && (
           <>
             <Divider style={styles.divider} />
@@ -77,7 +74,6 @@ const ProduccionGanaderaCard: React.FC<ProduccionGanaderaCardProps> = ({
           </>
         )}
 
-        {/* Producción de carne */}
         {ganadera.tiposProduccion.includes("Carne Bovina") && (
           <>
             <Divider style={styles.divider} />
@@ -93,7 +89,6 @@ const ProduccionGanaderaCard: React.FC<ProduccionGanaderaCardProps> = ({
           </>
         )}
 
-        {/* Otros productos */}
         {ganadera.otroProductoNombre && (
           <>
             <Divider style={styles.divider} />
@@ -108,7 +103,6 @@ const ProduccionGanaderaCard: React.FC<ProduccionGanaderaCardProps> = ({
           </>
         )}
 
-        {/* Información de la finca */}
         <Divider style={styles.divider} />
         <ThemedText style={styles.subtitle}>Información de la Finca</ThemedText>
         <View style={styles.row}>
@@ -120,7 +114,6 @@ const ProduccionGanaderaCard: React.FC<ProduccionGanaderaCardProps> = ({
           <Text>{finca.cantidad_animales}</Text>
         </View>
 
-        {/* Especies manejadas */}
         {finca.especies_maneja.length > 0 && (
           <View style={styles.section}>
             <Text style={styles.label}>Especies manejadas:</Text>
@@ -138,7 +131,6 @@ const ProduccionGanaderaCard: React.FC<ProduccionGanaderaCardProps> = ({
   );
 };
 
-// Función auxiliar para obtener iconos según el tipo de producción
 const getIconForProductionType = (type: string) => {
   switch (type) {
     case "Leche":
@@ -152,7 +144,7 @@ const getIconForProductionType = (type: string) => {
     case "Caprino":
       return "goat";
     default:
-      return "cow";
+      return "swap-horizontal";
   }
 };
 

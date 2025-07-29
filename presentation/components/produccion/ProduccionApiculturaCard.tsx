@@ -1,8 +1,9 @@
 import { ObtenerProduccionByUserInterface } from "@/core/produccion/interface/obter-producciones-userId.interface";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import { Divider, Text, useTheme } from "react-native-paper";
+import { Text, useTheme } from "react-native-paper";
 import { ThemedText } from "../../theme/components/ThemedText";
 
 interface ProduccionApiculturaCardProps {
@@ -18,7 +19,10 @@ const ProduccionApiculturaCard: React.FC<ProduccionApiculturaCardProps> = ({
 
   return (
     <ThemedView style={{ backgroundColor: theme.colors.background }}>
-      <ThemedText style={styles.sectionTitle}>Apicultura</ThemedText>
+      <ThemedText style={styles.sectionTitle}>
+        <MaterialCommunityIcons name="bee" size={20} />
+        Apicultura
+      </ThemedText>
 
       <View style={styles.row}>
         <Text style={styles.label}>Número de colmenas:</Text>
@@ -39,8 +43,6 @@ const ProduccionApiculturaCard: React.FC<ProduccionApiculturaCardProps> = ({
         <Text style={styles.label}>Calidad de miel:</Text>
         <Text>{apicultura.calidad_miel}</Text>
       </View>
-
-      <Divider style={styles.divider} />
     </ThemedView>
   );
 };
@@ -49,6 +51,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
+    flexDirection: "row",
     marginBottom: 16,
   },
   row: {

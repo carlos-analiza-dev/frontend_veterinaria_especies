@@ -1,4 +1,5 @@
 import { Alternativa } from "@/core/produccion/interface/obter-producciones-userId.interface";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { Divider, useTheme } from "react-native-paper";
@@ -15,7 +16,10 @@ const ProduccionAlternativaCard: React.FC<ProduccionAlternativaCardProps> = ({
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.surface }]}>
-      <ThemedText style={styles.title}>Actividades Alternativas</ThemedText>
+      <ThemedText style={styles.title}>
+        <MaterialCommunityIcons name="swap-horizontal" size={20} /> Actividades
+        Alternativas
+      </ThemedText>
 
       {alternativa.actividades.map((actividad, index) => (
         <View key={index} style={styles.actividadContainer}>
@@ -71,8 +75,9 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 16,
-    color: "#5D4037",
+    marginBottom: 12,
+    flexDirection: "row",
+    alignItems: "center",
   },
   actividadContainer: {
     marginBottom: 12,
@@ -83,7 +88,6 @@ const styles = StyleSheet.create({
   actividadTipo: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#5D4037",
   },
   detailsContainer: {
     marginLeft: 8,
@@ -96,7 +100,6 @@ const styles = StyleSheet.create({
   detailLabel: {
     fontWeight: "bold",
     marginRight: 8,
-    color: "#5D4037",
   },
   descripcion: {
     flexShrink: 1,

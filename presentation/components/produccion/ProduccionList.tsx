@@ -36,7 +36,6 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
     <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
       <Card.Content>
         <ThemedText style={styles.title}>{finca.nombre_finca}</ThemedText>
-        <ThemedText style={styles.location}>{finca.ubicacion}</ThemedText>
 
         <View style={styles.chipContainer}>
           <Chip icon="cow" style={styles.chip}>
@@ -59,12 +58,14 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
         {agricola && (
           <>
             <ProduccionAgricolaCard agricola={agricola} />
+            <Divider style={styles.divider} />
           </>
         )}
 
         {apicultura && (
           <>
             <ProduccionApiculturaCard apicultura={apicultura} />
+            <Divider style={styles.divider} />
           </>
         )}
 
@@ -122,6 +123,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     marginVertical: 12,
+    height: 3,
   },
   sectionTitle: {
     fontSize: 18,
