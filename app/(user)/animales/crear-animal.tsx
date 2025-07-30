@@ -19,6 +19,7 @@ import ThemedPicker from "@/presentation/theme/components/ThemedPicker";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import ThemedTextInput from "@/presentation/theme/components/ThemedTextInput";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
+import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import { FontAwesome } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -47,6 +48,7 @@ import Toast from "react-native-toast-message";
 const CrearAnimal = () => {
   const { user } = useAuthStore();
   const { colors } = useTheme();
+  const primary = useThemeColor({}, "primary");
   const { height, width } = useWindowDimensions();
   const [valor, setValor] = useState<"animal" | "padre" | "madre">("animal");
   const navigation = useNavigation();
@@ -434,28 +436,22 @@ const CrearAnimal = () => {
                   value: "animal",
                   label: "Animal",
                   icon: "paw",
-                  style:
-                    valor === "animal"
-                      ? { backgroundColor: colors.primary }
-                      : {},
+                  style: valor === "animal" ? { backgroundColor: primary } : {},
+                  labelStyle: valor === "animal" ? { color: "#fff" } : {},
                 },
                 {
                   value: "padre",
                   label: "Padre",
                   icon: "gender-male",
-                  style:
-                    valor === "padre"
-                      ? { backgroundColor: colors.primary }
-                      : {},
+                  style: valor === "padre" ? { backgroundColor: primary } : {},
+                  labelStyle: valor === "padre" ? { color: "#fff" } : {},
                 },
                 {
                   value: "madre",
                   label: "Madre",
                   icon: "gender-female",
-                  style:
-                    valor === "madre"
-                      ? { backgroundColor: colors.primary }
-                      : {},
+                  style: valor === "madre" ? { backgroundColor: primary } : {},
+                  labelStyle: valor === "madre" ? { color: "#fff" } : {},
                 },
               ]}
             />

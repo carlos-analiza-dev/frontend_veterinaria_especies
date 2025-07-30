@@ -60,6 +60,7 @@ export interface ProduccionGanadera {
 
   cerdosEngorde?: number;
   pesoPromedioCerdo?: number;
+  edadSacrificioProcino?: string;
 
   mortalidadLoteAves?: number;
 
@@ -115,7 +116,6 @@ export interface ProduccionForrajesInsumo {
 
 export interface ActividadAlternativa {
   tipo?: string;
-  descripcion?: string;
   cantidad_producida?: string;
   unidad_medida?: string;
   ingresos_anuales?: number;

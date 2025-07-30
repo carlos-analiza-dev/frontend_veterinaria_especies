@@ -30,8 +30,6 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
     transformacion_artesanal,
   } = produccion;
 
-  if (!ganadera) return null;
-
   return (
     <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
       <Card.Content>
@@ -55,6 +53,13 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
           </>
         )}
 
+        {forrajesInsumo && (
+          <>
+            <ProduccionForrajesCard forrajesInsumo={forrajesInsumo} />
+            <Divider style={styles.divider} />
+          </>
+        )}
+
         {agricola && (
           <>
             <ProduccionAgricolaCard agricola={agricola} />
@@ -65,13 +70,6 @@ const ProduccionList: React.FC<ProduccionGanaderaCardProps> = ({
         {apicultura && (
           <>
             <ProduccionApiculturaCard apicultura={apicultura} />
-            <Divider style={styles.divider} />
-          </>
-        )}
-
-        {forrajesInsumo && (
-          <>
-            <ProduccionForrajesCard forrajesInsumo={forrajesInsumo} />
             <Divider style={styles.divider} />
           </>
         )}
