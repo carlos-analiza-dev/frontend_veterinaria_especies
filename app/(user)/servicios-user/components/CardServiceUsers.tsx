@@ -2,7 +2,7 @@ import { Servicio } from "@/core/servicios/interfaces/response-servicios.interfa
 import ThemedButton from "@/presentation/theme/components/ThemedButton";
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import { Badge, Card, Text, useTheme } from "react-native-paper";
+import { Card, Text, useTheme } from "react-native-paper";
 
 interface Props {
   services: Servicio;
@@ -26,28 +26,8 @@ const CardServiceUsers = ({ services, onPress }: Props) => {
           <Text variant="titleLarge" style={styles.title}>
             {services.nombre}
           </Text>
-          <Badge
-            style={[
-              styles.badge,
-              {
-                backgroundColor: services.isActive
-                  ? theme.colors.primary
-                  : theme.colors.error,
-              },
-            ]}
-          >
-            {services.isActive ? "Activo" : "Inactivo"}
-          </Badge>
         </View>
 
-        <Text
-          variant="bodyMedium"
-          style={styles.description}
-          numberOfLines={2}
-          ellipsizeMode="tail"
-        >
-          {services.descripcion}
-        </Text>
         <ThemedButton
           onPress={onPress}
           title="Agendar Cita"

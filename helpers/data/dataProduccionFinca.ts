@@ -32,8 +32,6 @@ export const tiposCultivo = [
   "Otros",
 ];
 
-export const estacionalidades = ["Anual", "Estacional", "Continuo"];
-
 export const metodosCultivo = ["Tradicional", "Orgánico", "Invernadero"];
 
 export const tiposInsumo = [

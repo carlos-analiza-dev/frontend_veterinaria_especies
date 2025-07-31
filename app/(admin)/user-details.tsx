@@ -219,7 +219,7 @@ const UsersDetailsScreen = ({ route }: UserDetailsScreenProps) => {
     return (
       <MessageError
         titulo="Error al cargar los datos del usuario"
-        descripcion=" No se encontraron datos del usuario en este módulo. Por favor, verifica más tarde o vuelve a intentar."
+        descripcion="No se encontraron datos del usuario en este módulo. Por favor, verifica más tarde o intenta nuevamente."
       />
     );
   }
@@ -273,7 +273,7 @@ const UsersDetailsScreen = ({ route }: UserDetailsScreenProps) => {
             items={sexos}
             selectedValue={watch("sexo")}
             onValueChange={(text) => setValue("sexo", text)}
-            placeholder="Selecciona un sexo"
+            placeholder="Selecciona el sexo"
             error={errors.sexo?.message}
             enabled={isEditing}
           />

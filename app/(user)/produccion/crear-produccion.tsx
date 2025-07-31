@@ -49,7 +49,6 @@ const CrearProduccionPage = () => {
   const primary = useThemeColor({}, "primary");
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [currentDateField, setCurrentDateField] = useState("");
-  const [visibleTooltip, setVisibleTooltip] = useState<string | null>(null);
   const { data: fincas } = useFincasPropietarios(userId);
 
   const { control, handleSubmit, watch, setValue, reset } =
@@ -384,7 +383,7 @@ const styles = StyleSheet.create({
     marginVertical: 16,
     padding: 16,
     borderRadius: 8,
-    backgroundColor: "#f9f9f9",
+
     gap: 12,
   },
   switchContainer: {

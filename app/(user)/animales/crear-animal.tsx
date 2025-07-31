@@ -504,7 +504,7 @@ const CrearAnimal = () => {
 
                 {showIdentifierHelp && (
                   <Text style={styles.helpText}>
-                    PRIMEROS SEIS DIGITOS DE IDENTIFICACIÓN DEL ARETE
+                    PRIMEROS SEIS DÍGITOS DE IDENTIFICACIÓN DEL ARETE
                   </Text>
                 )}
 
@@ -546,7 +546,7 @@ const CrearAnimal = () => {
                   items={produccionItems}
                   onValueChange={(value) => setValue("produccion", value)}
                   selectedValue={watch("produccion")}
-                  placeholder="Selecciona la produccion"
+                  placeholder="Selecciona la producción"
                   icon="options-outline"
                   error={errors.produccion?.message}
                 />
@@ -554,7 +554,7 @@ const CrearAnimal = () => {
                   items={tipoProduccionItems}
                   onValueChange={(value) => setValue("tipo_produccion", value)}
                   selectedValue={watch("tipo_produccion")}
-                  placeholder="Selecciona el tipo produccion"
+                  placeholder="Selecciona el tipo producción"
                   icon="options-outline"
                   error={errors.tipo_produccion?.message}
                 />
@@ -711,7 +711,7 @@ const CrearAnimal = () => {
                                             % Comprado:
                                           </ThemedText>
                                           <ThemedTextInput
-                                            placeholder="Ej: 60"
+                                            placeholder="Ej.: 60"
                                             value={
                                               alimentoSeleccionado.porcentaje_comprado?.toString() ||
                                               ""
@@ -862,7 +862,7 @@ const CrearAnimal = () => {
                 )}
 
                 <ThemedTextInput
-                  placeholder="Caracteristicas"
+                  placeholder="Características"
                   icon="clipboard-outline"
                   value={watch("observaciones")}
                   onChangeText={(text) => setValue("observaciones", text)}
@@ -1076,7 +1076,7 @@ const CrearAnimal = () => {
                   style={[styles.input, styles.multilineInput]}
                 />
                 <ThemedTextInput
-                  placeholder="Numero de parto"
+                  placeholder="Número de parto"
                   icon="warning-outline"
                   value={watch("numero_parto_madre")?.toString() || ""}
                   onChangeText={(text) =>

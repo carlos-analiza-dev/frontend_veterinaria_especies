@@ -1,6 +1,7 @@
 import MyIcon from "@/presentation/auth/components/MyIcon";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
+import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import { DrawerContentComponentProps } from "@react-navigation/drawer";
 
 import { StyleSheet, TouchableOpacity } from "react-native";
@@ -12,6 +13,7 @@ type Props = DrawerContentComponentProps & {
 
 const CustomDrawerContent = ({ navigation, logout }: Props) => {
   const { colors } = useTheme();
+  const primary = useThemeColor({}, "primary");
 
   return (
     <ThemedView
@@ -32,7 +34,7 @@ const CustomDrawerContent = ({ navigation, logout }: Props) => {
         style={styles.drawerItem}
         onPress={() => navigation.navigate("dashboard")}
       >
-        <MyIcon name="bar-chart-outline" size={24} color={colors.primary} />
+        <MyIcon name="bar-chart-outline" size={24} color={primary} />
         <ThemedText style={[styles.itemText]}>Dashboard</ThemedText>
       </TouchableOpacity>
 
@@ -40,7 +42,7 @@ const CustomDrawerContent = ({ navigation, logout }: Props) => {
         style={styles.drawerItem}
         onPress={() => navigation.navigate("users")}
       >
-        <MyIcon name="people-outline" size={24} color={colors.primary} />
+        <MyIcon name="people-outline" size={24} color={primary} />
         <ThemedText style={[styles.itemText]}>Usuarios</ThemedText>
       </TouchableOpacity>
 
@@ -48,7 +50,7 @@ const CustomDrawerContent = ({ navigation, logout }: Props) => {
         style={styles.drawerItem}
         onPress={() => navigation.navigate("paises-page")}
       >
-        <MyIcon name="globe-outline" size={24} color={colors.primary} />
+        <MyIcon name="globe-outline" size={24} color={primary} />
         <ThemedText style={[styles.itemText]}>Paises</ThemedText>
       </TouchableOpacity>
 
@@ -56,7 +58,7 @@ const CustomDrawerContent = ({ navigation, logout }: Props) => {
         style={styles.drawerItem}
         onPress={() => navigation.navigate("servicios-page")}
       >
-        <MyIcon name="hammer-outline" size={24} color={colors.primary} />
+        <MyIcon name="hammer-outline" size={24} color={primary} />
         <ThemedText style={[styles.itemText]}>Servicios</ThemedText>
       </TouchableOpacity>
 
@@ -64,7 +66,7 @@ const CustomDrawerContent = ({ navigation, logout }: Props) => {
         style={styles.drawerItem}
         onPress={() => navigation.navigate("roles-page")}
       >
-        <MyIcon name="people-circle-sharp" size={24} color={colors.primary} />
+        <MyIcon name="people-circle-sharp" size={24} color={primary} />
         <ThemedText style={[styles.itemText]}>Roles</ThemedText>
       </TouchableOpacity>
 
@@ -72,7 +74,7 @@ const CustomDrawerContent = ({ navigation, logout }: Props) => {
         style={styles.drawerItem}
         onPress={() => navigation.navigate("medicos-page")}
       >
-        <MyIcon name="medkit-outline" size={24} color={colors.primary} />
+        <MyIcon name="medkit-outline" size={24} color={primary} />
         <ThemedText style={[styles.itemText]}>Medicos</ThemedText>
       </TouchableOpacity>
 
@@ -80,7 +82,7 @@ const CustomDrawerContent = ({ navigation, logout }: Props) => {
         style={styles.drawerItem}
         onPress={() => navigation.navigate("perfil-admin")}
       >
-        <MyIcon name="person-outline" size={24} color={colors.primary} />
+        <MyIcon name="person-outline" size={24} color={primary} />
         <ThemedText style={[styles.itemText]}>Perfil</ThemedText>
       </TouchableOpacity>
 
@@ -88,7 +90,7 @@ const CustomDrawerContent = ({ navigation, logout }: Props) => {
         style={styles.drawerItem}
         onPress={() => navigation.navigate("settings")}
       >
-        <MyIcon name="settings-outline" size={24} color={colors.primary} />
+        <MyIcon name="settings-outline" size={24} color={primary} />
         <ThemedText style={[styles.itemText]}>Configuración</ThemedText>
       </TouchableOpacity>
 

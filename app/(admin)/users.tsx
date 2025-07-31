@@ -74,7 +74,7 @@ const UsersScreenAdmin = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Gestión de Usuarios </Text>
+      <Text style={styles.title}>Gestión de Usuarios</Text>
       <View style={styles.filterContainer}>
         <Buscador
           title="Buscar por nombre..."
@@ -140,7 +140,7 @@ const UsersScreenAdmin = () => {
           !isLoading ? (
             <MessageError
               titulo="No se encontraron usuarios"
-              descripcion="No se encontraron usuarios para este modulo en este momento."
+              descripcion="No hay usuarios disponibles para este módulo en este momento."
             />
           ) : null
         }

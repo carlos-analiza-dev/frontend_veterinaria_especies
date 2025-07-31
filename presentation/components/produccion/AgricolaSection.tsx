@@ -1,13 +1,8 @@
 import {
   CreateProduccionFinca,
   CultivoTipo,
-  Estacionalidad,
 } from "@/core/produccion/interface/crear-produccion-finca.interface";
-import {
-  estacionalidades,
-  meses,
-  tiposCultivo,
-} from "@/helpers/data/dataProduccionFinca";
+import { meses, tiposCultivo } from "@/helpers/data/dataProduccionFinca";
 import ThemedButton from "@/presentation/theme/components/ThemedButton";
 import ThemedCheckbox from "@/presentation/theme/components/ThemedCheckbox";
 import ThemedPicker from "@/presentation/theme/components/ThemedPicker";
@@ -31,7 +26,7 @@ interface AgricolaSectionProps {
   fields: FieldArrayWithId<CreateProduccionFinca, "agricola.cultivos", "id">[];
   append: (obj: {
     tipo: CultivoTipo;
-    estacionalidad: Estacionalidad;
+    estacionalidad: string;
     tiempo_estimado_cultivo: string;
     meses_produccion: string[];
     cantidad_producida_hectareas: string;
@@ -52,7 +47,7 @@ const AgricolaSection: React.FC<AgricolaSectionProps> = ({
   const addNewCultivo = () => {
     append({
       tipo: "" as CultivoTipo,
-      estacionalidad: "" as Estacionalidad,
+      estacionalidad: "",
       tiempo_estimado_cultivo: "",
       meses_produccion: [],
       cantidad_producida_hectareas: "",
@@ -137,14 +132,11 @@ const AgricolaSection: React.FC<AgricolaSectionProps> = ({
                 control={control}
                 name={`agricola.cultivos.${index}.estacionalidad`}
                 render={({ field: { value, onChange } }) => (
-                  <ThemedPicker
-                    items={estacionalidades.map((est) => ({
-                      label: est,
-                      value: est,
-                    }))}
-                    selectedValue={value}
-                    onValueChange={onChange}
-                    placeholder="Seleccione estacionalidad"
+                  <ThemedTextInput
+                    value={value}
+                    onChangeText={onChange}
+                    placeholder="Estacionalidad de cosecha"
+                    keyboardType="default"
                     icon="calendar"
                   />
                 )}

@@ -1,6 +1,7 @@
 import MyIcon from "@/presentation/auth/components/MyIcon";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
+import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import { DrawerContentComponentProps } from "@react-navigation/drawer";
 import React, { useState } from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
@@ -19,6 +20,7 @@ const CustomDrawerUsers = ({ navigation, logout }: Props) => {
   };
 
   const { colors } = useTheme();
+  const primary = useThemeColor({}, "primary");
 
   return (
     <ThemedView
@@ -38,7 +40,7 @@ const CustomDrawerUsers = ({ navigation, logout }: Props) => {
         style={styles.drawerItem}
         onPress={() => navigation.navigate("servicios-user")}
       >
-        <MyIcon name="hammer-outline" size={24} color={colors.primary} />
+        <MyIcon name="hammer-outline" size={24} color={primary} />
         <ThemedText style={[styles.itemText]}>Servicios Disponibles</ThemedText>
       </TouchableOpacity>
 
@@ -46,11 +48,7 @@ const CustomDrawerUsers = ({ navigation, logout }: Props) => {
         style={styles.drawerItem}
         onPress={() => navigation.navigate("home")}
       >
-        <MyIcon
-          name="calendar-number-outline"
-          size={24}
-          color={colors.primary}
-        />
+        <MyIcon name="calendar-number-outline" size={24} color={primary} />
         <ThemedText style={[styles.itemText]}>Citas</ThemedText>
       </TouchableOpacity>
 
@@ -58,7 +56,7 @@ const CustomDrawerUsers = ({ navigation, logout }: Props) => {
         style={styles.drawerItem}
         onPress={() => navigation.navigate("fincas-page")}
       >
-        <MyIcon name="podium-outline" size={24} color={colors.primary} />
+        <MyIcon name="podium-outline" size={24} color={primary} />
         <ThemedText style={[styles.itemText]}>Fincas</ThemedText>
       </TouchableOpacity>
 
@@ -66,7 +64,7 @@ const CustomDrawerUsers = ({ navigation, logout }: Props) => {
         style={styles.drawerItem}
         onPress={() => navigation.navigate("animales-page")}
       >
-        <MyIcon name="paw-outline" size={24} color={colors.primary} />
+        <MyIcon name="paw-outline" size={24} color={primary} />
         <ThemedText style={[styles.itemText]}>Animales</ThemedText>
       </TouchableOpacity>
 
@@ -81,7 +79,7 @@ const CustomDrawerUsers = ({ navigation, logout }: Props) => {
             <List.Icon
               {...props}
               icon={() => (
-                <MyIcon name="leaf-outline" size={24} color={colors.primary} />
+                <MyIcon name="leaf-outline" size={24} color={primary} />
               )}
             />
           )}
@@ -97,11 +95,7 @@ const CustomDrawerUsers = ({ navigation, logout }: Props) => {
               })
             }
             left={() => (
-              <MyIcon
-                name="construct-outline"
-                size={24}
-                color={colors.primary}
-              />
+              <MyIcon name="construct-outline" size={24} color={primary} />
             )}
           />
           <List.Item
@@ -115,7 +109,7 @@ const CustomDrawerUsers = ({ navigation, logout }: Props) => {
               })
             }
             left={() => (
-              <MyIcon name="bag-add-outline" size={24} color={colors.primary} />
+              <MyIcon name="bag-add-outline" size={24} color={primary} />
             )}
           />
           <List.Item
@@ -129,11 +123,7 @@ const CustomDrawerUsers = ({ navigation, logout }: Props) => {
               })
             }
             left={() => (
-              <MyIcon
-                name="stats-chart-outline"
-                size={24}
-                color={colors.primary}
-              />
+              <MyIcon name="stats-chart-outline" size={24} color={primary} />
             )}
           />
         </List.Accordion>
@@ -143,7 +133,7 @@ const CustomDrawerUsers = ({ navigation, logout }: Props) => {
         style={styles.drawerItem}
         onPress={() => navigation.navigate("profile")}
       >
-        <MyIcon name="person-outline" size={24} color={colors.primary} />
+        <MyIcon name="person-outline" size={24} color={primary} />
         <ThemedText style={[styles.itemText]}>Perfil</ThemedText>
       </TouchableOpacity>
 
@@ -189,7 +179,8 @@ const styles = StyleSheet.create({
   },
   logoutButton: {
     marginTop: "auto",
-    marginBottom: 30,
+    marginBottom: 40,
+    justifyContent: "center",
   },
   logoutText: {
     color: "#ff4444",

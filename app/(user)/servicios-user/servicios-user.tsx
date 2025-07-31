@@ -18,6 +18,7 @@ const ServicesUser = () => {
   const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
   const primary = useThemeColor({}, "primary");
+  const text = useThemeColor({}, "text");
 
   const {
     data: servicios,
@@ -95,10 +96,10 @@ const ServicesUser = () => {
         }
         ListHeaderComponent={
           <View style={styles.header}>
-            <ThemedText type="title" style={styles.title}>
+            <ThemedText type="title" style={[styles.title, { color: primary }]}>
               Nuestros servicios
             </ThemedText>
-            <ThemedText style={styles.subtitle}>
+            <ThemedText style={[styles.subtitle, { color: text }]}>
               Selecciona un servicio para agendar una cita
             </ThemedText>
           </View>
@@ -145,17 +146,22 @@ const styles = StyleSheet.create({
   header: {
     marginBottom: 16,
     alignItems: "center",
+    paddingHorizontal: 8,
   },
   title: {
-    marginBottom: 4,
-    fontWeight: "600",
-  },
-  subtitle: {
-    color: "#666",
+    marginBottom: 8,
+    fontWeight: "700",
+    fontSize: 24,
     textAlign: "center",
   },
+  subtitle: {
+    opacity: 0.8,
+    textAlign: "center",
+    fontSize: 14,
+    lineHeight: 20,
+  },
   footer: {
-    height: 20,
+    height: 40,
   },
 });
 

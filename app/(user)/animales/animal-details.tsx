@@ -616,7 +616,7 @@ const AnimalDetailsPage = ({ route }: EditarAnimalProps) => {
 
                 {showIdentifierHelp && (
                   <Text style={styles.helpText}>
-                    NÚMERO DE SEIS DIGITOS DE IDENTIFICACIÓN DEL ARETE
+                    NÚMERO DE SEIS DÍGITOS DE IDENTIFICACIÓN DEL ARETE
                   </Text>
                 )}
 
@@ -658,7 +658,7 @@ const AnimalDetailsPage = ({ route }: EditarAnimalProps) => {
                   items={produccionItems}
                   onValueChange={(value) => setValue("produccion", value)}
                   selectedValue={watch("produccion") || ""}
-                  placeholder="Selecciona la produccion"
+                  placeholder="Selecciona la producción"
                   icon="options-outline"
                   error={errors.produccion?.message}
                 />
@@ -666,7 +666,7 @@ const AnimalDetailsPage = ({ route }: EditarAnimalProps) => {
                   items={tipoProduccionItems}
                   onValueChange={(value) => setValue("tipo_produccion", value)}
                   selectedValue={watch("tipo_produccion") || ""}
-                  placeholder="Selecciona el tipo produccion"
+                  placeholder="Selecciona el tipo producción"
                   icon="options-outline"
                   error={errors.tipo_produccion?.message}
                 />
@@ -822,7 +822,7 @@ const AnimalDetailsPage = ({ route }: EditarAnimalProps) => {
                                             % Comprado:
                                           </ThemedText>
                                           <ThemedTextInput
-                                            placeholder="Ej: 60"
+                                            placeholder="Ej.: 60"
                                             value={
                                               alimentoSeleccionado.porcentaje_comprado?.toString() ||
                                               ""
@@ -1049,7 +1049,7 @@ const AnimalDetailsPage = ({ route }: EditarAnimalProps) => {
                 />
                 {showIdentifierHelp1 && (
                   <Text style={styles.helpText}>
-                    NÚMERO DE SEIS DIGITOS DE IDENTIFICACIÓN DEL ARETE
+                    NÚMERO DE SEIS DÍGITOS DE IDENTIFICACIÓN DEL ARETE
                   </Text>
                 )}
 
@@ -1145,7 +1145,7 @@ const AnimalDetailsPage = ({ route }: EditarAnimalProps) => {
                 />
                 {showIdentifierHelp2 && (
                   <Text style={styles.helpText}>
-                    NÚMERO DE SEIS DIGITOS DE IDENTIFICACIÓN DEL ARETE
+                    NÚMERO DE SEIS DÍGITOS DE IDENTIFICACIÓN DEL ARETE
                   </Text>
                 )}
 
@@ -1203,7 +1203,7 @@ const AnimalDetailsPage = ({ route }: EditarAnimalProps) => {
                 />
 
                 <ThemedTextInput
-                  placeholder="Número de parto de la madre"
+                  placeholder="Número de partos de la madre"
                   icon="list-outline"
                   value={watch("numero_parto_madre")?.toString() || "0"}
                   onChangeText={(text) =>

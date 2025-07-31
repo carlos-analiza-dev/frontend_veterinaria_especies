@@ -57,6 +57,9 @@ const AgregarCitaServicio = ({ route }: DetailsCitaServicioProps) => {
   const [razaId, setRazaId] = useState("");
   const [filteredHours, setFilteredHours] = useState<HoraDisponibleItem[]>([]);
   const [duracion, setDuracion] = useState(1);
+  const [selectedAnimals, setSelectedAnimals] = useState<string[]>([]);
+  const [totalApagar, setTotalApagar] = useState<number>(0);
+  const [duracionTotal, setDuracionTotal] = useState<number>(0);
   const queryClient = useQueryClient();
   const navigation = useNavigation();
   const {
@@ -110,10 +113,29 @@ const AgregarCitaServicio = ({ route }: DetailsCitaServicioProps) => {
     setValue("medicoId", "");
   }, [categoriaId]);
 
+  useEffect(() => {
+    setSelectedAnimals([]);
+  }, [fincaId]);
+
+  useEffect(() => {
+    setSelectedAnimals([]);
+  }, [especieId]);
+
+  useEffect(() => {
+    setSelectedAnimals([]);
+  }, [razaId]);
+
   const timeToMinutes = (time: string) => {
     const [hours, minutes] = time.split(":").map(Number);
     return hours * 60 + minutes;
   };
+
+  useEffect(() => {
+    const totalServicio = watch("totalPagar");
+    const duracionServicio = watch("duracion");
+    setTotalApagar(selectedAnimals.length * (totalServicio || 0));
+    setDuracionTotal(selectedAnimals.length * (duracionServicio || 0));
+  }, [selectedAnimals, watch("totalPagar"), watch("duracion")]);
 
   useEffect(() => {
     if (servicios && subServicioId && paisId && horas_disponibles) {
@@ -216,6 +238,10 @@ const AgregarCitaServicio = ({ route }: DetailsCitaServicioProps) => {
     animales?.data.map((animal) => ({
       value: animal.id,
       label: animal.identificador,
+      imageUrl: animal.profileImages?.[0]?.url,
+      identificador: animal.identificador,
+      sexo: animal.sexo,
+      color: animal.color,
     })) || [];
 
   const allServicios =
@@ -325,6 +351,14 @@ const AgregarCitaServicio = ({ route }: DetailsCitaServicioProps) => {
             onValueChange={(text) => setValue("animalId", text)}
           />
 
+          {/* <ThemedAnimalPicker
+            animals={animales?.data || []}
+            selectedAnimals={selectedAnimals}
+            onSelectionChange={setSelectedAnimals}
+            label="Seleccione los animales"
+            multiple={true}
+          /> */}
+
           <ThemedText style={styles.sectionTitle}>
             Servicio Veterinario
           </ThemedText>
@@ -401,8 +435,8 @@ const AgregarCitaServicio = ({ route }: DetailsCitaServicioProps) => {
             <ThemedView style={styles.warningContainer}>
               <ThemedText style={styles.warningText}>
                 {watch("subServicioId") && watch("medicoId") && watch("fecha")
-                  ? "No hay horarios disponibles para citas en este momento"
-                  : "Complete la información del servicio para ver horarios disponibles"}
+                  ? "No hay horarios disponibles para citas en este momento."
+                  : "Completa la información del servicio para ver los horarios disponibles."}
               </ThemedText>
             </ThemedView>
           )}
@@ -415,7 +449,7 @@ const AgregarCitaServicio = ({ route }: DetailsCitaServicioProps) => {
             icon="hourglass-outline"
             value={
               watch("duracion")?.toString()
-                ? `${watch("duracion")} horas (duracion)`
+                ? `${watch("duracion")} horas (duración estimada)`
                 : ""
             }
             onChangeText={(text) => setValue("duracion", Number(text))}

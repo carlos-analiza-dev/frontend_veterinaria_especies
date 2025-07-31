@@ -3,7 +3,6 @@ import {
   InsumoTipo,
 } from "@/core/produccion/interface/crear-produccion-finca.interface";
 import {
-  estacionalidades,
   meses,
   tiposHeno,
   tiposInsumo,
@@ -160,14 +159,11 @@ const ForrajesSection: React.FC<ForrajesSectionProps> = ({
                     control={control}
                     name={`forrajesInsumo.insumos.${index}.estacionalidad_heno`}
                     render={({ field: { value, onChange } }) => (
-                      <ThemedPicker
-                        items={estacionalidades.map((est) => ({
-                          label: est,
-                          value: est,
-                        }))}
-                        selectedValue={value ?? ""}
-                        onValueChange={onChange}
-                        placeholder="Seleccione estacionalidad"
+                      <ThemedTextInput
+                        value={value}
+                        onChangeText={onChange}
+                        placeholder="Estacionalidad de cosecha"
+                        keyboardType="default"
                         icon="calendar"
                       />
                     )}

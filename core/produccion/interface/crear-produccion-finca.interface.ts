@@ -34,7 +34,6 @@ export type CultivoTipo =
   | "Frutas"
   | "Otros";
 
-export type Estacionalidad = "Anual" | "Estacional" | "Continuo";
 export type MetodoCultivo = "Tradicional" | "Orgánico" | "Invernadero";
 
 export type InsumoTipo =
@@ -83,7 +82,7 @@ export interface ProduccionGanadera {
 export interface Cultivo {
   tipo: CultivoTipo;
   descripcion?: string;
-  estacionalidad: Estacionalidad;
+  estacionalidad: string;
   tiempo_estimado_cultivo: string;
   meses_produccion: string[];
   cantidad_producida_hectareas: string;
