@@ -9,6 +9,7 @@ import useGetRazasByEspecie from "@/hooks/razas/useGetRazasByEspecie";
 import useGetServiciosActivos from "@/hooks/servicios/useGetServiciosActivos";
 import useGetSubServiciosByServicioId from "@/hooks/sub-servicios/useGetSubServiciosByServicioId";
 import { useAuthStore } from "@/presentation/auth/store/useAuthStore";
+import ThemedAnimalPicker from "@/presentation/theme/components/ThemedAnimalPicker";
 import ThemedButton from "@/presentation/theme/components/ThemedButton";
 import ThemedPicker from "@/presentation/theme/components/ThemedPicker";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
@@ -207,12 +208,6 @@ const CrearCita = () => {
       label: raza.nombre,
     })) || [];
 
-  const allAnimales =
-    animales?.data.map((animal) => ({
-      value: animal.id,
-      label: animal.identificador,
-    })) || [];
-
   const allCategorias =
     categorias?.map((categoria) => ({
       value: categoria.id,
@@ -314,12 +309,14 @@ const CrearCita = () => {
             selectedValue={razaId}
             onValueChange={(text) => setRazaId(text)}
           />
-          <ThemedPicker
-            items={allAnimales}
-            icon="code-outline"
-            placeholder="Identificador del animal"
-            selectedValue={watch("animalId")}
-            onValueChange={(text) => setValue("animalId", text)}
+          <ThemedAnimalPicker
+            animals={animales?.data || []}
+            selectedAnimals={watch("animalesId") || []}
+            onSelectionChange={(selectedId) =>
+              setValue("animalesId", selectedId)
+            }
+            label="Seleccione los animales"
+            multiple={true}
           />
 
           <ThemedText style={styles.sectionTitle}>

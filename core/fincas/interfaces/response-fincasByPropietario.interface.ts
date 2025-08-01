@@ -7,6 +7,7 @@ export interface Finca {
   id: string;
   nombre_finca: string;
   cantidad_animales: number;
+  medida_finca: string;
   ubicacion: string;
   longitud: number;
   latitud: number;

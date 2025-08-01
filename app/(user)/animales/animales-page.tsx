@@ -189,7 +189,7 @@ const AnimalesPageGanadero = () => {
       <FlatList
         data={animales}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item, index) => `${item.id}-${index}`}
         initialNumToRender={10}
         maxToRenderPerBatch={10}
         windowSize={21}

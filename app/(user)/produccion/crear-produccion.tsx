@@ -1,3 +1,4 @@
+import { Finca } from "@/core/fincas/interfaces/response-fincasByPropietario.interface";
 import { CrearProduccionFinca } from "@/core/produccion/accions/crear-produccion-finca";
 import { CreateProduccionFinca } from "@/core/produccion/interface/crear-produccion-finca.interface";
 import { useFincasPropietarios } from "@/hooks/fincas/useFincasPropietarios";
@@ -49,6 +50,9 @@ const CrearProduccionPage = () => {
   const primary = useThemeColor({}, "primary");
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [currentDateField, setCurrentDateField] = useState("");
+  const [fincaSeleccionada, setFincaSeleccionada] = useState<Finca | null>(
+    null
+  );
   const { data: fincas } = useFincasPropietarios(userId);
 
   const { control, handleSubmit, watch, setValue, reset } =
@@ -215,6 +219,7 @@ const CrearProduccionPage = () => {
             append={appendInsumo}
             remove={removeInsumo}
             watch={watch}
+            fincaSeleccionada={fincaSeleccionada}
           />
         );
       case "alternativa":
@@ -257,7 +262,13 @@ const CrearProduccionPage = () => {
             render={({ field: { value, onChange } }) => (
               <ThemedPicker
                 items={fincasItems}
-                onValueChange={onChange}
+                onValueChange={(selectedValue) => {
+                  onChange(selectedValue);
+                  const finca = fincas?.data.fincas.find(
+                    (f) => f.id === selectedValue
+                  );
+                  setFincaSeleccionada(finca || null);
+                }}
                 selectedValue={value}
                 placeholder="Selecciona una finca"
                 icon="podium-outline"

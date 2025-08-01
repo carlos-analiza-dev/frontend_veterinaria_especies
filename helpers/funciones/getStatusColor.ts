@@ -1,4 +1,4 @@
-import { Cita } from "@/core/citas/interfaces/response-citas-user.interface";
+import { Cita } from "@/core/medicos/interfaces/obtener-citas-medicos.interface";
 
 export const getStatusColor = (item: Cita) => {
   switch (item.estado.toLowerCase()) {

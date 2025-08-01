@@ -2,6 +2,7 @@ export interface CrearFinca {
   nombre_finca: string;
   cantidad_animales: number;
   ubicacion: string;
+  medida_finca: string;
   latitud?: number;
   longitud?: number;
   abreviatura: string;

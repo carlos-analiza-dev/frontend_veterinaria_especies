@@ -26,12 +26,29 @@ const CardCitas = ({ item, onPress }: Props) => {
     }
   };
 
+  const formatDate = (dateString: Date) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("es-ES", {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
+  const formatTime = (timeString: string) => {
+    return timeString.substring(0, 5);
+  };
+
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.8}>
       <View style={styles.header}>
-        <Text style={styles.serviceName} numberOfLines={1}>
-          {item.subServicio.nombre}
-        </Text>
+        <View style={styles.serviceContainer}>
+          <MaterialIcons name="medical-services" size={20} color="#4A90E2" />
+          <Text style={styles.serviceName} numberOfLines={1}>
+            {item.subServicio.nombre}
+          </Text>
+        </View>
         <View
           style={[styles.statusBadge, { backgroundColor: getStatusColor() }]}
         >
@@ -39,70 +56,65 @@ const CardCitas = ({ item, onPress }: Props) => {
         </View>
       </View>
 
-      <View style={styles.twoColumns}>
-        <View style={styles.column}>
-          <View style={styles.infoRow}>
-            <MaterialIcons name="calendar-today" size={16} color="#555" />
-            <Text style={styles.infoText}>{item.fecha}</Text>
-          </View>
-
-          <View style={styles.infoRow}>
-            <MaterialIcons name="access-time" size={16} color="#555" />
-            <Text style={styles.infoText}>
-              {item.horaInicio} - {item.horaFin}
-            </Text>
-          </View>
-
-          <View style={styles.infoRow}>
-            <MaterialIcons name="person" size={16} color="#555" />
-            <Text style={styles.infoText} numberOfLines={1}>
-              Dr. {item.medico.usuario.name.split(" ")[0]}{" "}
-              {item.medico.usuario.name.split(" ")[2] || ""}
-            </Text>
-          </View>
+      <View style={styles.dateTimeContainer}>
+        <View style={styles.dateTimeItem}>
+          <MaterialIcons name="calendar-today" size={16} color="#555" />
+          <Text style={styles.dateTimeText}>{formatDate(item.fecha)}</Text>
         </View>
-
-        <View style={styles.column}>
-          <View style={styles.infoRow}>
-            <MaterialIcons name="pets" size={16} color="#555" />
-            <Text style={styles.infoText}>{item.animal.especie.nombre}</Text>
-          </View>
-
-          <View style={styles.infoRow}>
-            <MaterialIcons name="pets" size={16} color="#555" />
-            <Text style={styles.infoText}>
-              {item.animal.razas.length === 1
-                ? item.animal.razas[0].nombre
-                : item.animal.razas.length > 1
-                ? "Encaste"
-                : "Sin raza"}
-            </Text>
-          </View>
-
-          <View style={styles.infoRow}>
-            <MaterialIcons name="tag" size={16} color="#555" />
-            <Text style={styles.infoText}>{item.animal.identificador}</Text>
-          </View>
+        <View style={styles.dateTimeItem}>
+          <MaterialIcons name="access-time" size={16} color="#555" />
+          <Text style={styles.dateTimeText}>
+            {formatTime(item.horaInicio)} - {formatTime(item.horaFin)}
+          </Text>
         </View>
       </View>
 
-      <View style={styles.infoRow}>
-        <MaterialIcons name="location-on" size={16} color="#555" />
-        <Text style={styles.infoText} numberOfLines={1}>
-          {item.finca.nombre_finca}
-        </Text>
+      <View style={styles.infoSection}>
+        <View style={styles.infoRow}>
+          <MaterialIcons name="person" size={16} color="#555" />
+          <Text style={styles.infoText} numberOfLines={1}>
+            Dr. {item.medico.nombre}
+          </Text>
+        </View>
+
+        <View style={styles.infoRow}>
+          <MaterialIcons name="location-on" size={16} color="#555" />
+          <Text style={styles.infoText} numberOfLines={1}>
+            {item.finca.nombre} -{" "}
+            {item.finca.ubicacion.split(",")[1]?.trim() || item.finca.ubicacion}
+          </Text>
+        </View>
       </View>
 
-      <View style={styles.infoRow}>
-        <MaterialIcons name="pets" size={16} color="#555" />
-        <Text style={styles.infoText}>
-          Cantidad: {item.cantidadAnimales} animal(es)
-        </Text>
-      </View>
+      {item.animales.length > 0 && (
+        <View style={styles.animalsSection}>
+          <Text style={styles.sectionTitle}>
+            Animales ({item.animales.length})
+          </Text>
+          {item.animales.map((animal, index) => (
+            <View key={`${animal.id}-${index}`} style={styles.animalItem}>
+              <View style={styles.animalInfo}>
+                <MaterialIcons name="pets" size={16} color="#555" />
+                <Text style={styles.animalText}>
+                  {animal.identificador} - {animal.especie}
+                </Text>
+              </View>
+              <Text style={styles.animalRaces}>
+                {animal.razas.length === 1
+                  ? animal.razas[0]
+                  : animal.razas.length > 1
+                  ? "Encaste"
+                  : "Sin raza"}
+              </Text>
+            </View>
+          ))}
+        </View>
+      )}
 
       <View style={styles.footer}>
         <Text style={styles.priceText}>
-          Valor: {pais?.simbolo_moneda} {parseFloat(item.totalPagar).toFixed(2)}
+          Total: {pais?.simbolo_moneda || "$"}{" "}
+          {parseFloat(item.totalPagar).toFixed(2)}
         </Text>
       </View>
     </TouchableOpacity>
@@ -127,18 +139,20 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#EEE",
-    paddingBottom: 8,
+  },
+  serviceContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
   },
   serviceName: {
     fontSize: 18,
     fontWeight: "bold",
     color: "#333",
-    flex: 1,
+    marginLeft: 8,
   },
   statusBadge: {
-    paddingHorizontal: 8,
+    paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
     marginLeft: 8,
@@ -148,28 +162,67 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#FFF",
   },
-  twoColumns: {
+  dateTimeContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 8,
+    marginBottom: 12,
+    backgroundColor: "#F5F5F5",
+    padding: 10,
+    borderRadius: 8,
   },
-  column: {
-    flex: 1,
+  dateTimeItem: {
+    flexDirection: "row",
+    alignItems: "center",
   },
-  infoContainer: {
-    marginBottom: 8,
+  dateTimeText: {
+    marginLeft: 8,
+    fontSize: 14,
+    color: "#555",
+  },
+  infoSection: {
+    marginBottom: 12,
   },
   infoRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 6,
-    flexShrink: 1,
+    marginBottom: 8,
   },
   infoText: {
     marginLeft: 8,
     fontSize: 14,
     color: "#555",
     flex: 1,
+  },
+  animalsSection: {
+    marginBottom: 12,
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#333",
+    marginBottom: 6,
+  },
+  animalItem: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 6,
+    paddingVertical: 4,
+  },
+  animalInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+  },
+  animalText: {
+    marginLeft: 8,
+    fontSize: 14,
+    color: "#555",
+  },
+  animalRaces: {
+    fontSize: 13,
+    color: "#777",
+    fontStyle: "italic",
   },
   footer: {
     marginTop: 8,

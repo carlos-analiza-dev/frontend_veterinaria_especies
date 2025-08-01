@@ -22,7 +22,6 @@ import { useTheme } from "react-native-paper";
 
 import { ActualizarFinca } from "@/core/fincas/accions/update-finca";
 import { CrearFinca } from "@/core/fincas/interfaces/crear-finca.interface";
-import { convertirAHectareas } from "@/helpers/funciones/convertirHectareas";
 import MapaSeleccionDireccion from "@/presentation/components/mapas/MapaSeleccionDireccion";
 import MessageError from "@/presentation/components/MessageError";
 import ThemedCheckbox from "@/presentation/theme/components/ThemedCheckbox";
@@ -37,7 +36,7 @@ type RoutePaisProps = RouteProp<UsersStackParamList, "FincaDetailsPage">;
 interface DetailsFincaProps {
   route: RoutePaisProps;
 }
-
+type UnidadMedida = "ha" | "mz" | "m2" | "km2" | "ac" | "ft2" | "yd2";
 const FincaDetailsPage = ({ route }: DetailsFincaProps) => {
   const { fincaId } = route.params;
   const { colors } = useTheme();
@@ -58,6 +57,20 @@ const FincaDetailsPage = ({ route }: DetailsFincaProps) => {
   React.useEffect(() => {
     if (finca?.data && !isEditing) {
       const fincaData = finca.data;
+      const unidadesValidas: UnidadMedida[] = [
+        "ha",
+        "mz",
+        "m2",
+        "km2",
+        "ac",
+        "ft2",
+        "yd2",
+      ];
+      const medidaFinca = unidadesValidas.includes(
+        fincaData.medida_finca as UnidadMedida
+      )
+        ? (fincaData.medida_finca as UnidadMedida)
+        : "ha";
       reset({
         nombre_finca: fincaData.nombre_finca,
         abreviatura: fincaData.abreviatura,
@@ -69,8 +82,9 @@ const FincaDetailsPage = ({ route }: DetailsFincaProps) => {
         area_ganaderia_hectarea: fincaData.area_ganaderia_hectarea,
         tipo_explotacion: fincaData.tipo_explotacion,
         especies_maneja: fincaData.especies_maneja,
+        medida_finca: fincaData.medida_finca,
       });
-      setUnidadMedida("ha");
+      setUnidadMedida(medidaFinca);
       if (finca?.data.tipo_explotacion) {
         const explotacion = finca.data.tipo_explotacion.map(
           (a) => a.tipo_explotacion
@@ -93,18 +107,13 @@ const FincaDetailsPage = ({ route }: DetailsFincaProps) => {
       const fincaData = {
         nombre_finca: data.nombre_finca,
         cantidad_animales: Number(data.cantidad_animales),
+        medida_finca: unidadMedida,
         ubicacion: data.ubicacion,
         latitud: data.latitud,
         longitud: data.longitud,
         abreviatura: data.abreviatura,
-        tamaño_total_hectarea: convertirAHectareas(
-          data.tamaño_total_hectarea,
-          unidadMedida
-        ),
-        area_ganaderia_hectarea: convertirAHectareas(
-          data.area_ganaderia_hectarea,
-          unidadMedida
-        ),
+        tamaño_total_hectarea: data.tamaño_total_hectarea,
+        area_ganaderia_hectarea: data.area_ganaderia_hectarea,
         tipo_explotacion: data.tipo_explotacion,
         especies_maneja: data.especies_maneja,
       };
@@ -448,6 +457,13 @@ const styles = StyleSheet.create({
   column: {
     flex: 1,
     marginHorizontal: 4,
+  },
+  conversionText: {
+    fontSize: 12,
+    color: "#666",
+    marginTop: 4,
+    marginLeft: 8,
+    fontStyle: "italic",
   },
 });
 

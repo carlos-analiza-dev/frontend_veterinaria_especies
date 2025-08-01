@@ -109,7 +109,7 @@ const CardFincas = ({ finca, onPress }: Props) => {
 
               <FincaInfoRow
                 icon="texture-box"
-                text={`${finca.tamaño_total_hectarea} ha Totales - ${finca.area_ganaderia_hectarea} ha para ganadería`}
+                text={`${finca.tamaño_total_hectarea} ${finca.medida_finca} Totales - ${finca.area_ganaderia_hectarea} ${finca.medida_finca} para ganadería`}
               />
 
               <View style={styles.speciesContainer}>

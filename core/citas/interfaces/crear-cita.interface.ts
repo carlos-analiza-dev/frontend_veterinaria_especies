@@ -1,6 +1,6 @@
 export interface CrearCitaInterface {
   medicoId: string;
-  animalId: string;
+  animalesId: string[];
   fincaId: string;
   subServicioId: string;
   usuarioId: string;

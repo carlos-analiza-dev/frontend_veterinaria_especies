@@ -1,3 +1,4 @@
+import { Finca } from "@/core/fincas/interfaces/response-fincasByPropietario.interface";
 import {
   CreateProduccionFinca,
   InsumoTipo,
@@ -36,6 +37,7 @@ interface ForrajesSectionProps {
   append: (obj: { tipo: InsumoTipo }) => void;
   remove: (index: number) => void;
   watch: UseFormWatch<CreateProduccionFinca>;
+  fincaSeleccionada: Finca | null;
 }
 
 const ForrajesSection: React.FC<ForrajesSectionProps> = ({
@@ -44,6 +46,7 @@ const ForrajesSection: React.FC<ForrajesSectionProps> = ({
   append,
   remove,
   watch,
+  fincaSeleccionada,
 }) => {
   const { colors } = useTheme();
 
@@ -202,7 +205,7 @@ const ForrajesSection: React.FC<ForrajesSectionProps> = ({
               <>
                 <View style={styles.inputGroup}>
                   <ThemedText style={styles.inputLabel}>
-                    Producción por manzana
+                    Producción por {fincaSeleccionada?.medida_finca}
                   </ThemedText>
                   <Controller
                     control={control}

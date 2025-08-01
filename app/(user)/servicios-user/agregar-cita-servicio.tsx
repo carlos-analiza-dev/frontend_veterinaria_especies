@@ -10,6 +10,7 @@ import useGetRazasByEspecie from "@/hooks/razas/useGetRazasByEspecie";
 import useGetSubServiciosByServicioId from "@/hooks/sub-servicios/useGetSubServiciosByServicioId";
 import { useAuthStore } from "@/presentation/auth/store/useAuthStore";
 import { UsersStackParamList } from "@/presentation/navigation/types";
+import ThemedAnimalPicker from "@/presentation/theme/components/ThemedAnimalPicker";
 import ThemedButton from "@/presentation/theme/components/ThemedButton";
 import ThemedPicker from "@/presentation/theme/components/ThemedPicker";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
@@ -234,16 +235,6 @@ const AgregarCitaServicio = ({ route }: DetailsCitaServicioProps) => {
       label: raza.nombre,
     })) || [];
 
-  const allAnimales =
-    animales?.data.map((animal) => ({
-      value: animal.id,
-      label: animal.identificador,
-      imageUrl: animal.profileImages?.[0]?.url,
-      identificador: animal.identificador,
-      sexo: animal.sexo,
-      color: animal.color,
-    })) || [];
-
   const allServicios =
     servicios?.data.map((servicio) => ({
       value: servicio.id,
@@ -343,21 +334,16 @@ const AgregarCitaServicio = ({ route }: DetailsCitaServicioProps) => {
             selectedValue={razaId}
             onValueChange={(text) => setRazaId(text)}
           />
-          <ThemedPicker
-            items={allAnimales}
-            icon="code-outline"
-            placeholder="Identificador del animal"
-            selectedValue={watch("animalId")}
-            onValueChange={(text) => setValue("animalId", text)}
-          />
 
-          {/* <ThemedAnimalPicker
+          <ThemedAnimalPicker
             animals={animales?.data || []}
-            selectedAnimals={selectedAnimals}
-            onSelectionChange={setSelectedAnimals}
+            selectedAnimals={watch("animalesId") || []}
+            onSelectionChange={(selectedId) =>
+              setValue("animalesId", selectedId)
+            }
             label="Seleccione los animales"
             multiple={true}
-          /> */}
+          />
 
           <ThemedText style={styles.sectionTitle}>
             Servicio Veterinario

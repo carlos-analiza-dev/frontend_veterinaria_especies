@@ -1,7 +1,6 @@
 import { CreateFinca } from "@/core/fincas/accions/crear-finca";
 import { CrearFinca } from "@/core/fincas/interfaces/crear-finca.interface";
 import { TipoExplotacion } from "@/helpers/data/tipoExplotacion";
-import { convertirAHectareas } from "@/helpers/funciones/convertirHectareas";
 import useGetDeptosActivesByPais from "@/hooks/departamentos/useGetDeptosActivesByPais";
 import useGetMunicipiosActivosByDepto from "@/hooks/municipios/useGetMunicipiosActivosByDepto";
 import useGetPaisesActivos from "@/hooks/paises/useGetPaisesActivos";
@@ -139,26 +138,18 @@ const CrearFincaPage = () => {
         return;
       }
 
-      const tamañoTotalHectareas = convertirAHectareas(
-        data.tamaño_total_hectarea,
-        unidadMedida
-      );
-      const areaGanaderiaHectareas = convertirAHectareas(
-        data.area_ganaderia_hectarea,
-        unidadMedida
-      );
-
       const fincaData = {
         nombre_finca: data.nombre_finca,
         cantidad_animales: Number(data.cantidad_animales),
+        medida_finca: unidadMedida,
         ubicacion: data.ubicacion,
         longitud: data.longitud,
         latitud: data.latitud,
         abreviatura: data.abreviatura,
         departamentoId: data.departamentoId,
         municipioId: data.municipioId,
-        tamaño_total_hectarea: tamañoTotalHectareas,
-        area_ganaderia_hectarea: areaGanaderiaHectareas,
+        tamaño_total_hectarea: data.tamaño_total_hectarea,
+        area_ganaderia_hectarea: data.area_ganaderia_hectarea,
         tipo_explotacion: data.tipo_explotacion,
         especies_maneja: data.especies_maneja,
         propietario_id: user?.id || "",
@@ -324,6 +315,9 @@ const CrearFincaPage = () => {
               <ThemedText style={styles.unidadLabel}>
                 ¿Con qué medidas conoces tu finca?
               </ThemedText>
+              <ThemedText style={styles.selectedMeasure}>
+                Medida seleccionada: {unidadMedida}
+              </ThemedText>
 
               <ThemedView
                 style={[
@@ -399,14 +393,6 @@ const CrearFincaPage = () => {
               onChangeText={(text) => setValue("tamaño_total_hectarea", text)}
               keyboardType="numeric"
             />
-            <ThemedText style={styles.conversionText}>
-              {watch("tamaño_total_hectarea") &&
-                !isNaN(parseFloat(watch("tamaño_total_hectarea"))) &&
-                `${convertirAHectareas(
-                  watch("tamaño_total_hectarea"),
-                  unidadMedida
-                )} ha`}
-            </ThemedText>
 
             <ThemedView
               style={[styles.column, { backgroundColor: colors.background }]}
@@ -420,14 +406,6 @@ const CrearFincaPage = () => {
                 }
                 keyboardType="numeric"
               />
-              <ThemedText style={styles.conversionText}>
-                {watch("area_ganaderia_hectarea") &&
-                  !isNaN(parseFloat(watch("area_ganaderia_hectarea"))) &&
-                  `${convertirAHectareas(
-                    watch("area_ganaderia_hectarea"),
-                    unidadMedida
-                  )} ha`}
-              </ThemedText>
             </ThemedView>
 
             <ThemedView
@@ -536,6 +514,12 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     flex: 1,
+  },
+  selectedMeasure: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 8,
   },
 });
 
