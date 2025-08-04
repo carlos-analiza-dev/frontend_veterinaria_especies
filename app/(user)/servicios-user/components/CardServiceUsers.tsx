@@ -1,7 +1,7 @@
 import { Servicio } from "@/core/servicios/interfaces/response-servicios.interface";
 import ThemedButton from "@/presentation/theme/components/ThemedButton";
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { Dimensions, StyleSheet, View } from "react-native";
 import { Card, Text, useTheme } from "react-native-paper";
 
 interface Props {
@@ -11,19 +11,32 @@ interface Props {
 
 const CardServiceUsers = ({ services, onPress }: Props) => {
   const theme = useTheme();
+  const windowWidth = Dimensions.get("window").width;
+  const windowHeight = Dimensions.get("window").height;
 
   return (
     <Card
-      style={[styles.card, { backgroundColor: theme.colors.background }]}
+      style={[
+        styles.card,
+        {
+          backgroundColor: theme.colors.background,
+          marginHorizontal: windowWidth * 0.02,
+          marginVertical: windowHeight * 0.01,
+        },
+      ]}
       onPress={onPress}
     >
       <Card.Cover
         source={require("@/images/servicio_image.png")}
-        style={styles.cover}
+        style={[styles.cover, { height: windowHeight * 0.15 }]}
       />
-      <Card.Content style={styles.content}>
+      <Card.Content style={[styles.content, { padding: windowWidth * 0.03 }]}>
         <View style={styles.header}>
-          <Text variant="titleLarge" style={styles.title}>
+          <Text
+            variant="titleLarge"
+            style={[styles.title, { fontSize: windowWidth * 0.04 }]}
+            numberOfLines={2}
+          >
             {services.nombre}
           </Text>
         </View>
@@ -32,18 +45,21 @@ const CardServiceUsers = ({ services, onPress }: Props) => {
           onPress={onPress}
           title="Agendar Cita"
           icon="arrow-forward-outline"
+          style={{ marginTop: windowHeight * 0.01 }}
         />
       </Card.Content>
     </Card>
   );
 };
+
 const styles = StyleSheet.create({
   card: {
-    margin: 8,
+    borderRadius: 8,
     overflow: "hidden",
+    elevation: 2,
   },
   cover: {
-    height: 120,
+    width: "100%",
   },
   content: {
     paddingTop: 12,
@@ -80,4 +96,5 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
 });
+
 export default CardServiceUsers;

@@ -19,12 +19,12 @@ import { useNavigation } from "expo-router";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import {
+  Dimensions,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   StyleSheet,
   TouchableWithoutFeedback,
-  useWindowDimensions,
   View,
 } from "react-native";
 import { Checkbox, useTheme } from "react-native-paper";
@@ -33,7 +33,7 @@ import Toast from "react-native-toast-message";
 const CrearFincaPage = () => {
   const queryClient = useQueryClient();
   const [modalVisible, setModalVisible] = useState(false);
-  const { height } = useWindowDimensions();
+
   const navigation = useNavigation();
   const [unidadMedida, setUnidadMedida] = useState<
     "ha" | "mz" | "m2" | "km2" | "ac" | "ft2" | "yd2"
@@ -41,6 +41,7 @@ const CrearFincaPage = () => {
   const [explotacionSeleccionada, setExplotacionSeleccionada] = useState<
     string[]
   >([]);
+  const { width, height } = Dimensions.get("window");
 
   const { handleSubmit, watch, setValue, reset } = useForm<CrearFinca>({
     defaultValues: {
@@ -52,6 +53,92 @@ const CrearFincaPage = () => {
   const { user } = useAuthStore();
   const selectedDeptoId = watch("departamentoId");
   const selectedPaisId = watch("pais_id");
+
+  const styles = StyleSheet.create({
+    container: {
+      padding: width * 0.04,
+      paddingBottom: height * 0.05,
+    },
+    row: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginBottom: height * 0.015,
+    },
+    scrollContainer: {
+      paddingVertical: height * 0.02,
+      paddingHorizontal: width * 0.03,
+      justifyContent: "center",
+      minHeight: height * 0.8,
+    },
+    column: {
+      flex: 1,
+      marginHorizontal: width * 0.01,
+    },
+    submitButton: {
+      paddingVertical: height * 0.015,
+    },
+    unidadesContainer: {
+      marginVertical: height * 0.02,
+      marginHorizontal: width * 0.01,
+    },
+    unidadLabel: {
+      marginBottom: height * 0.01,
+      fontWeight: "500",
+      fontSize: width * 0.04,
+    },
+    checkboxGroup: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      flexWrap: "wrap",
+    },
+    checkboxContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginRight: width * 0.04,
+      marginVertical: height * 0.005,
+      width: width * 0.45,
+    },
+    conversionText: {
+      fontSize: width * 0.03,
+      color: "#666",
+      marginTop: height * 0.005,
+      marginLeft: width * 0.02,
+    },
+    sectionContainer: {
+      marginBottom: height * 0.02,
+      width: "100%",
+    },
+    sectionTitle: {
+      fontSize: width * 0.045,
+      fontWeight: "bold",
+      marginBottom: height * 0.015,
+      color: "#333",
+    },
+    errorText: {
+      color: "red",
+      fontSize: width * 0.035,
+      marginTop: height * 0.01,
+    },
+    formContainer: {
+      flex: 1,
+    },
+    selectedMeasure: {
+      fontSize: width * 0.038,
+      fontWeight: "bold",
+      color: "#333",
+      marginBottom: height * 0.01,
+    },
+    input: {
+      marginBottom: height * 0.015,
+      fontSize: width * 0.04,
+    },
+    pickerContainer: {
+      marginBottom: height * 0.015,
+    },
+    mapButton: {
+      height: height * 0.06,
+    },
+  });
 
   const { data: deptos } = useGetDeptosActivesByPais(selectedPaisId);
   const { data: municipios } = useGetMunicipiosActivosByDepto(selectedDeptoId);
@@ -206,6 +293,10 @@ const CrearFincaPage = () => {
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={{ flex: 1 }}
+      keyboardVerticalOffset={Platform.select({
+        ios: height * 0.1,
+        android: height * 0.05,
+      })}
     >
       <ThemedView style={{ flex: 1, backgroundColor: colors.background }}>
         <ScrollView
@@ -226,6 +317,7 @@ const CrearFincaPage = () => {
               icon="home-outline"
               value={watch("nombre_finca")}
               onChangeText={(text) => setValue("nombre_finca", text)}
+              style={styles.input}
             />
             <TouchableWithoutFeedback onPress={() => setModalVisible(true)}>
               <View pointerEvents="box-only">
@@ -234,6 +326,7 @@ const CrearFincaPage = () => {
                   icon="location-outline"
                   value={watch("ubicacion")}
                   editable={false}
+                  style={styles.input}
                 />
               </View>
             </TouchableWithoutFeedback>
@@ -262,6 +355,7 @@ const CrearFincaPage = () => {
                   onChangeText={(text) =>
                     setValue("cantidad_animales", Number(text))
                   }
+                  style={styles.input}
                 />
               </ThemedView>
               <ThemedView
@@ -272,6 +366,7 @@ const CrearFincaPage = () => {
                   icon="text-outline"
                   value={watch("abreviatura")}
                   onChangeText={(text) => setValue("abreviatura", text)}
+                  style={styles.input}
                 />
               </ThemedView>
             </ThemedView>
@@ -392,6 +487,7 @@ const CrearFincaPage = () => {
               value={watch("tamaño_total_hectarea")}
               onChangeText={(text) => setValue("tamaño_total_hectarea", text)}
               keyboardType="numeric"
+              style={styles.input}
             />
 
             <ThemedView
@@ -405,6 +501,7 @@ const CrearFincaPage = () => {
                   setValue("area_ganaderia_hectarea", text)
                 }
                 keyboardType="numeric"
+                style={styles.input}
               />
             </ThemedView>
 
@@ -436,7 +533,9 @@ const CrearFincaPage = () => {
               cantidadTotal={Number(watch("cantidad_animales")) || 0}
             />
 
-            <ThemedView style={{ marginBottom: 10, marginTop: 16 }}>
+            <ThemedView
+              style={{ marginBottom: height * 0.02, marginTop: height * 0.03 }}
+            >
               <ThemedButton
                 title="Guardar Finca"
                 onPress={handleSubmit(onSubmit)}
@@ -449,78 +548,5 @@ const CrearFincaPage = () => {
     </KeyboardAvoidingView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 16,
-    paddingBottom: 32,
-  },
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 12,
-  },
-  scrollContainer: {
-    paddingVertical: 20,
-    paddingHorizontal: 10,
-    justifyContent: "center",
-  },
-  column: {
-    flex: 1,
-    marginHorizontal: 4,
-  },
-  submitButton: {
-    paddingVertical: 8,
-  },
-  unidadesContainer: {
-    marginVertical: 12,
-    marginHorizontal: 4,
-  },
-  unidadLabel: {
-    marginBottom: 8,
-    fontWeight: "500",
-  },
-  checkboxGroup: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    flexWrap: "wrap",
-  },
-  checkboxContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginRight: 16,
-    marginVertical: 4,
-  },
-  conversionText: {
-    fontSize: 12,
-    color: "#666",
-    marginTop: 4,
-    marginLeft: 8,
-  },
-  sectionContainer: {
-    marginBottom: 15,
-    width: "100%",
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 10,
-    color: "#333",
-  },
-  errorText: {
-    color: "red",
-    fontSize: 12,
-    marginTop: 5,
-  },
-  formContainer: {
-    flex: 1,
-  },
-  selectedMeasure: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: "#333",
-    marginBottom: 8,
-  },
-});
 
 export default CrearFincaPage;

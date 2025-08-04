@@ -8,6 +8,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { useRef } from "react";
 import {
   Animated,
+  Dimensions,
   Easing,
   StyleSheet,
   TouchableWithoutFeedback,
@@ -24,13 +25,87 @@ interface Props {
 const CardFincas = ({ finca, onPress }: Props) => {
   const { colors } = useTheme();
   const scaleValue = useRef(new Animated.Value(1)).current;
-
+  const { height, width } = Dimensions.get("window");
   const handlePressIn = () => {
     Animated.spring(scaleValue, {
       toValue: 0.98,
       useNativeDriver: true,
     }).start();
   };
+
+  const styles = StyleSheet.create({
+    container: {
+      marginBottom: height * 0.02,
+      marginHorizontal: width * 0.02,
+    },
+    card: {
+      marginBottom: height * 0.015,
+      elevation: 2,
+      overflow: "hidden",
+      borderRadius: width * 0.03,
+    },
+    divider: {
+      marginVertical: height * 0.01,
+    },
+    fincaName: {
+      marginLeft: width * 0.02,
+      flex: 1,
+      fontSize: width * 0.04,
+      fontWeight: "bold",
+    },
+    infoRow: {
+      flexDirection: "row",
+      alignItems: "flex-start",
+      marginVertical: height * 0.005,
+    },
+    infoText: {
+      marginLeft: width * 0.02,
+      flex: 1,
+      fontSize: width * 0.035,
+    },
+    speciesContainer: {
+      flex: 1,
+      marginLeft: width * 0.02,
+    },
+    speciesList: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      marginTop: height * 0.005,
+    },
+    speciesItem: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginRight: width * 0.03,
+      marginBottom: height * 0.005,
+    },
+    speciesIcon: {
+      marginRight: width * 0.01,
+      fontSize: width * 0.04,
+    },
+    speciesText: {
+      fontSize: width * 0.035,
+    },
+    cardContainer: {
+      marginBottom: height * 0.015,
+      marginHorizontal: width * 0.02,
+    },
+    mapContainer: {
+      marginTop: height * 0.01,
+      height: height * 0.2,
+      borderRadius: width * 0.03,
+      overflow: "hidden",
+    },
+    map: {
+      flex: 1,
+    },
+    markerContainer: {
+      width: width * 0.08,
+      height: width * 0.08,
+      borderRadius: width * 0.04,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+  });
 
   const handlePressOut = () => {
     Animated.spring(scaleValue, {
@@ -221,77 +296,3 @@ const CardFincas = ({ finca, onPress }: Props) => {
 };
 
 export default CardFincas;
-
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: 16,
-    marginHorizontal: 5,
-  },
-  card: {
-    marginBottom: 16,
-    elevation: 2,
-    overflow: "hidden",
-  },
-  divider: {
-    marginVertical: 8,
-  },
-  fincaName: {
-    marginLeft: 8,
-    flex: 1,
-  },
-  infoRow: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    marginVertical: 4,
-  },
-  infoText: {
-    marginLeft: 8,
-    flex: 1,
-  },
-  noFincasText: {
-    fontSize: 16,
-    marginBottom: 20,
-    textAlign: "center",
-  },
-  speciesContainer: {
-    flex: 1,
-    marginLeft: 8,
-  },
-  speciesList: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    marginTop: 4,
-  },
-  speciesItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginRight: 12,
-    marginBottom: 4,
-  },
-  speciesIcon: {
-    marginRight: 4,
-  },
-  speciesText: {
-    fontSize: 14,
-  },
-  cardContainer: {
-    marginBottom: 12,
-    marginHorizontal: 8,
-  },
-  mapContainer: {
-    marginTop: 8,
-    height: 150,
-    borderRadius: 12,
-    overflow: "hidden",
-  },
-  map: {
-    flex: 1,
-  },
-  markerContainer: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});

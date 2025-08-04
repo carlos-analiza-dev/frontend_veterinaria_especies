@@ -15,6 +15,7 @@ import { useNavigation } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Dimensions,
   FlatList,
   Platform,
   RefreshControl,
@@ -25,6 +26,7 @@ import { useTheme } from "react-native-paper";
 import AnimalCard from "./components/AnimalCard";
 
 const AnimalesPageGanadero = () => {
+  const { width, height } = Dimensions.get("window");
   const navigation = useNavigation();
   const { user } = useAuthStore();
   const { colors } = useTheme();
@@ -33,6 +35,46 @@ const AnimalesPageGanadero = () => {
   const [especieId, setEspecieId] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    centered: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    scrollContainer: {
+      paddingHorizontal: width * 0.04,
+      paddingBottom: height * 0.12,
+    },
+    filterContainer: {
+      padding: width * 0.04,
+      paddingBottom: height * 0.01,
+    },
+    roleFilterContainer: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      gap: width * 0.02,
+      marginTop: height * 0.02,
+    },
+    pickerWrapper: {
+      flex: 1,
+      minHeight: height * 0.06,
+    },
+    cardContainer: {
+      marginBottom: height * 0.02,
+    },
+    fabStyle: {
+      position: "absolute",
+      right: width * 0.05,
+      bottom: height * 0.05,
+      width: width * 0.14,
+      height: width * 0.14,
+      borderRadius: width * 0.07,
+    },
+  });
 
   const handleUpdateProfileImage = async (
     imageUri: string,
@@ -210,13 +252,17 @@ const AnimalesPageGanadero = () => {
             refreshing={isRefetching}
             colors={[colorPrimary]}
             tintColor={colorPrimary}
+            progressViewOffset={height * 0.02}
           />
         }
         onEndReached={loadMore}
         onEndReachedThreshold={0.5}
         ListFooterComponent={
           isFetchingNextPage ? (
-            <ActivityIndicator size="small" style={{ marginVertical: 16 }} />
+            <ActivityIndicator
+              size="small"
+              style={{ marginVertical: height * 0.02 }}
+            />
           ) : null
         }
       />
@@ -225,45 +271,5 @@ const AnimalesPageGanadero = () => {
     </ThemedView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  centered: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  scrollContainer: {
-    padding: 16,
-    paddingBottom: 80,
-  },
-  filterContainer: {
-    padding: 16,
-  },
-
-  filterButton: {
-    width: "48%",
-    marginBottom: 8,
-  },
-  filterButtonText: {
-    fontSize: 12,
-  },
-  searchInput: {
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: "#ddd",
-  },
-
-  roleFilterContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    gap: 10,
-  },
-  pickerWrapper: {
-    flex: 1,
-  },
-});
 
 export default AnimalesPageGanadero;

@@ -24,6 +24,7 @@ import { useNavigation } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
+  Dimensions,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -61,6 +62,7 @@ const AgregarCitaServicio = ({ route }: DetailsCitaServicioProps) => {
   const [selectedAnimals, setSelectedAnimals] = useState<string[]>([]);
   const [totalApagar, setTotalApagar] = useState<number>(0);
   const [duracionTotal, setDuracionTotal] = useState<number>(0);
+  const { height, width } = Dimensions.get("window");
   const queryClient = useQueryClient();
   const navigation = useNavigation();
   const {
@@ -70,6 +72,101 @@ const AgregarCitaServicio = ({ route }: DetailsCitaServicioProps) => {
     handleSubmit,
     formState: { errors },
   } = useForm<CrearCitaInterface>();
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      paddingHorizontal: width * 0.04,
+      paddingVertical: height * 0.02,
+      backgroundColor: "#f5f5f5",
+    },
+    scrollContainer: {
+      flexGrow: 1,
+      paddingBottom: height * 0.05,
+    },
+    title: {
+      fontSize: width * 0.045,
+      marginBottom: height * 0.02,
+      fontWeight: "bold",
+      color: "#333",
+      textAlign: "center",
+    },
+    header: {
+      alignItems: "center",
+      marginBottom: height * 0.03,
+    },
+    formContainer: {
+      marginBottom: height * 0.025,
+      backgroundColor: "#fff",
+      borderRadius: width * 0.03,
+      padding: width * 0.04,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 6,
+      elevation: 3,
+    },
+    input: {
+      marginBottom: height * 0.02,
+      width: "100%",
+      backgroundColor: "#f9f9f9",
+      borderRadius: width * 0.02,
+      paddingHorizontal: width * 0.03,
+      paddingVertical: height * 0.015,
+      fontSize: width * 0.035,
+    },
+    sectionTitle: {
+      fontSize: width * 0.038,
+      fontWeight: "600",
+      marginBottom: height * 0.015,
+      color: "#555",
+      marginTop: height * 0.01,
+    },
+    warningContainer: {
+      padding: width * 0.03,
+      marginBottom: height * 0.02,
+      backgroundColor: "#FFF3E0",
+      borderRadius: width * 0.02,
+      borderLeftWidth: width * 0.01,
+      borderLeftColor: "#FFA000",
+    },
+    warningText: {
+      color: "#E65100",
+      textAlign: "center",
+      fontSize: width * 0.032,
+    },
+    buttonContainer: {
+      marginTop: height * 0.03,
+      borderRadius: width * 0.02,
+      overflow: "hidden",
+    },
+    dateInputContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginBottom: height * 0.02,
+    },
+    dateInput: {
+      flex: 1,
+    },
+    dateIcon: {
+      marginLeft: width * 0.02,
+    },
+    helpText: {
+      color: "#e63946",
+      fontSize: width * 0.03,
+      marginBottom: height * 0.015,
+      fontStyle: "italic",
+      textAlign: "center",
+    },
+    pickerContainer: {
+      marginBottom: height * 0.02,
+    },
+
+    dateTimePicker: {
+      width: "100%",
+      marginBottom: height * 0.02,
+    },
+  });
 
   const handleDateChange = (event: any, selectedDate?: Date) => {
     setShowDatePicker(Platform.OS === "ios");
@@ -470,98 +567,5 @@ const AgregarCitaServicio = ({ route }: DetailsCitaServicioProps) => {
     </KeyboardAvoidingView>
   );
 };
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: "#f5f5f5",
-  },
-  scrollContainer: {
-    flexGrow: 1,
-    paddingBottom: 30,
-  },
-  title: {
-    fontSize: 18,
-    marginBottom: 16,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  header: {
-    alignItems: "center",
-    marginBottom: 24,
-  },
-  formContainer: {
-    marginBottom: 20,
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 3,
-  },
-  input: {
-    marginBottom: 16,
-    width: "100%",
-    backgroundColor: "#f9f9f9",
-    borderRadius: 8,
-    paddingHorizontal: 12,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 12,
-    color: "#555",
-    marginTop: 8,
-  },
-  warningContainer: {
-    padding: 12,
-    marginBottom: 16,
-    backgroundColor: "#FFF3E0",
-    borderRadius: 8,
-    borderLeftWidth: 4,
-    borderLeftColor: "#FFA000",
-  },
-  warningText: {
-    color: "#E65100",
-    textAlign: "center",
-    fontSize: 14,
-  },
-  buttonContainer: {
-    marginTop: 20,
-    borderRadius: 8,
-    overflow: "hidden",
-  },
-  dateInputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  dateInput: {
-    flex: 1,
-  },
-  dateIcon: {
-    marginLeft: 10,
-  },
-  confirmationContainer: {
-    padding: 12,
-    marginBottom: 16,
-    backgroundColor: "#E8F5E9",
-    borderRadius: 8,
-    borderLeftWidth: 4,
-    borderLeftColor: "#4CAF50",
-  },
-  confirmationText: {
-    color: "#2E7D32",
-    textAlign: "center",
-    fontSize: 14,
-  },
-  helpText: {
-    color: "#e63946",
-    fontSize: 12,
-    marginBottom: 10,
-    fontStyle: "italic",
-  },
-});
+
 export default AgregarCitaServicio;

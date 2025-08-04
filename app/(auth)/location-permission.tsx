@@ -2,16 +2,26 @@ import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import * as Location from "expo-location";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
-import { Alert, Linking, StyleSheet, View } from "react-native";
+import {
+  Alert,
+  Linking,
+  StyleSheet,
+  useWindowDimensions,
+  View,
+} from "react-native";
 import { Button, Card, Icon, Text, useTheme } from "react-native-paper";
 
 export default function LocationPermissionScreen() {
   const theme = useTheme();
+  const { width, height } = useWindowDimensions();
   const colorPrimary = useThemeColor({}, "primary");
   const [status, setStatus] = useState<Location.PermissionStatus>(
     Location.PermissionStatus.UNDETERMINED
   );
   const [isLoading, setIsLoading] = useState(false);
+
+  const isSmallDevice = width < 375;
+  const isMediumDevice = width >= 375 && width < 414;
 
   useEffect(() => {
     checkPermission();
@@ -50,19 +60,54 @@ export default function LocationPermissionScreen() {
 
   return (
     <View
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      style={[
+        styles.container,
+        {
+          backgroundColor: theme.colors.background,
+          padding: isSmallDevice ? 16 : 20,
+        },
+      ]}
     >
-      <Card style={styles.card}>
+      <Card
+        style={[
+          styles.card,
+          {
+            width: isSmallDevice
+              ? width * 0.9
+              : isMediumDevice
+              ? width * 0.85
+              : Math.min(width * 0.8, 500),
+            paddingVertical: isSmallDevice ? 16 : 24,
+          },
+        ]}
+      >
         <Card.Content style={styles.content}>
           <View style={styles.iconContainer}>
-            <Icon source="map-marker-radius" size={60} color={colorPrimary} />
+            <Icon
+              source="map-marker-radius"
+              size={isSmallDevice ? 50 : 60}
+              color={colorPrimary}
+            />
           </View>
 
-          <Text variant="headlineMedium" style={styles.title}>
+          <Text
+            variant={isSmallDevice ? "headlineSmall" : "headlineMedium"}
+            style={styles.title}
+          >
             Ubicación Requerida
           </Text>
 
-          <Text variant="bodyMedium" style={styles.description}>
+          <Text
+            variant="bodyMedium"
+            style={[
+              styles.description,
+              {
+                marginBottom: isSmallDevice ? 24 : 32,
+                fontSize: isSmallDevice ? 14 : 16,
+                lineHeight: isSmallDevice ? 20 : 22,
+              },
+            ]}
+          >
             Para encontrar fincas cercanas y agendar citas, necesitamos acceso a
             tu ubicación.
           </Text>
@@ -73,7 +118,10 @@ export default function LocationPermissionScreen() {
             loading={isLoading}
             disabled={isLoading}
             style={styles.button}
-            labelStyle={styles.buttonLabel}
+            labelStyle={[
+              styles.buttonLabel,
+              { fontSize: isSmallDevice ? 14 : 16 },
+            ]}
             icon="map-marker-check"
             buttonColor={colorPrimary}
           >
@@ -81,7 +129,15 @@ export default function LocationPermissionScreen() {
           </Button>
 
           {status === "denied" && (
-            <Text style={[styles.warningText, { color: theme.colors.error }]}>
+            <Text
+              style={[
+                styles.warningText,
+                {
+                  color: theme.colors.error,
+                  fontSize: isSmallDevice ? 12 : 14,
+                },
+              ]}
+            >
               Permiso denegado. Por favor, actívalo manualmente en
               Configuración.
             </Text>
@@ -96,18 +152,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    padding: 20,
+    alignItems: "center",
   },
   card: {
     borderRadius: 16,
-    paddingVertical: 24,
+    alignSelf: "center",
   },
   content: {
     alignItems: "center",
     paddingHorizontal: 16,
-  },
-  icon: {
-    marginBottom: 24,
   },
   title: {
     marginBottom: 12,
@@ -115,9 +168,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   description: {
-    marginBottom: 32,
     textAlign: "center",
-    lineHeight: 22,
     opacity: 0.8,
   },
   button: {
@@ -127,12 +178,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   buttonLabel: {
-    fontSize: 16,
+    fontWeight: "500",
   },
   warningText: {
     marginTop: 8,
     textAlign: "center",
-    fontSize: 14,
   },
   iconContainer: {
     marginBottom: 24,

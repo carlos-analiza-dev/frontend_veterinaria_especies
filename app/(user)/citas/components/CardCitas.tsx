@@ -2,7 +2,14 @@ import { Cita } from "@/core/citas/interfaces/response-citas-user.interface";
 import { useAuthStore } from "@/presentation/auth/store/useAuthStore";
 import { MaterialIcons } from "@expo/vector-icons";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Dimensions,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+const { height, width } = Dimensions.get("window");
 
 interface Props {
   item: Cita;
@@ -124,10 +131,8 @@ const CardCitas = ({ item, onPress }: Props) => {
 const styles = StyleSheet.create({
   card: {
     backgroundColor: "#FFF",
-    borderRadius: 12,
-    padding: 16,
-    marginVertical: 8,
-    marginHorizontal: 16,
+    borderRadius: width * 0.03,
+    padding: width * 0.04,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -138,7 +143,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 12,
+    marginBottom: height * 0.015,
   },
   serviceContainer: {
     flexDirection: "row",
@@ -146,68 +151,67 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   serviceName: {
-    fontSize: 18,
     fontWeight: "bold",
     color: "#333",
-    marginLeft: 8,
+    marginLeft: width * 0.02,
   },
   statusBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-    marginLeft: 8,
+    paddingHorizontal: width * 0.025,
+    paddingVertical: height * 0.005,
+    borderRadius: width * 0.03,
+    marginLeft: width * 0.02,
   },
   statusText: {
-    fontSize: 12,
+    fontSize: width * 0.03,
     fontWeight: "bold",
     color: "#FFF",
   },
   dateTimeContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 12,
+    marginBottom: height * 0.015,
     backgroundColor: "#F5F5F5",
-    padding: 10,
-    borderRadius: 8,
+    padding: width * 0.03,
+    borderRadius: width * 0.02,
   },
   dateTimeItem: {
     flexDirection: "row",
     alignItems: "center",
   },
   dateTimeText: {
-    marginLeft: 8,
-    fontSize: 14,
+    marginLeft: width * 0.02,
+    fontSize: width * 0.035,
     color: "#555",
   },
   infoSection: {
-    marginBottom: 12,
+    marginBottom: height * 0.015,
   },
   infoRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 8,
+    marginBottom: height * 0.01,
   },
   infoText: {
-    marginLeft: 8,
-    fontSize: 14,
+    marginLeft: width * 0.02,
+    fontSize: width * 0.035,
     color: "#555",
     flex: 1,
   },
   animalsSection: {
-    marginBottom: 12,
+    marginBottom: height * 0.015,
   },
   sectionTitle: {
-    fontSize: 14,
+    fontSize: width * 0.035,
     fontWeight: "600",
     color: "#333",
-    marginBottom: 6,
+    marginBottom: height * 0.008,
   },
   animalItem: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 6,
-    paddingVertical: 4,
+    marginBottom: height * 0.008,
+    paddingVertical: height * 0.005,
   },
   animalInfo: {
     flexDirection: "row",
@@ -215,24 +219,24 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   animalText: {
-    marginLeft: 8,
-    fontSize: 14,
+    marginLeft: width * 0.02,
+    fontSize: width * 0.035,
     color: "#555",
   },
   animalRaces: {
-    fontSize: 13,
+    fontSize: width * 0.032,
     color: "#777",
     fontStyle: "italic",
   },
   footer: {
-    marginTop: 8,
+    marginTop: height * 0.01,
     borderTopWidth: 1,
     borderTopColor: "#EEE",
-    paddingTop: 8,
+    paddingTop: height * 0.01,
     alignItems: "flex-end",
   },
   priceText: {
-    fontSize: 16,
+    fontSize: width * 0.04,
     fontWeight: "bold",
     color: "#2E7D32",
   },

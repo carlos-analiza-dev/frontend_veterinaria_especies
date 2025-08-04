@@ -9,6 +9,7 @@ import { useNavigation } from "expo-router";
 import { useCallback } from "react";
 import {
   ActivityIndicator,
+  Dimensions,
   FlatList,
   RefreshControl,
   StyleSheet,
@@ -23,10 +24,52 @@ const HomeUser = () => {
   const colorPrimary = useThemeColor({}, "primary");
   const textColor = useThemeColor({}, "text");
   const emptyTextColor = useThemeColor({}, "icon");
+  const { width, height } = Dimensions.get("window");
   const userId = user?.id || "";
   const limit = 10;
 
-  const styles = createStyles(textColor, emptyTextColor);
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      paddingHorizontal: width * 0.04,
+      paddingTop: height * 0.02,
+    },
+    title: {
+      fontSize: width * 0.06,
+      fontWeight: "bold",
+      marginVertical: height * 0.02,
+      textAlign: "center",
+      color: textColor,
+    },
+    loadingContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    listContent: {
+      paddingBottom: height * 0.1,
+    },
+    emptyContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      padding: width * 0.05,
+    },
+    emptyText: {
+      fontSize: width * 0.04,
+      color: emptyTextColor,
+      textAlign: "center",
+    },
+    footerLoader: {
+      marginVertical: height * 0.03,
+    },
+    fabStyle: {
+      position: "absolute",
+      margin: width * 0.05,
+      right: width * 0.02,
+      bottom: height * 0.03,
+    },
+  });
 
   const {
     data: citas,
@@ -50,9 +93,7 @@ const HomeUser = () => {
 
   if (isLoading) {
     return (
-      <ThemedView
-        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-      >
+      <ThemedView style={styles.loadingContainer}>
         <ActivityIndicator size="large" />
       </ThemedView>
     );
@@ -62,11 +103,15 @@ const HomeUser = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Historial de Citas </Text>
+      <Text style={styles.title}>Historial de Citas</Text>
 
       <FlatList
         data={allCitas}
-        renderItem={({ item }) => <CardCitas item={item} onPress={() => {}} />}
+        renderItem={({ item }) => (
+          <View style={{ marginBottom: height * 0.015 }}>
+            <CardCitas item={item} onPress={() => {}} />
+          </View>
+        )}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
         refreshControl={
@@ -74,6 +119,7 @@ const HomeUser = () => {
             refreshing={isRefetching}
             onRefresh={onRefresh}
             colors={[colorPrimary]}
+            progressViewOffset={height * 0.02}
           />
         }
         onEndReached={loadMore}
@@ -89,54 +135,23 @@ const HomeUser = () => {
         }
         ListEmptyComponent={
           !isLoading ? (
-            <MessageError
-              titulo="No se encontraron citas"
-              descripcion="No se encontraron citas para este modulo en este momento."
-            />
+            <View style={styles.emptyContainer}>
+              <MessageError
+                titulo="No se encontraron citas"
+                descripcion="No se encontraron citas para este módulo en este momento."
+              />
+            </View>
           ) : null
         }
       />
+
       <FAB
         iconName="add-outline"
         onPress={() => navigation.navigate("CrearCita")}
+        style={styles.fabStyle}
       />
     </View>
   );
 };
-const createStyles = (textColor: string, emptyTextColor: string) =>
-  StyleSheet.create({
-    container: {
-      flex: 1,
-      padding: 10,
-    },
-    title: {
-      fontSize: 22,
-      fontWeight: "bold",
-      marginVertical: 15,
-      textAlign: "center",
-      color: textColor,
-    },
-    loadingContainer: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-    },
-    listContent: {
-      paddingBottom: 20,
-    },
-    emptyContainer: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-      padding: 20,
-    },
-    emptyText: {
-      fontSize: 16,
-      color: emptyTextColor,
-    },
-    footerLoader: {
-      marginVertical: 20,
-    },
-  });
 
 export default HomeUser;

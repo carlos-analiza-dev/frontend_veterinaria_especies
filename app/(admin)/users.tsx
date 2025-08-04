@@ -14,10 +14,12 @@ import {
   RefreshControl,
   StyleSheet,
   Text,
+  useWindowDimensions,
   View,
 } from "react-native";
 
 const UsersScreenAdmin = () => {
+  const { width } = useWindowDimensions();
   const limit = 10;
   const colorPrimary = useThemeColor({}, "primary");
   const textColor = useThemeColor({}, "text");
@@ -27,7 +29,15 @@ const UsersScreenAdmin = () => {
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const navigation = useNavigation();
 
-  const styles = createStyles(textColor, emptyTextColor);
+  const isSmallDevice = width < 375;
+  const isMediumDevice = width >= 375 && width < 414;
+
+  const styles = createStyles(
+    textColor,
+    emptyTextColor,
+    isSmallDevice,
+    isMediumDevice
+  );
 
   const {
     data,
@@ -148,6 +158,7 @@ const UsersScreenAdmin = () => {
       <FAB
         iconName="add-outline"
         onPress={() => navigation.navigate("CrearUsuario")}
+        style={styles.fab}
       />
     </View>
   );
@@ -155,18 +166,19 @@ const UsersScreenAdmin = () => {
 
 const createStyles = (
   textColor: string,
-
-  emptyTextColor: string
+  emptyTextColor: string,
+  isSmallDevice: boolean,
+  isMediumDevice: boolean
 ) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      padding: 10,
+      padding: isSmallDevice ? 8 : isMediumDevice ? 12 : 16,
     },
     title: {
-      fontSize: 22,
+      fontSize: isSmallDevice ? 20 : 22,
       fontWeight: "bold",
-      marginVertical: 15,
+      marginVertical: isSmallDevice ? 10 : 15,
       textAlign: "center",
       color: textColor,
     },
@@ -176,7 +188,7 @@ const createStyles = (
       alignItems: "center",
     },
     listContent: {
-      paddingBottom: 20,
+      paddingBottom: isSmallDevice ? 60 : 80,
     },
     emptyContainer: {
       flex: 1,
@@ -192,23 +204,23 @@ const createStyles = (
       marginVertical: 20,
     },
     filterContainer: {
-      marginBottom: 15,
-    },
-    searchInput: {
-      marginBottom: 10,
-      borderWidth: 1,
-      borderColor: "#ddd",
+      marginBottom: isSmallDevice ? 10 : 15,
     },
     roleFilterContainer: {
       flexDirection: "row",
       flexWrap: "wrap",
-      gap: 6,
-      marginBottom: 10,
+      gap: isSmallDevice ? 4 : 6,
+      marginBottom: isSmallDevice ? 8 : 10,
     },
-
     filterButton: {
-      width: "32%",
-      marginBottom: 10,
+      width: isSmallDevice ? "48%" : isMediumDevice ? "31%" : "32%",
+      marginBottom: isSmallDevice ? 8 : 10,
+    },
+    fab: {
+      position: "absolute",
+      margin: isSmallDevice ? 16 : 24,
+      right: 0,
+      bottom: 0,
     },
   });
 

@@ -8,6 +8,7 @@ import { useState } from "react";
 import {
   ImageBackground,
   KeyboardAvoidingView,
+  Platform,
   ScrollView,
   StyleSheet,
   useWindowDimensions,
@@ -17,7 +18,7 @@ import Toast from "react-native-toast-message";
 
 const LoginScreen = () => {
   const { login, logout } = useAuthStore();
-  const { height } = useWindowDimensions();
+  const { height, width } = useWindowDimensions();
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -81,6 +82,8 @@ const LoginScreen = () => {
     });
   };
 
+  const isSmallDevice = width < 375;
+
   return (
     <ImageBackground
       source={require("@/images/Ganaderia.png")}
@@ -89,26 +92,50 @@ const LoginScreen = () => {
     >
       <View style={styles.overlay} />
 
-      <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 40 : 0}
+      >
         <ScrollView
-          contentContainerStyle={styles.scrollContainer}
+          contentContainerStyle={[
+            styles.scrollContainer,
+            { paddingBottom: isSmallDevice ? 20 : 40 },
+          ]}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={{ marginTop: height * 0.25, flex: 1 }}>
-            <View style={styles.formContainer}>
+          <View
+            style={[
+              styles.contentContainer,
+              {
+                marginTop: height * (isSmallDevice ? 0.15 : 0.25),
+                minHeight: height * 0.6,
+              },
+            ]}
+          >
+            <View
+              style={[
+                styles.formContainer,
+                {
+                  padding: isSmallDevice ? 15 : 20,
+                  width: isSmallDevice
+                    ? width * 0.9
+                    : Math.min(width * 0.85, 400),
+                },
+              ]}
+            >
               <ThemedText
-                style={{
-                  fontSize: 22,
-                  fontFamily: "KanitBold",
-                  fontWeight: "bold",
-                  textAlign: "center",
-                  marginBottom: 5,
-                }}
+                style={[styles.title, { fontSize: isSmallDevice ? 20 : 22 }]}
                 type="title"
               >
                 Ingresar
               </ThemedText>
-              <ThemedText style={{ textAlign: "center", marginBottom: 20 }}>
+              <ThemedText
+                style={[
+                  styles.subtitle,
+                  { marginBottom: isSmallDevice ? 15 : 20 },
+                ]}
+              >
                 Por favor, ingrese para continuar
               </ThemedText>
 
@@ -143,18 +170,25 @@ const LoginScreen = () => {
                 variant="primary"
                 icon="log-in-outline"
                 loading={isPosting}
-                style={styles.loginButton}
+                style={{
+                  ...styles.loginButton,
+                  marginTop: isSmallDevice ? 10 : 15,
+                }}
               />
 
               <View style={styles.linksContainer}>
                 <View style={styles.linkRow}>
-                  <ThemedText>¿No tienes cuenta?</ThemedText>
+                  <ThemedText style={styles.linkText}>
+                    ¿No tienes cuenta?
+                  </ThemedText>
                   <ThemedLink href="/(auth)/register" style={styles.link}>
                     Crear Cuenta
                   </ThemedLink>
                 </View>
                 <View style={styles.linkRow}>
-                  <ThemedText>¿Olvidaste tu contraseña?</ThemedText>
+                  <ThemedText style={styles.linkText}>
+                    ¿Olvidaste tu contraseña?
+                  </ThemedText>
                   <ThemedLink
                     href="/(auth)/change-password"
                     style={styles.link}
@@ -183,33 +217,57 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
-    paddingHorizontal: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 10,
+  },
+  contentContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
   },
   formContainer: {
     backgroundColor: "rgba(255, 255, 255, 0.9)",
     borderRadius: 10,
-    padding: 20,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
     marginBottom: 20,
+    alignSelf: "center",
+  },
+  title: {
+    fontFamily: "KanitBold",
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 5,
+  },
+  subtitle: {
+    textAlign: "center",
   },
   inputsContainer: {
     marginBottom: 15,
+    width: "100%",
   },
   loginButton: {
-    marginTop: 15,
+    width: "100%",
+    minHeight: 48,
   },
   linksContainer: {
-    marginTop: 20,
+    marginTop: 15,
+    width: "100%",
   },
   linkRow: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 8,
+    flexWrap: "wrap",
+  },
+  linkText: {
+    textAlign: "center",
   },
   link: {
     marginLeft: 5,

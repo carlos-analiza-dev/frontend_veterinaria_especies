@@ -7,10 +7,11 @@ import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import ThemedTextInput from "@/presentation/theme/components/ThemedTextInput";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import { RouteProp } from "@react-navigation/native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   ActivityIndicator,
+  Dimensions,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -51,10 +52,102 @@ const FincaDetailsPage = ({ route }: DetailsFincaProps) => {
   const [explotacionSeleccionada, setExplotacionSeleccionada] = useState<
     string[]
   >([]);
-
+  const { height, width } = Dimensions.get("window");
   const { handleSubmit, watch, setValue, reset } = useForm<CrearFinca>();
 
-  React.useEffect(() => {
+  const styles = StyleSheet.create({
+    container: {
+      padding: width * 0.04,
+      paddingBottom: height * 0.05,
+    },
+    row: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginBottom: height * 0.015,
+    },
+    scrollContainer: {
+      paddingVertical: height * 0.02,
+      paddingHorizontal: width * 0.03,
+      justifyContent: "center",
+      minHeight: height * 0.8,
+    },
+    column: {
+      flex: 1,
+      marginHorizontal: width * 0.01,
+    },
+    submitButton: {
+      paddingVertical: height * 0.015,
+    },
+    unidadesContainer: {
+      marginVertical: height * 0.02,
+      marginHorizontal: width * 0.01,
+    },
+    unidadLabel: {
+      marginBottom: height * 0.01,
+      fontWeight: "500",
+      fontSize: width * 0.04,
+    },
+    checkboxGroup: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      flexWrap: "wrap",
+    },
+    checkboxContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginRight: width * 0.04,
+      marginVertical: height * 0.005,
+      width: width * 0.45,
+    },
+    conversionText: {
+      fontSize: width * 0.03,
+      color: "#666",
+      marginTop: height * 0.005,
+      marginLeft: width * 0.02,
+    },
+    sectionContainer: {
+      marginBottom: height * 0.02,
+      width: "100%",
+    },
+    sectionTitle: {
+      fontSize: width * 0.045,
+      fontWeight: "bold",
+      marginBottom: height * 0.015,
+      color: "#333",
+    },
+    errorText: {
+      color: "red",
+      fontSize: width * 0.035,
+      marginTop: height * 0.01,
+    },
+    formContainer: {
+      flex: 1,
+    },
+    selectedMeasure: {
+      fontSize: width * 0.038,
+      fontWeight: "bold",
+      color: "#333",
+      marginBottom: height * 0.01,
+    },
+    input: {
+      marginBottom: height * 0.015,
+      fontSize: width * 0.04,
+    },
+    pickerContainer: {
+      marginBottom: height * 0.015,
+    },
+    mapButton: {
+      height: height * 0.06,
+    },
+    buttonGroup: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginTop: 20,
+      marginBottom: 20,
+    },
+  });
+
+  useEffect(() => {
     if (finca?.data && !isEditing) {
       const fincaData = finca.data;
       const unidadesValidas: UnidadMedida[] = [
@@ -369,102 +462,5 @@ const FincaDetailsPage = ({ route }: DetailsFincaProps) => {
     </KeyboardAvoidingView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  scrollContainer: {
-    padding: 16,
-  },
-  readOnlyContainer: {
-    flex: 1,
-  },
-  formContainer: {
-    flex: 1,
-  },
-  section: {
-    marginBottom: 16,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 4,
-  },
-  value: {
-    fontSize: 16,
-    marginBottom: 12,
-  },
-  editButton: {
-    marginTop: 20,
-    paddingVertical: 10,
-  },
-  buttonGroup: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 20,
-    marginBottom: 20,
-  },
-  cancelButton: {
-    flex: 1,
-    marginRight: 8,
-    backgroundColor: "#f44336",
-  },
-  submitButton: {
-    flex: 1,
-    marginLeft: 8,
-  },
-  unidadesContainer: {
-    marginVertical: 12,
-  },
-  unidadLabel: {
-    marginBottom: 8,
-    fontWeight: "500",
-  },
-  checkboxGroup: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-  },
-  checkboxContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginRight: 16,
-    marginVertical: 4,
-  },
-  sectionContainer: {
-    marginBottom: 15,
-    width: "100%",
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 10,
-    color: "#333",
-  },
-  errorText: {
-    color: "red",
-    fontSize: 12,
-    marginTop: 5,
-  },
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 12,
-  },
-  column: {
-    flex: 1,
-    marginHorizontal: 4,
-  },
-  conversionText: {
-    fontSize: 12,
-    color: "#666",
-    marginTop: 4,
-    marginLeft: 8,
-    fontStyle: "italic",
-  },
-});
 
 export default FincaDetailsPage;

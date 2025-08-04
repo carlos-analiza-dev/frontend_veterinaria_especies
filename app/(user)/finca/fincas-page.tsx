@@ -4,9 +4,11 @@ import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Dimensions,
   RefreshControl,
   ScrollView,
   StyleSheet,
+  View,
 } from "react-native";
 import { useTheme } from "react-native-paper";
 
@@ -25,6 +27,33 @@ const FincasPageGanaderos = () => {
   const navigation = useNavigation();
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const { height, width } = Dimensions.get("window");
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      padding: width * 0.03,
+    },
+    scrollContainer: {
+      padding: width * 0.04,
+      paddingBottom: height * 0.15,
+    },
+    title: {
+      fontSize: width * 0.05,
+      fontWeight: "bold",
+      marginBottom: height * 0.01,
+      marginTop: height * 0.02,
+    },
+    searchContainer: {
+      padding: width * 0.04,
+      paddingBottom: height * 0.01,
+    },
+    cardMargin: {
+      marginBottom: height * 0.02,
+    },
+  });
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -84,6 +113,7 @@ const FincasPageGanaderos = () => {
           searchTerm={searchTerm}
         />
       </ThemedView>
+
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         refreshControl={
@@ -92,19 +122,21 @@ const FincasPageGanaderos = () => {
             onRefresh={onRefresh}
             colors={[colorPrimary]}
             tintColor={colorPrimary}
+            progressViewOffset={height * 0.02}
           />
         }
       >
         <ThemedText style={styles.title}>Mis Fincas</ThemedText>
 
         {fincas.data.fincas.map((finca) => (
-          <CardFincas
-            key={finca.id}
-            finca={finca}
-            onPress={() =>
-              navigation.navigate("FincaDetailsPage", { fincaId: finca.id })
-            }
-          />
+          <View key={finca.id} style={styles.cardMargin}>
+            <CardFincas
+              finca={finca}
+              onPress={() =>
+                navigation.navigate("FincaDetailsPage", { fincaId: finca.id })
+              }
+            />
+          </View>
         ))}
       </ScrollView>
 
@@ -115,29 +147,5 @@ const FincasPageGanaderos = () => {
     </ThemedView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 10,
-  },
-  scrollContainer: {
-    padding: 16,
-    paddingBottom: 80,
-  },
-  title: {
-    marginBottom: 4,
-    fontWeight: "bold",
-  },
-  subtitle: {
-    marginBottom: 16,
-    color: "#666",
-  },
-  searchContainer: {
-    padding: 16,
-  },
-});
 
 export default FincasPageGanaderos;

@@ -9,6 +9,7 @@ import React, { useState } from "react";
 import {
   ImageBackground,
   KeyboardAvoidingView,
+  Platform,
   ScrollView,
   StyleSheet,
   useWindowDimensions,
@@ -23,7 +24,10 @@ interface ChangePasswordData {
 }
 
 const ChangePasswordPage = () => {
-  const { height } = useWindowDimensions();
+  const { height, width } = useWindowDimensions();
+
+  const isSmallDevice = width < 375;
+  const isMediumDevice = width >= 375 && width < 414;
 
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswor2, setShowPasswor2] = useState(false);
@@ -123,24 +127,48 @@ const ChangePasswordPage = () => {
     >
       <View style={styles.overlay} />
 
-      <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+        keyboardVerticalOffset={
+          Platform.OS === "ios" ? (isSmallDevice ? 20 : 40) : 0
+        }
+      >
         <ScrollView
-          contentContainerStyle={styles.scrollContainer}
+          contentContainerStyle={[
+            styles.scrollContainer,
+            {
+              paddingHorizontal: isSmallDevice ? 15 : isMediumDevice ? 30 : 40,
+              paddingBottom: isSmallDevice ? 20 : 40,
+            },
+          ]}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={[styles.formContainer, { marginTop: height * 0.2 }]}>
+          <View
+            style={[
+              styles.formContainer,
+              {
+                marginTop: isSmallDevice ? height * 0.1 : height * 0.2,
+                padding: isSmallDevice ? 15 : 20,
+                width: isSmallDevice
+                  ? width * 0.9
+                  : isMediumDevice
+                  ? width * 0.85
+                  : Math.min(width * 0.8, 500),
+              },
+            ]}
+          >
             <ThemedText
-              style={{
-                fontSize: 22,
-                fontFamily: "KanitBold",
-                fontWeight: "bold",
-                textAlign: "center",
-                marginBottom: 5,
-              }}
+              style={[styles.title, { fontSize: isSmallDevice ? 20 : 22 }]}
             >
               Restablecer Contraseña
             </ThemedText>
-            <ThemedText style={{ textAlign: "center", marginBottom: 20 }}>
+            <ThemedText
+              style={[
+                styles.subtitle,
+                { marginBottom: isSmallDevice ? 15 : 20 },
+              ]}
+            >
               Por favor, ingresa tus datos correctamente
             </ThemedText>
 
@@ -188,18 +216,25 @@ const ChangePasswordPage = () => {
               variant="primary"
               icon="reload-outline"
               loading={changePasswordMutation.isPending}
-              style={styles.loginButton}
+              style={{
+                ...styles.loginButton,
+                marginTop: isSmallDevice ? 10 : 15,
+              }}
             />
 
             <View style={styles.linksContainer}>
               <View style={styles.linkRow}>
-                <ThemedText>¿No tienes cuenta?</ThemedText>
+                <ThemedText style={styles.linkText}>
+                  ¿No tienes cuenta?
+                </ThemedText>
                 <ThemedLink href="/(auth)/register" style={styles.link}>
                   Crear Cuenta
                 </ThemedLink>
               </View>
               <View style={styles.linkRow}>
-                <ThemedText>¿Ya tienes una cuenta?</ThemedText>
+                <ThemedText style={styles.linkText}>
+                  ¿Ya tienes una cuenta?
+                </ThemedText>
                 <ThemedLink href="/(auth)/login" style={styles.link}>
                   Inicia Sesión
                 </ThemedLink>
@@ -224,36 +259,52 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
-    paddingHorizontal: 40,
+    justifyContent: "center",
+    alignItems: "center",
   },
   formContainer: {
     backgroundColor: "rgba(255, 255, 255, 0.9)",
     borderRadius: 10,
-    padding: 20,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
     marginBottom: 20,
+    alignSelf: "center",
   },
   inputsContainer: {
     marginBottom: 15,
+    width: "100%",
   },
   loginButton: {
-    marginTop: 15,
+    width: "100%",
   },
   linksContainer: {
-    marginTop: 20,
+    marginTop: 15,
+    width: "100%",
   },
   linkRow: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 8,
+    flexWrap: "wrap",
+  },
+  linkText: {
+    textAlign: "center",
   },
   link: {
     marginLeft: 5,
+  },
+  title: {
+    fontFamily: "KanitBold",
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 5,
+  },
+  subtitle: {
+    textAlign: "center",
   },
 });
 

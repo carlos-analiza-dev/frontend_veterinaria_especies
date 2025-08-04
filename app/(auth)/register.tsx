@@ -27,10 +27,13 @@ import {
 import Toast from "react-native-toast-message";
 
 const RegisterScreen = () => {
-  const { height } = useWindowDimensions();
+  const { height, width } = useWindowDimensions();
   const [codigoPais, setCodigoPais] = useState("");
   const [prefijoNumber, setPrefijoNumber] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
+  const isSmallDevice = width < 375;
+  const isMediumDevice = width >= 375 && width < 414;
 
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
@@ -58,6 +61,7 @@ const RegisterScreen = () => {
       example: "Ejemplo: AB123456",
     },
   };
+
   const {
     control,
     handleSubmit,
@@ -84,7 +88,6 @@ const RegisterScreen = () => {
   const departamentoId = watch("departamento");
 
   const { data } = useGetPaisesActivos();
-
   const { data: pais } = usePaisesById(paisId);
 
   useEffect(() => {
@@ -96,7 +99,6 @@ const RegisterScreen = () => {
   }, [pais, trigger]);
 
   const { data: departamentos } = useGetDeptosActivesByPais(paisId);
-
   const { data: municipios } = useGetMunicipiosActivosByDepto(departamentoId);
 
   const countryItems =
@@ -212,16 +214,46 @@ const RegisterScreen = () => {
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
+        keyboardVerticalOffset={
+          Platform.OS === "ios" ? (isSmallDevice ? 20 : 40) : 0
+        }
       >
         <ScrollView
-          contentContainerStyle={styles.scrollContainer}
+          contentContainerStyle={[
+            styles.scrollContainer,
+            {
+              paddingHorizontal: isSmallDevice ? 15 : 20,
+              paddingBottom: isSmallDevice ? 10 : 20,
+            },
+          ]}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={[styles.formContainer, { marginTop: height * 0.1 }]}>
-            <ThemedText type="title" style={styles.title}>
+          <View
+            style={[
+              styles.formContainer,
+              {
+                marginTop: isSmallDevice ? height * 0.05 : height * 0.1,
+                padding: isSmallDevice ? 15 : 20,
+                width: isSmallDevice
+                  ? width * 0.9
+                  : isMediumDevice
+                  ? width * 0.85
+                  : Math.min(width * 0.8, 500),
+              },
+            ]}
+          >
+            <ThemedText
+              type="title"
+              style={[styles.title, { fontSize: isSmallDevice ? 20 : 22 }]}
+            >
               Regístrate
             </ThemedText>
-            <ThemedText style={{ textAlign: "center", marginBottom: 20 }}>
+            <ThemedText
+              style={[
+                styles.subtitle,
+                { marginBottom: isSmallDevice ? 15 : 20 },
+              ]}
+            >
               Completa tus datos para crear una cuenta
             </ThemedText>
 
@@ -305,7 +337,6 @@ const RegisterScreen = () => {
                     if (codigoPais) {
                       return validateIdentification(value, codigoPais);
                     }
-
                     return true;
                   },
                 }}
@@ -351,7 +382,6 @@ const RegisterScreen = () => {
                         default:
                           formattedText = text;
                       }
-
                       onChange(formattedText);
                     }}
                     error={error?.message}
@@ -400,7 +430,6 @@ const RegisterScreen = () => {
                     value={value}
                     onChangeText={(text) => {
                       const cleanedText = text.replace(/[^\d]/g, "");
-
                       let formattedText = cleanedText;
                       if (cleanedText.length > 4) {
                         formattedText = `${cleanedText.slice(
@@ -408,9 +437,7 @@ const RegisterScreen = () => {
                           4
                         )}-${cleanedText.slice(4, 8)}`;
                       }
-
                       formattedText = formattedText.substring(0, 9);
-
                       onChange(formattedText);
                     }}
                     error={error?.message}
@@ -426,18 +453,25 @@ const RegisterScreen = () => {
               variant="primary"
               icon="person-add-outline"
               loading={mutation.isPending}
-              style={styles.loginButton}
+              style={{
+                ...styles.loginButton,
+                marginTop: isSmallDevice ? 10 : 15,
+              }}
             />
 
             <View style={styles.linksContainer}>
               <View style={styles.linkRow}>
-                <ThemedText>¿Ya tienes cuenta?</ThemedText>
+                <ThemedText style={styles.linkText}>
+                  ¿Ya tienes cuenta?
+                </ThemedText>
                 <ThemedLink href="/(auth)/login" style={styles.link}>
                   Iniciar sesión
                 </ThemedLink>
               </View>
               <View style={styles.linkRow}>
-                <ThemedText>¿Olvidaste tu contraseña?</ThemedText>
+                <ThemedText style={styles.linkText}>
+                  ¿Olvidaste tu contraseña?
+                </ThemedText>
                 <ThemedLink href="/(auth)/change-password" style={styles.link}>
                   Cambiar
                 </ThemedLink>
@@ -462,43 +496,52 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
-    paddingHorizontal: 20,
+    justifyContent: "center",
+    alignItems: "center",
   },
   formContainer: {
     backgroundColor: "rgba(255, 255, 255, 0.9)",
     borderRadius: 10,
-    padding: 20,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
     marginBottom: 20,
+    alignSelf: "center",
   },
   inputsContainer: {
     marginBottom: 15,
+    width: "100%",
   },
   loginButton: {
-    marginTop: 15,
+    width: "100%",
   },
   linksContainer: {
-    marginTop: 20,
+    marginTop: 15,
+    width: "100%",
   },
   linkRow: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 8,
+    flexWrap: "wrap",
+  },
+  linkText: {
+    textAlign: "center",
   },
   link: {
     marginLeft: 5,
   },
   title: {
-    fontSize: 22,
     fontFamily: "KanitBold",
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: 5,
+  },
+  subtitle: {
+    textAlign: "center",
   },
 });
 

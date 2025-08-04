@@ -7,6 +7,7 @@ import { useNavigation } from "expo-router";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
+  Dimensions,
   FlatList,
   RefreshControl,
   StyleSheet,
@@ -116,52 +117,63 @@ const ServicesUser = () => {
   );
 };
 
+const windowWidth = Dimensions.get("window").width;
+const windowHeight = Dimensions.get("window").height;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: "100%",
   },
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    width: "100%",
   },
   errorContainer: {
     flex: 1,
     justifyContent: "center",
-    padding: 20,
+    padding: windowWidth * 0.05,
+    width: "100%",
   },
   emptyContainer: {
     flex: 1,
     justifyContent: "center",
-    padding: 20,
+    padding: windowWidth * 0.05,
+    width: "100%",
   },
   listContent: {
-    paddingHorizontal: 16,
-    paddingBottom: 20,
+    paddingHorizontal: windowWidth * 0.04,
+    paddingBottom: windowHeight * 0.03,
+    paddingTop: windowHeight * 0.02,
   },
   cardContainer: {
-    marginBottom: 24,
-    marginTop: 8,
+    marginBottom: windowHeight * 0.025,
+    marginTop: windowHeight * 0.01,
+    width: "100%",
   },
   header: {
-    marginBottom: 16,
+    marginBottom: windowHeight * 0.02,
     alignItems: "center",
-    paddingHorizontal: 8,
+    paddingHorizontal: windowWidth * 0.02,
+    width: "100%",
   },
   title: {
-    marginBottom: 8,
+    marginBottom: windowHeight * 0.01,
     fontWeight: "700",
-    fontSize: 24,
+    fontSize: windowWidth * 0.06,
     textAlign: "center",
   },
   subtitle: {
     opacity: 0.8,
     textAlign: "center",
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: windowWidth * 0.035,
+    lineHeight: windowHeight * 0.025,
+    maxWidth: "90%",
   },
   footer: {
-    height: 40,
+    height: windowHeight * 0.05,
   },
 });
 
