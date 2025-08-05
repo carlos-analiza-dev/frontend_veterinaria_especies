@@ -1,13 +1,14 @@
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
+import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import React from "react";
-import { Button, useTheme } from "react-native-paper";
+import { Button } from "react-native-paper";
 
 interface Props {
   onPress: () => void;
 }
 
 const ButtonNext = ({ onPress }: Props) => {
-  const { colors } = useTheme();
+  const primary = useThemeColor({}, "primary");
   return (
     <ThemedView
       style={{
@@ -15,7 +16,6 @@ const ButtonNext = ({ onPress }: Props) => {
         alignItems: "center",
         justifyContent: "flex-end",
         marginBottom: 16,
-        backgroundColor: colors.background,
       }}
     >
       <Button
@@ -25,7 +25,7 @@ const ButtonNext = ({ onPress }: Props) => {
           flexDirection: "row-reverse",
           alignItems: "center",
         }}
-        labelStyle={{ marginRight: 18 }}
+        labelStyle={{ marginRight: 18, color: primary }}
         icon="arrow-right"
       >
         Siguiente

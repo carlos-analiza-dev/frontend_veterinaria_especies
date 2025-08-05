@@ -8,14 +8,18 @@ import { useNavigation } from "expo-router";
 import React from "react";
 import {
   ActivityIndicator,
+  Dimensions,
   FlatList,
   RefreshControl,
   StyleSheet,
 } from "react-native";
 import { useTheme } from "react-native-paper";
 
+const { width } = Dimensions.get("window");
+const isSmallDevice = width < 375;
+
 const InsumosCapexPage = () => {
-  const limit = 10;
+  const limit = isSmallDevice ? 8 : 10;
   const {
     data: insumos,
     isLoading,
@@ -40,14 +44,14 @@ const InsumosCapexPage = () => {
   if (isLoading && !flattenedInsumos.length) {
     return (
       <ThemedView style={styles.loadingContainer}>
-        <ActivityIndicator size={"large"} />
+        <ActivityIndicator size={isSmallDevice ? "small" : "large"} />
       </ThemedView>
     );
   }
 
   if (!flattenedInsumos.length || isError) {
     return (
-      <ThemedView style={{ flex: 1 }}>
+      <ThemedView style={styles.emptyContainer}>
         <MessageError
           titulo="Error al cargar los insumos"
           descripcion="No se encontraron datos de insumos para este módulo. Por favor, verifica más tarde o vuelve a intentar."
@@ -55,13 +59,14 @@ const InsumosCapexPage = () => {
         <FAB
           iconName="add-outline"
           onPress={() => router.navigate("CrearInsumoPage")}
+          style={styles.fab}
         />
       </ThemedView>
     );
   }
 
   return (
-    <ThemedView style={{ flex: 1 }}>
+    <ThemedView style={styles.container}>
       <FlatList
         data={flattenedInsumos}
         keyExtractor={(item) => item.id}
@@ -73,15 +78,18 @@ const InsumosCapexPage = () => {
             }
           />
         )}
-        contentContainerStyle={{
-          paddingBottom: 20,
-          backgroundColor: theme.colors.background,
-        }}
+        contentContainerStyle={[
+          styles.listContent,
+          { backgroundColor: theme.colors.background },
+        ]}
         onEndReached={handleLoadMore}
-        onEndReachedThreshold={0.5}
+        onEndReachedThreshold={isSmallDevice ? 0.2 : 0.5}
         ListFooterComponent={
           isFetching ? (
-            <ActivityIndicator size="small" style={styles.footerLoader} />
+            <ActivityIndicator
+              size={isSmallDevice ? "small" : "large"}
+              style={styles.footerLoader}
+            />
           ) : null
         }
         refreshControl={
@@ -89,25 +97,56 @@ const InsumosCapexPage = () => {
             refreshing={isFetching}
             onRefresh={refetch}
             colors={[primary]}
+            progressViewOffset={isSmallDevice ? 30 : 50}
           />
         }
+        initialNumToRender={isSmallDevice ? 5 : 10}
+        windowSize={isSmallDevice ? 5 : 10}
       />
       <FAB
         iconName="add-outline"
         onPress={() => router.navigate("CrearInsumoPage")}
+        style={styles.fab}
       />
     </ThemedView>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    paddingHorizontal: 16,
+  },
+  errorContainer: {
+    marginBottom: 20,
+  },
+  listContent: {
+    paddingHorizontal: 8,
+    paddingBottom: 20,
+  },
+  card: {
+    marginVertical: 6,
+    marginHorizontal: 8,
+  },
   footerLoader: {
     marginVertical: 20,
+  },
+  fab: {
+    position: "absolute",
+    right: 20,
+    bottom: 20,
+  },
+  smallText: {
+    fontSize: 14,
   },
 });
 

@@ -2,9 +2,10 @@ import { CreateProduccionFinca } from "@/core/produccion/interface/crear-producc
 import { calidadesMiel } from "@/helpers/data/dataProduccionFinca";
 import ThemedPicker from "@/presentation/theme/components/ThemedPicker";
 import ThemedTextInput from "@/presentation/theme/components/ThemedTextInput";
+import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import React from "react";
 import { Control, Controller } from "react-hook-form";
-import { StyleSheet, Text, View } from "react-native";
+import { Dimensions, StyleSheet, Text, View } from "react-native";
 import { useTheme } from "react-native-paper";
 
 interface ApiculturaSectionProps {
@@ -13,15 +14,59 @@ interface ApiculturaSectionProps {
 
 const ApiculturaSection: React.FC<ApiculturaSectionProps> = ({ control }) => {
   const { colors } = useTheme();
+  const primary = useThemeColor({}, "primary");
+  const windowWidth = Dimensions.get("window").width;
+  const isSmallScreen = windowWidth < 375;
+
+  const dynamicStyles = {
+    container: {
+      marginTop: isSmallScreen ? 6 : 8,
+      gap: isSmallScreen ? 12 : 16,
+    },
+    sectionTitle: {
+      fontSize: isSmallScreen ? 16 : 18,
+      marginBottom: isSmallScreen ? 6 : 8,
+    },
+    card: {
+      padding: isSmallScreen ? 12 : 16,
+      borderRadius: isSmallScreen ? 10 : 12,
+    },
+    inputLabel: {
+      fontSize: isSmallScreen ? 13 : 14,
+      marginBottom: isSmallScreen ? 6 : 8,
+    },
+    input: {
+      borderRadius: isSmallScreen ? 6 : 8,
+    },
+  };
 
   return (
-    <View style={styles.container}>
-      <Text style={[styles.sectionTitle, { color: colors.primary }]}>
+    <View style={[styles.container, dynamicStyles.container]}>
+      <Text
+        style={[
+          styles.sectionTitle,
+          dynamicStyles.sectionTitle,
+          { color: primary },
+        ]}
+      >
         Producción Apícola
       </Text>
 
-      <View style={styles.card}>
-        <Text style={styles.inputLabel}>Número de colmenas</Text>
+      <View
+        style={[
+          styles.card,
+          dynamicStyles.card,
+          {
+            backgroundColor: colors.surface,
+            shadowColor: colors.shadow,
+            borderColor: colors.outline,
+            borderWidth: 1,
+          },
+        ]}
+      >
+        <Text style={[styles.inputLabel, dynamicStyles.inputLabel]}>
+          Número de colmenas
+        </Text>
         <Controller
           control={control}
           name="apicultura.numero_colmenas"
@@ -31,12 +76,15 @@ const ApiculturaSection: React.FC<ApiculturaSectionProps> = ({ control }) => {
               value={value?.toString()}
               onChangeText={(text) => onChange(text ? Number(text) : undefined)}
               keyboardType="numeric"
-              style={styles.input}
+              style={[styles.input, dynamicStyles.input]}
               icon="calculator-sharp"
             />
           )}
         />
-        <Text style={styles.inputLabel}>Frecuencia de cosecha</Text>
+
+        <Text style={[styles.inputLabel, dynamicStyles.inputLabel]}>
+          Frecuencia de cosecha
+        </Text>
         <Controller
           control={control}
           name="apicultura.frecuencia_cosecha"
@@ -45,12 +93,15 @@ const ApiculturaSection: React.FC<ApiculturaSectionProps> = ({ control }) => {
               value={value}
               onChangeText={onChange}
               placeholder="Ej: Cada 2 meses"
-              style={styles.input}
+              style={[styles.input, dynamicStyles.input]}
               icon="calendar-outline"
             />
           )}
         />
-        <Text style={styles.inputLabel}>Cantidad por cosecha (kg)</Text>
+
+        <Text style={[styles.inputLabel, dynamicStyles.inputLabel]}>
+          Cantidad por cosecha (kg)
+        </Text>
         <Controller
           control={control}
           name="apicultura.cantidad_por_cosecha"
@@ -60,12 +111,15 @@ const ApiculturaSection: React.FC<ApiculturaSectionProps> = ({ control }) => {
               onChangeText={(text) => onChange(text ? Number(text) : undefined)}
               keyboardType="decimal-pad"
               placeholder="Ej: 150.75"
-              style={styles.input}
+              style={[styles.input, dynamicStyles.input]}
               icon="trending-up"
             />
           )}
         />
-        <Text style={styles.inputLabel}>Calidad de la miel</Text>
+
+        <Text style={[styles.inputLabel, dynamicStyles.inputLabel]}>
+          Calidad de la miel
+        </Text>
         <Controller
           control={control}
           name="apicultura.calidad_miel"
@@ -93,31 +147,20 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   sectionTitle: {
-    fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 8,
   },
   card: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    padding: 16,
-    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
   },
   inputLabel: {
-    fontSize: 14,
     fontWeight: "600",
     color: "#333",
-    marginBottom: 8,
   },
   input: {
     backgroundColor: "#F9FAFB",
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
-    borderRadius: 8,
   },
 });
 

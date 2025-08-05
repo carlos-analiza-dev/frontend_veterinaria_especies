@@ -22,6 +22,7 @@ import ThemedPicker from "@/presentation/theme/components/ThemedPicker";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import ThemedTextInput from "@/presentation/theme/components/ThemedTextInput";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
+import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import { FontAwesome } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { RouteProp } from "@react-navigation/native";
@@ -58,11 +59,14 @@ interface EditarAnimalProps {
 const AnimalDetailsPage = ({ route }: EditarAnimalProps) => {
   const { animalId } = route.params;
   const { user } = useAuthStore();
+  const primary = useThemeColor({}, "primary");
   const navigation = useNavigation();
   const [valor, setValor] = useState<"animal" | "padre" | "madre">("animal");
   const userId = user?.id;
   const { colors } = useTheme();
   const { height, width } = useWindowDimensions();
+
+  const isSmallScreen = width < 375;
   const queryClient = useQueryClient();
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showIdentifierHelp, setShowIdentifierHelp] = useState(false);
@@ -512,16 +516,13 @@ const AnimalDetailsPage = ({ route }: EditarAnimalProps) => {
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={{ flex: 1 }}
+      keyboardVerticalOffset={Platform.select({ ios: 60, android: 80 })}
     >
-      <ThemedView
-        style={[styles.container, { backgroundColor: colors.background }]}
-      >
+      <ThemedView style={styles.container}>
         <ScrollView
-          contentContainerStyle={[
-            styles.scrollContainer,
-            { minHeight: height * 0.8 },
-          ]}
+          contentContainerStyle={styles.scrollContainer}
           keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
           <ThemedView style={{ marginBottom: 12 }}>
             <SegmentedButtons
@@ -534,38 +535,34 @@ const AnimalDetailsPage = ({ route }: EditarAnimalProps) => {
                   value: "animal",
                   label: "Animal",
                   icon: "paw",
-                  style:
-                    valor === "animal"
-                      ? { backgroundColor: colors.primary }
-                      : {},
+                  style: valor === "animal" ? { backgroundColor: primary } : {},
+                  labelStyle: valor === "animal" ? { color: "#fff" } : {},
                 },
                 {
                   value: "padre",
                   label: "Padre",
                   icon: "gender-male",
-                  style:
-                    valor === "padre"
-                      ? { backgroundColor: colors.primary }
-                      : {},
+                  style: valor === "padre" ? { backgroundColor: primary } : {},
+                  labelStyle: valor === "animal" ? { color: "#fff" } : {},
                 },
                 {
                   value: "madre",
                   label: "Madre",
                   icon: "gender-female",
-                  style:
-                    valor === "madre"
-                      ? { backgroundColor: colors.primary }
-                      : {},
+                  style: valor === "madre" ? { backgroundColor: primary } : {},
+                  labelStyle: valor === "animal" ? { color: "#fff" } : {},
                 },
               ]}
             />
           </ThemedView>
-          <View style={[styles.formContainer, { width: width * 0.9 }]}>
+          <View style={[styles.formContainer, { width: width * 0.95 }]}>
             {valor === "animal" && (
-              <ThemedView
-                style={{ marginBottom: 20, backgroundColor: colors.background }}
-              >
-                <Text style={styles.sectionTitle}>Datos del animal</Text>
+              <ThemedView style={styles.section}>
+                <Text
+                  style={[styles.sectionTitle, width < 375 && { fontSize: 18 }]}
+                >
+                  Datos del animal
+                </Text>
                 <ThemedPicker
                   items={especiesItems}
                   onValueChange={(value) => {
@@ -598,7 +595,7 @@ const AnimalDetailsPage = ({ route }: EditarAnimalProps) => {
                 />
 
                 <ThemedTextInput
-                  placeholder="Ingrese 6 dígitos"
+                  placeholder={width < 375 ? "6 dígitos" : "Ingrese 6 dígitos"}
                   icon="warning-outline"
                   onFocus={() => setShowIdentifierHelp(true)}
                   onBlur={() => setShowIdentifierHelp(false)}
@@ -615,8 +612,10 @@ const AnimalDetailsPage = ({ route }: EditarAnimalProps) => {
                 />
 
                 {showIdentifierHelp && (
-                  <Text style={styles.helpText}>
-                    NÚMERO DE SEIS DÍGITOS DE IDENTIFICACIÓN DEL ARETE
+                  <Text
+                    style={[styles.helpText, width < 375 && { fontSize: 10 }]}
+                  >
+                    NÚMERO DE SEIS DÍGITOS DEL ARETE
                   </Text>
                 )}
 
@@ -698,7 +697,14 @@ const AnimalDetailsPage = ({ route }: EditarAnimalProps) => {
                 )}
 
                 <View style={styles.sectionContainer}>
-                  <Text style={styles.sectionTitle}>Tipo de alimentación</Text>
+                  <Text
+                    style={[
+                      styles.sectionTitle,
+                      width < 375 && { fontSize: 16 },
+                    ]}
+                  >
+                    Tipo de alimentación
+                  </Text>
                   {alimentosOptions.map((alimento) => {
                     const alimentoSeleccionado = tipoAlimentacion.find(
                       (a) => a.alimento === alimento.value
@@ -707,7 +713,10 @@ const AnimalDetailsPage = ({ route }: EditarAnimalProps) => {
                     return (
                       <View
                         key={alimento.value}
-                        style={styles.categoryContainer}
+                        style={[
+                          styles.categoryContainer,
+                          width < 375 && { padding: 8 },
+                        ]}
                       >
                         <TouchableOpacity
                           style={styles.categoryHeader}
@@ -927,18 +936,29 @@ const AnimalDetailsPage = ({ route }: EditarAnimalProps) => {
                 </View>
 
                 <View style={styles.sectionContainer}>
-                  <Text style={styles.sectionTitle}>Tipo de complemento</Text>
-                  {complementosOptions.map((complemento) => (
-                    <ThemedCheckbox
-                      key={complemento.value}
-                      label={complemento.label}
-                      value={complemento.value}
-                      onPress={handleAlimentoChange}
-                      isSelected={complementoSeleccionados.includes(
-                        complemento.value
-                      )}
-                    />
-                  ))}
+                  <Text
+                    style={[
+                      styles.sectionTitle,
+                      width < 375 && { fontSize: 16 },
+                    ]}
+                  >
+                    Tipo de complemento
+                  </Text>
+                  <View
+                    style={width < 375 ? styles.columnLayout : styles.rowLayout}
+                  >
+                    {complementosOptions.map((complemento) => (
+                      <ThemedCheckbox
+                        key={complemento.value}
+                        label={complemento.label}
+                        value={complemento.value}
+                        onPress={handleAlimentoChange}
+                        isSelected={complementoSeleccionados.includes(
+                          complemento.value
+                        )}
+                      />
+                    ))}
+                  </View>
                 </View>
 
                 <ThemedTextInput
@@ -1232,19 +1252,33 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    alignItems: "center",
   },
   scrollContainer: {
-    paddingVertical: 20,
-    paddingHorizontal: 10,
+    flexGrow: 1,
+    paddingTop: 16,
+    paddingHorizontal: 8,
     justifyContent: "center",
+  },
+  segmentedButtonsContainer: {
+    marginBottom: 16,
+    paddingHorizontal: 8,
+  },
+  segmentedButtons: {
+    marginBottom: 12,
+  },
+  segmentedButtonLabel: {
+    fontSize: 14,
   },
   formContainer: {
     maxWidth: 500,
     alignSelf: "center",
   },
+  section: {
+    marginBottom: 20,
+    width: "100%",
+  },
   input: {
-    marginBottom: 15,
+    marginBottom: 12,
     width: "100%",
   },
   multilineInput: {
@@ -1256,40 +1290,32 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 8,
   },
-  datePicker: {
-    width: "100%",
-    marginBottom: 15,
-  },
   sectionContainer: {
-    marginBottom: 15,
+    marginBottom: 16,
     width: "100%",
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: "bold",
-    marginBottom: 10,
+    marginBottom: 12,
     color: "#333",
   },
   switchContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 15,
+    marginBottom: 16,
     width: "100%",
   },
   switchLabel: {
     fontSize: 16,
     color: "#333",
+    flex: 1,
   },
   errorText: {
     color: "red",
     fontSize: 12,
     marginTop: 5,
-  },
-  identifierPreview: {
-    marginBottom: 15,
-    color: "#666",
-    fontSize: 14,
   },
   helpText: {
     color: "#e63946",
@@ -1297,21 +1323,26 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontStyle: "italic",
   },
-  categoryTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
   categoryContainer: {
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "#ddd",
     borderRadius: 8,
-    padding: 10,
+    padding: 12,
   },
   categoryHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+  },
+  checkboxContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  categoryTitle: {
+    fontSize: 16,
+    fontWeight: "500",
+    marginLeft: 8,
   },
   subservicesContainer: {
     marginTop: 10,
@@ -1320,13 +1351,17 @@ const styles = StyleSheet.create({
   subserviceItem: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    marginBottom: 4,
   },
   subserviceText: {
     marginLeft: 8,
+    fontSize: 14,
   },
   selectedSubserviceItem: {
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#f5f5f5",
   },
   percentageInputsContainer: {
     marginLeft: 40,
@@ -1339,7 +1374,7 @@ const styles = StyleSheet.create({
   percentageLabel: {
     fontSize: 14,
     marginBottom: 4,
-    color: "#333",
+    color: "#555",
   },
   percentageInput: {
     height: 40,
@@ -1349,6 +1384,28 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     fontSize: 16,
     backgroundColor: "#fff",
+  },
+  radioItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  radioText: {
+    fontSize: 16,
+    marginLeft: 8,
+  },
+  complementosContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+  },
+  rowLayout: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+  },
+  columnLayout: {
+    flexDirection: "column",
   },
 });
 

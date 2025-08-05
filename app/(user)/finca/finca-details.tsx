@@ -252,7 +252,9 @@ const FincaDetailsPage = ({ route }: DetailsFincaProps) => {
 
   if (isLoading) {
     return (
-      <ThemedView style={styles.container}>
+      <ThemedView
+        style={{ flex: 1, alignContent: "center", justifyContent: "center" }}
+      >
         <ActivityIndicator size="large" />
       </ThemedView>
     );

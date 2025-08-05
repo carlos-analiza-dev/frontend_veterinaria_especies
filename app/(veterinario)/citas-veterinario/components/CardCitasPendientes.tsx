@@ -10,6 +10,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import * as Location from "expo-location";
 import React, { useEffect, useState } from "react";
 import {
+  Dimensions,
   Linking,
   StyleSheet,
   Text,
@@ -17,6 +18,9 @@ import {
   View,
 } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+const { width, height } = Dimensions.get("window");
+const isSmallDevice = width < 375;
+const isTablet = width >= 768;
 
 interface Props {
   item: Cita;
@@ -97,6 +101,205 @@ const CardCitasMedico = ({ item, onConfirm, onCancel, onComplete }: Props) => {
 
   const primaryAnimal = item.animales[0] || {};
   const ownerPhone = primaryAnimal.propietario?.telefono;
+
+  const styles = StyleSheet.create({
+    card: {
+      backgroundColor: "#FFF",
+      borderRadius: isSmallDevice ? 8 : isTablet ? 16 : 12,
+      padding: isSmallDevice ? 12 : isTablet ? 20 : 16,
+      marginVertical: isSmallDevice ? 6 : isTablet ? 12 : 8,
+      marginHorizontal: isSmallDevice ? 10 : isTablet ? width * 0.05 : 16,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 3,
+    },
+    header: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: isSmallDevice ? 8 : 12,
+    },
+    serviceInfo: {
+      flexDirection: "row",
+      alignItems: "center",
+      flex: 1,
+    },
+    serviceName: {
+      fontSize: isSmallDevice ? 16 : isTablet ? 20 : 18,
+      fontWeight: "bold",
+      color: "#333",
+      marginLeft: isSmallDevice ? 6 : 8,
+    },
+    statusBadge: {
+      paddingHorizontal: isSmallDevice ? 8 : 10,
+      paddingVertical: isSmallDevice ? 3 : 5,
+      borderRadius: 12,
+    },
+    statusText: {
+      fontSize: isSmallDevice ? 10 : 12,
+      fontWeight: "bold",
+      color: "#FFF",
+    },
+    datetimeContainer: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginBottom: isSmallDevice ? 8 : 12,
+      backgroundColor: "#F5F7FA",
+      padding: isSmallDevice ? 8 : 10,
+      borderRadius: 8,
+    },
+    datetimeItem: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    datetimeText: {
+      marginLeft: isSmallDevice ? 6 : 8,
+      fontSize: isSmallDevice ? 10 : 11,
+      color: "#555",
+      fontWeight: "500",
+    },
+    mapContainer: {
+      height: isSmallDevice ? 120 : isTablet ? 200 : 150,
+      borderRadius: 10,
+      overflow: "hidden",
+      marginBottom: isSmallDevice ? 8 : 12,
+      borderWidth: 1,
+      borderColor: "#E0E0E0",
+    },
+    locationInfo: {
+      flexDirection: isSmallDevice ? "column" : "row",
+      justifyContent: "space-between",
+      marginBottom: isSmallDevice ? 8 : 12,
+      gap: isSmallDevice ? 8 : 0,
+    },
+    locationItem: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: "#F5F7FA",
+      paddingVertical: isSmallDevice ? 6 : 8,
+      paddingHorizontal: isSmallDevice ? 10 : 12,
+      borderRadius: 20,
+      width: isSmallDevice ? "100%" : undefined,
+    },
+    locationText: {
+      marginLeft: isSmallDevice ? 4 : 6,
+      fontSize: isSmallDevice ? 12 : 14,
+      color: "#333",
+      fontWeight: "500",
+    },
+    section: {
+      marginBottom: isSmallDevice ? 8 : 12,
+      borderBottomWidth: 1,
+      borderBottomColor: "#EEE",
+      paddingBottom: isSmallDevice ? 8 : 12,
+    },
+    sectionTitle: {
+      fontSize: isSmallDevice ? 10 : 12,
+      fontWeight: "bold",
+      color: "#666",
+      marginBottom: isSmallDevice ? 4 : 6,
+      textTransform: "uppercase",
+    },
+    infoRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginBottom: isSmallDevice ? 6 : 8,
+    },
+    infoText: {
+      marginLeft: isSmallDevice ? 6 : 8,
+      fontSize: isSmallDevice ? 12 : 14,
+      color: "#555",
+      flex: 1,
+    },
+    animalInfo: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginBottom: isSmallDevice ? 4 : 6,
+    },
+    animalText: {
+      fontSize: isSmallDevice ? 12 : 14,
+      color: "#333",
+    },
+    animalSubText: {
+      fontSize: isSmallDevice ? 10 : 12,
+      color: "#666",
+      fontStyle: "italic",
+    },
+    priceContainer: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginTop: isSmallDevice ? 6 : 8,
+      paddingTop: isSmallDevice ? 6 : 8,
+      borderTopWidth: 1,
+      borderTopColor: "#EEE",
+    },
+    priceLabel: {
+      fontSize: isSmallDevice ? 12 : 14,
+      color: "#666",
+      fontWeight: "bold",
+    },
+    priceValue: {
+      fontSize: isSmallDevice ? 16 : 18,
+      color: "#2E7D32",
+      fontWeight: "bold",
+    },
+    actionsContainer: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginTop: isSmallDevice ? 8 : 12,
+      gap: isSmallDevice ? 6 : 8,
+    },
+    actionButton: {
+      flex: 1,
+      paddingVertical: isSmallDevice ? 8 : 10,
+      borderRadius: 8,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    actionButtonText: {
+      color: "#FFF",
+      fontWeight: "bold",
+      fontSize: isSmallDevice ? 12 : 14,
+    },
+    statusContainer: {
+      padding: isSmallDevice ? 8 : 12,
+      borderRadius: 8,
+      alignItems: "center",
+      marginTop: isSmallDevice ? 8 : 12,
+    },
+    statusLabel: {
+      fontWeight: "bold",
+      fontSize: isSmallDevice ? 12 : 14,
+    },
+    linkText: {
+      color: "#1A73E8",
+      textDecorationLine: "underline",
+    },
+    map: {
+      ...StyleSheet.absoluteFillObject,
+    },
+    animalDetails: {
+      marginLeft: 8,
+    },
+    confirmButton: {
+      backgroundColor: "#4CAF50",
+    },
+    completeButton: {
+      backgroundColor: "#2196F3",
+    },
+    cancelButton: {
+      backgroundColor: "#F44336",
+    },
+    completedContainer: {
+      backgroundColor: "#E8F5E9",
+    },
+    canceledContainer: {
+      backgroundColor: "#FFEBEE",
+    },
+  });
 
   return (
     <View style={styles.card}>
@@ -287,202 +490,5 @@ const CardCitasMedico = ({ item, onConfirm, onCancel, onComplete }: Props) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: "#FFF",
-    borderRadius: 12,
-    padding: 16,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  serviceInfo: {
-    flexDirection: "row",
-    alignItems: "center",
-    flex: 1,
-  },
-  serviceName: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#333",
-    marginLeft: 8,
-  },
-  statusBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 12,
-  },
-  statusText: {
-    fontSize: 12,
-    fontWeight: "bold",
-    color: "#FFF",
-  },
-  datetimeContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 12,
-    backgroundColor: "#F5F7FA",
-    padding: 10,
-    borderRadius: 8,
-  },
-  datetimeItem: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  datetimeText: {
-    marginLeft: 8,
-    fontSize: 11,
-    color: "#555",
-    fontWeight: "500",
-  },
-  mapContainer: {
-    height: 150,
-    borderRadius: 10,
-    overflow: "hidden",
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: "#E0E0E0",
-  },
-  map: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  locationInfo: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 12,
-  },
-  locationItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#F5F7FA",
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 20,
-  },
-  locationText: {
-    marginLeft: 6,
-    fontSize: 14,
-    color: "#333",
-    fontWeight: "500",
-  },
-  section: {
-    marginBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#EEE",
-    paddingBottom: 12,
-  },
-  sectionTitle: {
-    fontSize: 12,
-    fontWeight: "bold",
-    color: "#666",
-    marginBottom: 6,
-    textTransform: "uppercase",
-  },
-  infoRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  infoText: {
-    marginLeft: 8,
-    fontSize: 14,
-    color: "#555",
-    flex: 1,
-  },
-  animalInfo: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 6,
-  },
-  animalDetails: {
-    marginLeft: 8,
-  },
-  animalText: {
-    fontSize: 14,
-    color: "#333",
-  },
-  animalSubText: {
-    fontSize: 12,
-    color: "#666",
-    fontStyle: "italic",
-  },
-  priceContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 8,
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: "#EEE",
-  },
-  priceLabel: {
-    fontSize: 14,
-    color: "#666",
-    fontWeight: "bold",
-  },
-  priceValue: {
-    fontSize: 18,
-    color: "#2E7D32",
-    fontWeight: "bold",
-  },
-  actionsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 12,
-  },
-  actionButton: {
-    flex: 1,
-    paddingVertical: 10,
-    borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-    marginHorizontal: 4,
-  },
-  actionButtonText: {
-    color: "#FFF",
-    fontWeight: "bold",
-    fontSize: 14,
-  },
-  confirmButton: {
-    backgroundColor: "#4CAF50",
-  },
-  completeButton: {
-    backgroundColor: "#2196F3",
-  },
-  cancelButton: {
-    backgroundColor: "#F44336",
-  },
-  statusContainer: {
-    padding: 12,
-    borderRadius: 8,
-    alignItems: "center",
-    marginTop: 12,
-  },
-  completedContainer: {
-    backgroundColor: "#E8F5E9",
-  },
-  canceledContainer: {
-    backgroundColor: "#FFEBEE",
-  },
-  statusLabel: {
-    fontWeight: "bold",
-    fontSize: 14,
-  },
-  linkText: {
-    color: "#1A73E8",
-    textDecorationLine: "underline",
-  },
-});
 
 export default CardCitasMedico;

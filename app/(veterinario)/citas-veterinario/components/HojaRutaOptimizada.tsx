@@ -5,6 +5,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import * as Location from "expo-location";
 import React, { useEffect, useState } from "react";
 import {
+  Dimensions,
   FlatList,
   StyleSheet,
   Text,
@@ -13,6 +14,9 @@ import {
 } from "react-native";
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
 import { ActivityIndicator } from "react-native-paper";
+const { width, height } = Dimensions.get("window");
+const isSmallDevice = width < 375;
+const isTablet = width >= 768;
 
 interface HojaRutaOptimizadaProps {
   citas: Cita[];
@@ -78,6 +82,140 @@ const HojaRutaOptimizada: React.FC<HojaRutaOptimizadaProps> = ({
     obtenerUbicacionYOrdenar();
   }, [citas]);
 
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      padding: isSmallDevice ? 12 : isTablet ? 24 : 16,
+    },
+    backButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginBottom: isSmallDevice ? 12 : 16,
+      paddingVertical: isSmallDevice ? 6 : 8,
+    },
+    title: {
+      fontSize: isSmallDevice ? 20 : isTablet ? 26 : 22,
+      fontWeight: "bold",
+      marginBottom: isSmallDevice ? 12 : 16,
+      textAlign: "center",
+      color: "#333",
+    },
+    mapContainer: {
+      height: isSmallDevice
+        ? height * 0.35
+        : isTablet
+        ? height * 0.5
+        : height * 0.4,
+      borderRadius: 10,
+      overflow: "hidden",
+      marginBottom: isSmallDevice ? 12 : 16,
+      borderWidth: 1,
+      borderColor: "#E0E0E0",
+    },
+    map: {
+      ...StyleSheet.absoluteFillObject,
+    },
+    marker: {
+      backgroundColor: "#1a73e8",
+      width: isSmallDevice ? 24 : 30,
+      height: isSmallDevice ? 24 : 30,
+      borderRadius: 15,
+      justifyContent: "center",
+      alignItems: "center",
+      borderWidth: 2,
+      borderColor: "white",
+    },
+    markerText: {
+      color: "white",
+      fontWeight: "bold",
+      fontSize: isSmallDevice ? 12 : 14,
+    },
+    listContainer: {
+      paddingBottom: isSmallDevice ? 16 : 20,
+    },
+    citaItem: {
+      flexDirection: "row",
+      padding: isSmallDevice ? 10 : 12,
+      marginBottom: isSmallDevice ? 6 : 8,
+      backgroundColor: "#FFF",
+      borderRadius: 8,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 2,
+    },
+    citaNumero: {
+      width: isSmallDevice ? 24 : 30,
+      height: isSmallDevice ? 24 : 30,
+      borderRadius: 15,
+      backgroundColor: "#1a73e8",
+      justifyContent: "center",
+      alignItems: "center",
+      marginRight: isSmallDevice ? 10 : 12,
+    },
+    citaNumeroText: {
+      color: "white",
+      fontWeight: "bold",
+      fontSize: isSmallDevice ? 12 : 14,
+    },
+    citaInfo: {
+      flex: 1,
+    },
+    citaNombre: {
+      fontWeight: "bold",
+      fontSize: isSmallDevice ? 14 : 16,
+      marginBottom: isSmallDevice ? 2 : 4,
+    },
+    citaDetalle: {
+      color: "#555",
+      fontSize: isSmallDevice ? 12 : 14,
+      marginBottom: isSmallDevice ? 2 : 4,
+    },
+    citaDistancia: {
+      color: "#1a73e8",
+      fontWeight: "500",
+      fontSize: isSmallDevice ? 12 : 14,
+    },
+    loadingContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "rgba(255, 255, 255, 0.9)",
+    },
+    loadingBox: {
+      backgroundColor: "#fff",
+      padding: isSmallDevice ? 16 : 24,
+      borderRadius: 12,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 6,
+      elevation: 5,
+      alignItems: "center",
+      width: isSmallDevice ? width * 0.8 : width * 0.6,
+    },
+    loadingText: {
+      marginTop: isSmallDevice ? 8 : 12,
+      fontSize: isSmallDevice ? 14 : 16,
+      fontWeight: "500",
+      color: "#333",
+      textAlign: "center",
+    },
+    errorContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      padding: isSmallDevice ? 16 : 20,
+    },
+    errorText: {
+      color: "red",
+      fontSize: isSmallDevice ? 14 : 16,
+      marginBottom: isSmallDevice ? 16 : 20,
+      textAlign: "center",
+    },
+  });
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -139,8 +277,8 @@ const HojaRutaOptimizada: React.FC<HojaRutaOptimizadaProps> = ({
               ubicacionActual?.coords.longitude ||
               citasOrdenadas[0]?.finca.longitud ||
               0,
-            latitudeDelta: 0.2,
-            longitudeDelta: 0.2,
+            latitudeDelta: isSmallDevice ? 0.5 : isTablet ? 0.1 : 0.2,
+            longitudeDelta: isSmallDevice ? 0.5 : isTablet ? 0.1 : 0.2,
           }}
         >
           {ubicacionActual && (
@@ -207,124 +345,5 @@ const HojaRutaOptimizada: React.FC<HojaRutaOptimizadaProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
-  backButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: "bold",
-    marginBottom: 16,
-    textAlign: "center",
-  },
-  mapContainer: {
-    height: 300,
-    borderRadius: 10,
-    overflow: "hidden",
-    marginBottom: 16,
-  },
-  map: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  marker: {
-    backgroundColor: "#1a73e8",
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  markerText: {
-    color: "white",
-    fontWeight: "bold",
-  },
-  listContainer: {
-    paddingBottom: 20,
-  },
-  citaItem: {
-    flexDirection: "row",
-    padding: 12,
-    marginBottom: 8,
-    backgroundColor: "#FFF",
-    borderRadius: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  citaNumero: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: "#1a73e8",
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
-  },
-  citaNumeroText: {
-    color: "white",
-    fontWeight: "bold",
-  },
-  citaInfo: {
-    flex: 1,
-  },
-  citaNombre: {
-    fontWeight: "bold",
-    fontSize: 16,
-    marginBottom: 4,
-  },
-  citaDetalle: {
-    color: "#555",
-    marginBottom: 4,
-  },
-  citaDistancia: {
-    color: "#1a73e8",
-    fontWeight: "bold",
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.9)",
-  },
-
-  loadingBox: {
-    backgroundColor: "#fff",
-    padding: 24,
-    borderRadius: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    elevation: 5,
-    alignItems: "center",
-  },
-
-  loadingText: {
-    marginTop: 12,
-    fontSize: 16,
-    fontWeight: "500",
-    color: "#333",
-  },
-
-  errorContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  errorText: {
-    color: "red",
-    marginBottom: 20,
-  },
-});
 
 export default HojaRutaOptimizada;

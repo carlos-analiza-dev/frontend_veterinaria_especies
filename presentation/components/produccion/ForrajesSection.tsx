@@ -15,11 +15,11 @@ import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import ThemedTextInput from "@/presentation/theme/components/ThemedTextInput";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import DeleteButton from "@/presentation/theme/components/ui/DeleteButton";
+import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React from "react";
 import { Control, Controller, UseFormWatch } from "react-hook-form";
-import { StyleSheet, View } from "react-native";
-import { useTheme } from "react-native-paper";
+import { Dimensions, StyleSheet, View } from "react-native";
 
 interface InsumoItem {
   id: string;
@@ -48,7 +48,48 @@ const ForrajesSection: React.FC<ForrajesSectionProps> = ({
   watch,
   fincaSeleccionada,
 }) => {
-  const { colors } = useTheme();
+  const primary = useThemeColor({}, "primary");
+  const error = useThemeColor({}, "error");
+  const windowWidth = Dimensions.get("window").width;
+  const isSmallScreen = windowWidth < 375;
+
+  const dynamicStyles = {
+    container: {
+      marginVertical: isSmallScreen ? 12 : 16,
+      paddingHorizontal: isSmallScreen ? 8 : 12,
+    },
+    header: {
+      marginBottom: isSmallScreen ? 12 : 16,
+    },
+    sectionTitle: {
+      fontSize: isSmallScreen ? 16 : 18,
+    },
+    subSection: {
+      padding: isSmallScreen ? 12 : 16,
+      marginBottom: isSmallScreen ? 16 : 20,
+      borderRadius: isSmallScreen ? 8 : 12,
+    },
+    inputGroup: {
+      marginBottom: isSmallScreen ? 12 : 16,
+    },
+    inputLabel: {
+      fontSize: isSmallScreen ? 13 : 14,
+    },
+    checkboxContainer: {
+      gap: isSmallScreen ? 8 : 12,
+    },
+    checkboxItem: {
+      width: isSmallScreen ? "45%" : "30%",
+      minWidth: isSmallScreen ? 80 : 100,
+    },
+    iconSize: isSmallScreen ? 20 : 24,
+    subSectionTitle: {
+      fontSize: isSmallScreen ? 15 : 16,
+    },
+    addButton: {
+      marginTop: isSmallScreen ? 4 : 8,
+    },
+  };
 
   const addNewInsumo = () => {
     append({
@@ -74,10 +115,20 @@ const ForrajesSection: React.FC<ForrajesSectionProps> = ({
   };
 
   return (
-    <ThemedView style={styles.container}>
-      <View style={styles.header}>
-        <MaterialCommunityIcons name="barn" size={24} color={colors.primary} />
-        <ThemedText style={[styles.sectionTitle, { color: colors.primary }]}>
+    <ThemedView style={[styles.container, dynamicStyles.container]}>
+      <View style={[styles.header, dynamicStyles.header]}>
+        <MaterialCommunityIcons
+          name="barn"
+          size={dynamicStyles.iconSize}
+          color={primary}
+        />
+        <ThemedText
+          style={[
+            styles.sectionTitle,
+            dynamicStyles.sectionTitle,
+            { color: primary },
+          ]}
+        >
           Forrajes e Insumos
         </ThemedText>
       </View>
@@ -86,32 +137,39 @@ const ForrajesSection: React.FC<ForrajesSectionProps> = ({
         const currentTipo = watch(`forrajesInsumo.insumos.${index}.tipo`);
 
         return (
-          <ThemedView key={field.id} style={[styles.subSection]}>
+          <ThemedView
+            key={field.id}
+            style={[styles.subSection, dynamicStyles.subSection]}
+          >
             <View style={styles.sectionHeader}>
               <View style={styles.sectionTitleContainer}>
                 {currentTipo && (
                   <MaterialCommunityIcons
                     name={getIconForInsumo(currentTipo)}
-                    size={20}
-                    color={colors.primary}
+                    size={dynamicStyles.iconSize - 4}
+                    color={primary}
                     style={styles.icon}
                   />
                 )}
-                <ThemedText style={styles.subSectionTitle}>
+                <ThemedText
+                  style={[
+                    styles.subSectionTitle,
+                    dynamicStyles.subSectionTitle,
+                  ]}
+                >
                   Insumo {index + 1}
                 </ThemedText>
               </View>
 
               {fields.length > 1 && (
-                <DeleteButton
-                  onPress={() => remove(index)}
-                  textColor={colors.error}
-                />
+                <DeleteButton onPress={() => remove(index)} textColor={error} />
               )}
             </View>
 
-            <View style={styles.inputGroup}>
-              <ThemedText style={styles.inputLabel}>Tipo de insumo</ThemedText>
+            <View style={[styles.inputGroup, dynamicStyles.inputGroup]}>
+              <ThemedText style={[styles.inputLabel, dynamicStyles.inputLabel]}>
+                Tipo de insumo
+              </ThemedText>
               <Controller
                 control={control}
                 name={`forrajesInsumo.insumos.${index}.tipo`}
@@ -132,8 +190,10 @@ const ForrajesSection: React.FC<ForrajesSectionProps> = ({
 
             {currentTipo === "Heno" ? (
               <>
-                <View style={styles.inputGroup}>
-                  <ThemedText style={styles.inputLabel}>
+                <View style={[styles.inputGroup, dynamicStyles.inputGroup]}>
+                  <ThemedText
+                    style={[styles.inputLabel, dynamicStyles.inputLabel]}
+                  >
                     Tipo de heno
                   </ThemedText>
                   <Controller
@@ -154,8 +214,10 @@ const ForrajesSection: React.FC<ForrajesSectionProps> = ({
                   />
                 </View>
 
-                <View style={styles.inputGroup}>
-                  <ThemedText style={styles.inputLabel}>
+                <View style={[styles.inputGroup, dynamicStyles.inputGroup]}>
+                  <ThemedText
+                    style={[styles.inputLabel, dynamicStyles.inputLabel]}
+                  >
                     Estacionalidad
                   </ThemedText>
                   <Controller
@@ -173,38 +235,48 @@ const ForrajesSection: React.FC<ForrajesSectionProps> = ({
                   />
                 </View>
 
-                <View style={styles.inputGroup}>
-                  <ThemedText style={styles.inputLabel}>
+                <View style={[styles.inputGroup, dynamicStyles.inputGroup]}>
+                  <ThemedText
+                    style={[styles.inputLabel, dynamicStyles.inputLabel]}
+                  >
                     Meses de producción
                   </ThemedText>
-                  <View style={styles.checkboxContainer}>
+                  <View
+                    style={[
+                      styles.checkboxContainer,
+                      dynamicStyles.checkboxContainer,
+                    ]}
+                  >
                     {meses.map((mes) => (
-                      <Controller
-                        key={mes}
-                        control={control}
-                        name={`forrajesInsumo.insumos.${index}.meses_produccion_heno`}
-                        render={({ field: { value = [], onChange } }) => (
-                          <ThemedCheckbox
-                            label={mes}
-                            value={mes}
-                            isSelected={value?.includes(mes)}
-                            onPress={() => {
-                              const newValue = value?.includes(mes)
-                                ? value.filter((item: string) => item !== mes)
-                                : [...(value || []), mes];
-                              onChange(newValue);
-                            }}
-                          />
-                        )}
-                      />
+                      <View key={mes} style={[styles.checkboxItem]}>
+                        <Controller
+                          control={control}
+                          name={`forrajesInsumo.insumos.${index}.meses_produccion_heno`}
+                          render={({ field: { value = [], onChange } }) => (
+                            <ThemedCheckbox
+                              label={mes}
+                              value={mes}
+                              isSelected={value?.includes(mes)}
+                              onPress={() => {
+                                const newValue = value?.includes(mes)
+                                  ? value.filter((item: string) => item !== mes)
+                                  : [...(value || []), mes];
+                                onChange(newValue);
+                              }}
+                            />
+                          )}
+                        />
+                      </View>
                     ))}
                   </View>
                 </View>
               </>
             ) : (
               <>
-                <View style={styles.inputGroup}>
-                  <ThemedText style={styles.inputLabel}>
+                <View style={[styles.inputGroup, dynamicStyles.inputGroup]}>
+                  <ThemedText
+                    style={[styles.inputLabel, dynamicStyles.inputLabel]}
+                  >
                     Producción por {fincaSeleccionada?.medida_finca}
                   </ThemedText>
                   <Controller
@@ -222,8 +294,10 @@ const ForrajesSection: React.FC<ForrajesSectionProps> = ({
                   />
                 </View>
 
-                <View style={styles.inputGroup}>
-                  <ThemedText style={styles.inputLabel}>
+                <View style={[styles.inputGroup, dynamicStyles.inputGroup]}>
+                  <ThemedText
+                    style={[styles.inputLabel, dynamicStyles.inputLabel]}
+                  >
                     Tiempo estimado
                   </ThemedText>
                   <Controller
@@ -250,8 +324,8 @@ const ForrajesSection: React.FC<ForrajesSectionProps> = ({
         onPress={addNewInsumo}
         icon="add-outline"
         variant="outline"
-        style={styles.addButton}
         title="Agregar otro insumo"
+        textStyle={{ fontSize: dynamicStyles.inputLabel.fontSize }}
       />
     </ThemedView>
   );
@@ -264,7 +338,6 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 16,
   },
   sectionTitle: {
     marginLeft: 8,
@@ -274,7 +347,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderRadius: 12,
     padding: 16,
-    backgroundColor: "#f9f9f9",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -307,14 +379,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     marginTop: 8,
-    gap: 12,
   },
   checkboxItem: {
-    width: "30%",
-    minWidth: 100,
+    marginBottom: 8,
   },
   addButton: {
-    marginTop: 8,
     borderStyle: "dashed",
   },
 });

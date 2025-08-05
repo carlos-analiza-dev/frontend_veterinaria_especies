@@ -54,7 +54,7 @@ const CrearProduccionPage = () => {
     null
   );
   const { data: fincas } = useFincasPropietarios(userId);
-
+  const [showFincaError, setShowFincaError] = useState(false);
   const { control, handleSubmit, watch, setValue, reset } =
     useForm<CreateProduccionFinca>();
 
@@ -95,6 +95,7 @@ const CrearProduccionPage = () => {
     {
       value: "ganadera",
       label: "Ganaderia",
+      disabled: !fincaSeleccionada,
       icon: "cow",
       description: "Registro de producción ganadera (leche, carne, etc.)",
       style: section === "ganadera" ? { backgroundColor: primary } : {},
@@ -103,6 +104,7 @@ const CrearProduccionPage = () => {
     {
       value: "forrajes",
       label: "Forrajes",
+      disabled: !fincaSeleccionada,
       icon: "grass",
       description: "Gestión de producción de forrajes para alimentación animal",
       style: section === "forrajes" ? { backgroundColor: primary } : {},
@@ -111,6 +113,7 @@ const CrearProduccionPage = () => {
     {
       value: "agricola",
       label: "Agricola",
+      disabled: !fincaSeleccionada,
       icon: "sprout",
       description: "Registro de cultivos y producción agrícola",
       style: section === "agricola" ? { backgroundColor: primary } : {},
@@ -119,6 +122,7 @@ const CrearProduccionPage = () => {
     {
       value: "apicultura",
       label: "Apicultura",
+      disabled: !fincaSeleccionada,
       icon: "bee",
       description: "Producción de miel y derivados apícolas",
       style: section === "apicultura" ? { backgroundColor: primary } : {},
@@ -127,6 +131,7 @@ const CrearProduccionPage = () => {
     {
       value: "alternativa",
       label: "Alternativa",
+      disabled: !fincaSeleccionada,
       icon: "swap-horizontal",
       description: "Otras actividades productivas alternativas",
       style: section === "alternativa" ? { backgroundColor: primary } : {},
@@ -192,6 +197,15 @@ const CrearProduccionPage = () => {
   };
 
   const renderSection = () => {
+    if (!fincaSeleccionada) {
+      return (
+        <ThemedView style={styles.noFincaSelected}>
+          <Text style={styles.noFincaText}>
+            Selecciona una finca para habilitar las secciones de producción
+          </Text>
+        </ThemedView>
+      );
+    }
     switch (section) {
       case "ganadera":
         return (
@@ -209,6 +223,7 @@ const CrearProduccionPage = () => {
             append={appendCultivo}
             remove={removeCultivo}
             watch={watch}
+            fincaSeleccionada={fincaSeleccionada}
           />
         );
       case "forrajes":
@@ -347,7 +362,7 @@ const CrearProduccionPage = () => {
           <ThemedButton
             onPress={handleSubmit(onSubmit)}
             style={styles.submitButton}
-            disabled={mutate_produccion.isPending}
+            disabled={mutate_produccion.isPending || !fincaSeleccionada}
             icon="save-outline"
             title=" Guardar Producción"
           />
@@ -405,6 +420,18 @@ const styles = StyleSheet.create({
   submitButton: {
     marginTop: 24,
     paddingVertical: 12,
+  },
+  noFincaSelected: {
+    marginTop: 20,
+    padding: 16,
+    borderRadius: 8,
+    backgroundColor: "#f0f0f0",
+    alignItems: "center",
+  },
+  noFincaText: {
+    color: "#666",
+    textAlign: "center",
+    fontSize: 16,
   },
 });
 

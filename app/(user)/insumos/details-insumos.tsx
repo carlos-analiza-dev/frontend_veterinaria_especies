@@ -20,6 +20,7 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
+  useWindowDimensions,
   View,
 } from "react-native";
 import { Chip, useTheme } from "react-native-paper";
@@ -33,13 +34,15 @@ interface EditarInsumoProps {
 
 const DetallesInsumosPage = ({ route }: EditarInsumoProps) => {
   const { insumoId } = route.params;
+  const { width } = useWindowDimensions();
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [newCategory, setNewCategory] = useState("");
 
   const { data: insumo, isLoading, isError } = useGetInsumoById(insumoId);
-
+  const isSmallDevice = width < 375;
+  const isLargeDevice = width >= 414;
   const {
     handleSubmit,
     setValue,
@@ -154,20 +157,42 @@ const DetallesInsumosPage = ({ route }: EditarInsumoProps) => {
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={[styles.container, { backgroundColor: colors.background }]}
+      keyboardVerticalOffset={Platform.select({ ios: 60, android: 80 })}
     >
       <ScrollView
         keyboardShouldPersistTaps="handled"
-        contentContainerStyle={styles.scrollContainer}
+        contentContainerStyle={[
+          styles.scrollContainer,
+          isSmallDevice && { paddingHorizontal: 12 },
+        ]}
         showsVerticalScrollIndicator={false}
       >
         <ThemedView
           style={[styles.header, { backgroundColor: colors.background }]}
         >
-          <ThemedText style={styles.title}>Editar Insumo</ThemedText>
+          <ThemedText
+            style={[
+              styles.title,
+              isSmallDevice && styles.smallTitle,
+              isLargeDevice && styles.largeTitle,
+            ]}
+          >
+            Editar Insumo
+          </ThemedText>
         </ThemedView>
 
-        <ThemedView style={styles.formContainer}>
-          <ThemedText style={styles.sectionTitle}>
+        <ThemedView
+          style={[
+            styles.formContainer,
+            isSmallDevice && styles.smallFormContainer,
+          ]}
+        >
+          <ThemedText
+            style={[
+              styles.sectionTitle,
+              isSmallDevice && styles.smallSectionTitle,
+            ]}
+          >
             Información General
           </ThemedText>
 
@@ -184,7 +209,11 @@ const DetallesInsumosPage = ({ route }: EditarInsumoProps) => {
             error={errors.cantidadSku?.message}
           />
 
-          <ThemedText style={styles.label}>Categorías*</ThemedText>
+          <ThemedText
+            style={[styles.label, isSmallDevice && styles.smallLabel]}
+          >
+            Categorías*
+          </ThemedText>
           <View style={styles.chipsContainer}>
             {selectedCategories.map((category) => (
               <Chip
@@ -202,7 +231,11 @@ const DetallesInsumosPage = ({ route }: EditarInsumoProps) => {
             value={newCategory}
             onChangeText={setNewCategory}
             onSubmitEditing={handleAddCategory}
-            style={[styles.input, { flex: 1 }]}
+            style={[
+              styles.input,
+              { flex: 1 },
+              isSmallDevice && { marginRight: 8 },
+            ]}
           />
           <ThemedView style={styles.addInputContainer}>
             <ThemedButton
@@ -215,7 +248,12 @@ const DetallesInsumosPage = ({ route }: EditarInsumoProps) => {
 
           {categoriesOptions.length > 0 && (
             <View style={styles.suggestionsContainer}>
-              <ThemedText style={styles.suggestionsTitle}>
+              <ThemedText
+                style={[
+                  styles.suggestionsTitle,
+                  isSmallDevice && styles.smallSuggestionsTitle,
+                ]}
+              >
                 Sugerencias categorias
               </ThemedText>
               <View style={styles.suggestions}>
@@ -225,6 +263,7 @@ const DetallesInsumosPage = ({ route }: EditarInsumoProps) => {
                     mode="outlined"
                     style={[
                       styles.suggestionChip,
+                      isSmallDevice && styles.smallSuggestionChip,
                       selectedCategories.includes(category) && { opacity: 0.5 },
                     ]}
                     onPress={() => {
@@ -262,14 +301,12 @@ const DetallesInsumosPage = ({ route }: EditarInsumoProps) => {
             error={errors.intereses?.message}
           />
 
-          <ThemedView style={styles.buttonContainer}>
-            <ThemedButton
-              onPress={handleSubmit(onSubmit)}
-              icon="save-outline"
-              title="Actualizar Datos"
-              disabled={mutation.isPending}
-            />
-          </ThemedView>
+          <ThemedButton
+            onPress={handleSubmit(onSubmit)}
+            icon="save-outline"
+            title="Actualizar Datos"
+            disabled={mutation.isPending}
+          />
         </ThemedView>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -285,10 +322,32 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingBottom: 30,
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    paddingHorizontal: 16,
+  },
+  messageErrorContainer: {
+    marginBottom: 20,
+  },
+  smallErrorText: {
+    fontSize: 14,
+  },
   title: {
     fontSize: 28,
     marginBottom: 16,
     fontWeight: "bold",
+  },
+  smallTitle: {
+    fontSize: 24,
+  },
+  largeTitle: {
+    fontSize: 32,
   },
   header: {
     alignItems: "center",
@@ -305,6 +364,9 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 3,
   },
+  smallFormContainer: {
+    padding: 16,
+  },
   input: {
     marginBottom: 16,
     width: "100%",
@@ -319,16 +381,17 @@ const styles = StyleSheet.create({
     color: "#555",
     marginTop: 8,
   },
+  smallSectionTitle: {
+    fontSize: 14,
+  },
   label: {
     fontSize: 14,
     fontWeight: "500",
     marginBottom: 8,
     color: "#555",
   },
-  buttonContainer: {
-    marginTop: 20,
-    borderRadius: 8,
-    overflow: "hidden",
+  smallLabel: {
+    fontSize: 13,
   },
   chipsContainer: {
     flexDirection: "row",
@@ -340,13 +403,24 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     backgroundColor: "#e0e0e0",
   },
-  categoryInputContainer: {
+  smallChip: {
+    marginRight: 6,
+    marginBottom: 6,
+    height: 32,
+  },
+  addInputContainer: {
     flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 16,
   },
   addButton: {
-    marginLeft: 8,
     height: 40,
     justifyContent: "center",
+  },
+  smallAddButton: {
+    height: 36,
+    paddingHorizontal: 12,
   },
   suggestionsContainer: {
     marginTop: 12,
@@ -355,6 +429,10 @@ const styles = StyleSheet.create({
   suggestionsTitle: {
     marginBottom: 8,
     color: "#666",
+    fontSize: 14,
+  },
+  smallSuggestionsTitle: {
+    fontSize: 13,
   },
   suggestions: {
     flexDirection: "row",
@@ -364,20 +442,16 @@ const styles = StyleSheet.create({
   suggestionChip: {
     borderRadius: 8,
   },
+  smallSuggestionChip: {
+    height: 32,
+  },
   multilineInput: {
     minHeight: 100,
     textAlignVertical: "top",
   },
-  addInputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-end",
-    marginBottom: 16,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+  submitButton: {
+    marginTop: 20,
+    borderRadius: 8,
   },
 });
 

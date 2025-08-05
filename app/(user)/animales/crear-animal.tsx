@@ -50,6 +50,9 @@ const CrearAnimal = () => {
   const { colors } = useTheme();
   const primary = useThemeColor({}, "primary");
   const { height, width } = useWindowDimensions();
+
+  const isSmallScreen = width < 375;
+
   const [valor, setValor] = useState<"animal" | "padre" | "madre">("animal");
   const navigation = useNavigation();
   const queryClient = useQueryClient();
@@ -417,15 +420,18 @@ const CrearAnimal = () => {
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={{ flex: 1 }}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
     >
-      <ThemedView
-        style={[styles.container, { backgroundColor: colors.background }]}
-      >
+      <ThemedView style={styles.container}>
         <ScrollView
-          contentContainerStyle={[styles.scrollContainer]}
+          contentContainerStyle={[
+            styles.scrollContainer,
+            { paddingBottom: isSmallScreen ? 20 : 40 },
+          ]}
           keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
-          <ThemedView style={{ marginBottom: 12 }}>
+          <ThemedView style={styles.segmentedButtonsContainer}>
             <SegmentedButtons
               value={valor}
               onValueChange={(value) =>
@@ -434,34 +440,54 @@ const CrearAnimal = () => {
               buttons={[
                 {
                   value: "animal",
-                  label: "Animal",
+                  label: isSmallScreen ? "Animal" : "Datos Animal",
                   icon: "paw",
                   style: valor === "animal" ? { backgroundColor: primary } : {},
-                  labelStyle: valor === "animal" ? { color: "#fff" } : {},
+                  labelStyle: [
+                    styles.segmentedButtonLabel,
+                    valor === "animal" ? { color: "#fff" } : {},
+                    isSmallScreen && { fontSize: 12 },
+                  ],
                 },
                 {
                   value: "padre",
-                  label: "Padre",
+                  label: isSmallScreen ? "Padre" : "Datos Padre",
                   icon: "gender-male",
                   style: valor === "padre" ? { backgroundColor: primary } : {},
-                  labelStyle: valor === "padre" ? { color: "#fff" } : {},
+                  labelStyle: [
+                    styles.segmentedButtonLabel,
+                    valor === "padre" ? { color: "#fff" } : {},
+                    isSmallScreen && { fontSize: 12 },
+                  ],
                 },
                 {
                   value: "madre",
-                  label: "Madre",
+                  label: isSmallScreen ? "Madre" : "Datos Madre",
                   icon: "gender-female",
                   style: valor === "madre" ? { backgroundColor: primary } : {},
-                  labelStyle: valor === "madre" ? { color: "#fff" } : {},
+                  labelStyle: [
+                    styles.segmentedButtonLabel,
+                    valor === "madre" ? { color: "#fff" } : {},
+                    isSmallScreen && { fontSize: 12 },
+                  ],
                 },
               ]}
+              style={styles.segmentedButtons}
             />
           </ThemedView>
-          <View style={[styles.formContainer, { width: width * 0.9 }]}>
+
+          <View style={[styles.formContainer, { width: width * 0.95 }]}>
             {valor === "animal" && (
-              <ThemedView
-                style={{ marginBottom: 20, backgroundColor: colors.background }}
-              >
-                <Text style={styles.sectionTitle}>Datos del animal</Text>
+              <ThemedView style={styles.section}>
+                <Text
+                  style={[
+                    styles.sectionTitle,
+                    isSmallScreen && { fontSize: 18 },
+                  ]}
+                >
+                  Datos del animal
+                </Text>
+
                 <ThemedPicker
                   items={especiesItmes}
                   onValueChange={(value) => setValue("especie", value)}
@@ -490,7 +516,11 @@ const CrearAnimal = () => {
                 />
 
                 <ThemedTextInput
-                  placeholder="Arete (ingrese 6 dígitos)"
+                  placeholder={
+                    isSmallScreen
+                      ? "Arete (6 dígitos)"
+                      : "Arete (ingrese 6 dígitos)"
+                  }
                   icon="warning-outline"
                   value={watch("identificador_temp") || ""}
                   onChangeText={handleIdentifierChange}
@@ -503,7 +533,9 @@ const CrearAnimal = () => {
                 />
 
                 {showIdentifierHelp && (
-                  <Text style={styles.helpText}>
+                  <Text
+                    style={[styles.helpText, isSmallScreen && { fontSize: 10 }]}
+                  >
                     PRIMEROS SEIS DÍGITOS DE IDENTIFICACIÓN DEL ARETE
                   </Text>
                 )}
@@ -537,7 +569,7 @@ const CrearAnimal = () => {
                     setValue("tipo_reproduccion", value)
                   }
                   selectedValue={watch("tipo_reproduccion")}
-                  placeholder="Selecciona tipo de reproducción"
+                  placeholder="Tipo de reproducción"
                   icon="git-compare-outline"
                   error={errors.tipo_reproduccion?.message}
                 />
@@ -550,11 +582,12 @@ const CrearAnimal = () => {
                   icon="options-outline"
                   error={errors.produccion?.message}
                 />
+
                 <ThemedPicker
                   items={tipoProduccionItems}
                   onValueChange={(value) => setValue("tipo_produccion", value)}
                   selectedValue={watch("tipo_produccion")}
-                  placeholder="Selecciona el tipo producción"
+                  placeholder="Tipo producción"
                   icon="options-outline"
                   error={errors.tipo_produccion?.message}
                 />
@@ -581,13 +614,20 @@ const CrearAnimal = () => {
                         : new Date()
                     }
                     mode="date"
-                    display="spinner"
+                    display={isSmallScreen ? "default" : "spinner"}
                     onChange={handleDateChange}
                   />
                 )}
 
                 <View style={styles.sectionContainer}>
-                  <Text style={styles.sectionTitle}>Tipo de alimentación</Text>
+                  <Text
+                    style={[
+                      styles.sectionTitle,
+                      isSmallScreen && { fontSize: 16 },
+                    ]}
+                  >
+                    Tipo de alimentación
+                  </Text>
                   {alimentosOptions.map((alimento) => {
                     const alimentoSeleccionado = tipoAlimentacion.find(
                       (a) => a.alimento === alimento.value
@@ -596,18 +636,16 @@ const CrearAnimal = () => {
                     return (
                       <View
                         key={alimento.value}
-                        style={styles.categoryContainer}
+                        style={[
+                          styles.categoryContainer,
+                          isSmallScreen && { padding: 8 },
+                        ]}
                       >
                         <TouchableOpacity
                           style={styles.categoryHeader}
                           onPress={() => toggleAlimentoExpand(alimento.value)}
                         >
-                          <View
-                            style={{
-                              flexDirection: "row",
-                              alignItems: "center",
-                            }}
-                          >
+                          <View style={styles.checkboxContainer}>
                             <Checkbox
                               status={
                                 isAlimentoSeleccionado(alimento.value)
@@ -635,7 +673,12 @@ const CrearAnimal = () => {
                               }}
                               color={colors.primary}
                             />
-                            <ThemedText style={styles.categoryTitle}>
+                            <ThemedText
+                              style={[
+                                styles.categoryTitle,
+                                isSmallScreen && { fontSize: 14 },
+                              ]}
+                            >
                               {alimento.label}
                             </ThemedText>
                           </View>
@@ -646,7 +689,7 @@ const CrearAnimal = () => {
                                 ? "chevron-up"
                                 : "chevron-down"
                             }
-                            size={16}
+                            size={isSmallScreen ? 14 : 16}
                             color={colors.primary}
                           />
                         </TouchableOpacity>
@@ -687,7 +730,12 @@ const CrearAnimal = () => {
                                       }
                                       color={colors.primary}
                                     />
-                                    <ThemedText style={styles.subserviceText}>
+                                    <ThemedText
+                                      style={[
+                                        styles.subserviceText,
+                                        isSmallScreen && { fontSize: 13 },
+                                      ]}
+                                    >
                                       {origen === "comprado"
                                         ? "Comprado"
                                         : origen === "producido"
@@ -706,7 +754,10 @@ const CrearAnimal = () => {
                                           style={styles.percentageInputWrapper}
                                         >
                                           <ThemedText
-                                            style={styles.percentageLabel}
+                                            style={[
+                                              styles.percentageLabel,
+                                              isSmallScreen && { fontSize: 12 },
+                                            ]}
                                           >
                                             % Comprado:
                                           </ThemedText>
@@ -742,7 +793,10 @@ const CrearAnimal = () => {
                                               }
                                             }}
                                             keyboardType="number-pad"
-                                            style={styles.percentageInput}
+                                            style={[
+                                              styles.percentageInput,
+                                              isSmallScreen && { height: 35 },
+                                            ]}
                                             maxLength={3}
                                           />
                                         </View>
@@ -751,7 +805,10 @@ const CrearAnimal = () => {
                                           style={styles.percentageInputWrapper}
                                         >
                                           <ThemedText
-                                            style={styles.percentageLabel}
+                                            style={[
+                                              styles.percentageLabel,
+                                              isSmallScreen && { fontSize: 12 },
+                                            ]}
                                           >
                                             % Producido:
                                           </ThemedText>
@@ -787,7 +844,10 @@ const CrearAnimal = () => {
                                               }
                                             }}
                                             keyboardType="number-pad"
-                                            style={styles.percentageInput}
+                                            style={[
+                                              styles.percentageInput,
+                                              isSmallScreen && { height: 35 },
+                                            ]}
                                             maxLength={3}
                                           />
                                         </View>
@@ -799,7 +859,14 @@ const CrearAnimal = () => {
                                           alimentoSeleccionado.porcentaje_comprado +
                                             alimentoSeleccionado.porcentaje_producido !==
                                             100 && (
-                                            <Text style={styles.errorText}>
+                                            <Text
+                                              style={[
+                                                styles.errorText,
+                                                isSmallScreen && {
+                                                  fontSize: 11,
+                                                },
+                                              ]}
+                                            >
                                               La suma de porcentajes debe ser
                                               100%
                                             </Text>
@@ -816,18 +883,32 @@ const CrearAnimal = () => {
                 </View>
 
                 <View style={styles.sectionContainer}>
-                  <Text style={styles.sectionTitle}>Tipo de complemento</Text>
-                  {complementosOptions.map((complemento) => (
-                    <ThemedCheckbox
-                      key={complemento.value}
-                      label={complemento.label}
-                      value={complemento.value}
-                      onPress={handleAlimentoChange}
-                      isSelected={complementoSeleccionados.includes(
-                        complemento.value
-                      )}
-                    />
-                  ))}
+                  <Text
+                    style={[
+                      styles.sectionTitle,
+                      isSmallScreen && { fontSize: 16 },
+                    ]}
+                  >
+                    Tipo de complemento
+                  </Text>
+                  <View
+                    style={[
+                      styles.complementosContainer,
+                      isSmallScreen && { flexDirection: "column" },
+                    ]}
+                  >
+                    {complementosOptions.map((complemento) => (
+                      <ThemedCheckbox
+                        key={complemento.value}
+                        label={complemento.label}
+                        value={complemento.value}
+                        onPress={handleAlimentoChange}
+                        isSelected={complementoSeleccionados.includes(
+                          complemento.value
+                        )}
+                      />
+                    ))}
+                  </View>
                 </View>
 
                 <ThemedTextInput
@@ -841,7 +922,14 @@ const CrearAnimal = () => {
 
                 {selectedSexo === "Macho" && (
                   <View style={styles.switchContainer}>
-                    <Text style={styles.switchLabel}>Castrado</Text>
+                    <Text
+                      style={[
+                        styles.switchLabel,
+                        isSmallScreen && { fontSize: 14 },
+                      ]}
+                    >
+                      Castrado
+                    </Text>
                     <Switch
                       value={watch("castrado") || false}
                       onValueChange={(value) => setValue("castrado", value)}
@@ -852,7 +940,14 @@ const CrearAnimal = () => {
 
                 {selectedSexo === "Hembra" && (
                   <View style={styles.switchContainer}>
-                    <Text style={styles.switchLabel}>Esterilizado</Text>
+                    <Text
+                      style={[
+                        styles.switchLabel,
+                        isSmallScreen && { fontSize: 14 },
+                      ]}
+                    >
+                      Esterilizado
+                    </Text>
                     <Switch
                       value={watch("esterelizado") || false}
                       onValueChange={(value) => setValue("esterelizado", value)}
@@ -868,6 +963,8 @@ const CrearAnimal = () => {
                   onChangeText={(text) => setValue("observaciones", text)}
                   error={errors.observaciones?.message}
                   style={[styles.input, styles.multilineInput]}
+                  multiline
+                  numberOfLines={3}
                 />
 
                 <ThemedPicker
@@ -890,7 +987,14 @@ const CrearAnimal = () => {
                     style={styles.radioItem}
                   >
                     <Checkbox status={checkAnimal ? "checked" : "unchecked"} />
-                    <Text>¿Animal fue comprado?</Text>
+                    <Text
+                      style={[
+                        styles.radioText,
+                        isSmallScreen && { fontSize: 14 },
+                      ]}
+                    >
+                      ¿Animal fue comprado?
+                    </Text>
                   </TouchableOpacity>
                 </View>
 
@@ -909,16 +1013,18 @@ const CrearAnimal = () => {
                 <ButtonNext onPress={() => setValor("padre")} />
               </ThemedView>
             )}
-            {/* DATOS PADRE */}
 
+            {/* DATOS PADRE */}
             {valor === "padre" && (
-              <View
-                style={[
-                  styles.sectionContainer,
-                  { backgroundColor: colors.background },
-                ]}
-              >
-                <Text style={styles.sectionTitle}>Datos del padre</Text>
+              <View style={styles.section}>
+                <Text
+                  style={[
+                    styles.sectionTitle,
+                    isSmallScreen && { fontSize: 18 },
+                  ]}
+                >
+                  Datos del padre
+                </Text>
                 <ThemedTextInput
                   placeholder="Nombre Padre (opcional)"
                   icon="aperture-outline"
@@ -928,7 +1034,11 @@ const CrearAnimal = () => {
                   style={[styles.input, styles.multilineInput]}
                 />
                 <ThemedTextInput
-                  placeholder="Arete Padre (ingrese 6 dígitos)"
+                  placeholder={
+                    isSmallScreen
+                      ? "Arete Padre (6 dígitos)"
+                      : "Arete Padre (ingrese 6 dígitos)"
+                  }
                   icon="warning-outline"
                   value={watch("identificador_temp_padre") || ""}
                   onChangeText={handleIdentifierChangePadre}
@@ -940,7 +1050,9 @@ const CrearAnimal = () => {
                   maxLength={6}
                 />
                 {showIdentifierHelp1 && (
-                  <Text style={styles.helpText}>
+                  <Text
+                    style={[styles.helpText, isSmallScreen && { fontSize: 10 }]}
+                  >
                     PRIMEROS SEIS DIGITOS DE IDENTIFICACIÓN DEL ARETE
                   </Text>
                 )}
@@ -1000,14 +1112,17 @@ const CrearAnimal = () => {
               </View>
             )}
 
+            {/* DATOS MADRE */}
             {valor === "madre" && (
-              <View
-                style={[
-                  styles.sectionContainer,
-                  { backgroundColor: colors.background },
-                ]}
-              >
-                <Text style={styles.sectionTitle}>Datos de la madre</Text>
+              <View style={styles.section}>
+                <Text
+                  style={[
+                    styles.sectionTitle,
+                    isSmallScreen && { fontSize: 18 },
+                  ]}
+                >
+                  Datos de la madre
+                </Text>
                 <ThemedTextInput
                   placeholder="Nombre Madre (opcional)"
                   icon="aperture-outline"
@@ -1017,7 +1132,11 @@ const CrearAnimal = () => {
                   style={[styles.input, styles.multilineInput]}
                 />
                 <ThemedTextInput
-                  placeholder="Arete Madre (ingrese 6 dígitos)"
+                  placeholder={
+                    isSmallScreen
+                      ? "Arete Madre (6 dígitos)"
+                      : "Arete Madre (ingrese 6 dígitos)"
+                  }
                   icon="warning-outline"
                   value={watch("identificador_temp_madre") || ""}
                   onChangeText={handleIdentifierChangeMadre}
@@ -1029,7 +1148,9 @@ const CrearAnimal = () => {
                   maxLength={6}
                 />
                 {showIdentifierHelp2 && (
-                  <Text style={styles.helpText}>
+                  <Text
+                    style={[styles.helpText, isSmallScreen && { fontSize: 10 }]}
+                  >
                     PRIMEROS SEIS DIGITOS DE IDENTIFICACIÓN DEL ARETE
                   </Text>
                 )}
@@ -1101,7 +1222,6 @@ const CrearAnimal = () => {
                   onPress={handleSubmit(onSubmit)}
                   icon="arrow-forward-outline"
                   loading={mutation.isPending}
-                  style={styles.submitButton}
                 />
               </View>
             )}
@@ -1116,19 +1236,33 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    alignItems: "center",
   },
   scrollContainer: {
-    paddingVertical: 20,
-    paddingHorizontal: 10,
+    flexGrow: 1,
+    paddingTop: 16,
+    paddingHorizontal: 8,
     justifyContent: "center",
+  },
+  segmentedButtonsContainer: {
+    marginBottom: 16,
+    paddingHorizontal: 8,
+  },
+  segmentedButtons: {
+    marginBottom: 12,
+  },
+  segmentedButtonLabel: {
+    fontSize: 14,
   },
   formContainer: {
     maxWidth: 500,
     alignSelf: "center",
   },
+  section: {
+    marginBottom: 20,
+    width: "100%",
+  },
   input: {
-    marginBottom: 15,
+    marginBottom: 12,
     width: "100%",
   },
   multilineInput: {
@@ -1140,40 +1274,32 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 8,
   },
-  datePicker: {
-    width: "100%",
-    marginBottom: 15,
-  },
   sectionContainer: {
-    marginBottom: 15,
+    marginBottom: 16,
     width: "100%",
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: "bold",
-    marginBottom: 10,
+    marginBottom: 12,
     color: "#333",
   },
   switchContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 15,
+    marginBottom: 16,
     width: "100%",
   },
   switchLabel: {
     fontSize: 16,
     color: "#333",
+    flex: 1,
   },
   errorText: {
     color: "red",
     fontSize: 12,
     marginTop: 5,
-  },
-  identifierPreview: {
-    marginBottom: 15,
-    color: "#666",
-    fontSize: 14,
   },
   helpText: {
     color: "#e63946",
@@ -1184,18 +1310,23 @@ const styles = StyleSheet.create({
   categoryContainer: {
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "#ddd",
     borderRadius: 8,
-    padding: 10,
+    padding: 12,
   },
   categoryHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
+  checkboxContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
   categoryTitle: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: "500",
+    marginLeft: 8,
   },
   subservicesContainer: {
     marginTop: 10,
@@ -1211,15 +1342,10 @@ const styles = StyleSheet.create({
   },
   subserviceText: {
     marginLeft: 8,
+    fontSize: 14,
   },
-  radioItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 10,
-  },
-
   selectedSubserviceItem: {
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#f5f5f5",
   },
   percentageInputsContainer: {
     marginLeft: 40,
@@ -1232,7 +1358,7 @@ const styles = StyleSheet.create({
   percentageLabel: {
     fontSize: 14,
     marginBottom: 4,
-    color: "#333",
+    color: "#555",
   },
   percentageInput: {
     height: 40,
@@ -1242,6 +1368,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     fontSize: 16,
     backgroundColor: "#fff",
+  },
+  radioItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  radioText: {
+    fontSize: 16,
+    marginLeft: 8,
+  },
+  complementosContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
   },
 });
 

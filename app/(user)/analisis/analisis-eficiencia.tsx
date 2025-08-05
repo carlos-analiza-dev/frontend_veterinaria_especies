@@ -1,3 +1,16 @@
+import React, { useState } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  Platform,
+  RefreshControl,
+  SafeAreaView,
+  StyleSheet,
+  View,
+  useWindowDimensions,
+} from "react-native";
+import { useTheme } from "react-native-paper";
+
 import { Analisis } from "@/core/analisis_suelo/interface/response-analisis-suelo.interface";
 import useGetAnalisisSuelo from "@/hooks/analisis_suelo/useGetAnalisisSuelo";
 import CardAnalisisSuelo from "@/presentation/components/analisis_suelo/CardAnalisisSuelo";
@@ -6,31 +19,18 @@ import MessageError from "@/presentation/components/MessageError";
 import ThemedButton from "@/presentation/theme/components/ThemedButton";
 import { ThemedText } from "@/presentation/theme/components/ThemedText";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
-import React, { useState } from "react";
-import {
-  ActivityIndicator,
-  FlatList,
-  RefreshControl,
-  StyleSheet,
-  View,
-} from "react-native";
-import { useTheme } from "react-native-paper";
 
 const AnalisisEficienciaPage = () => {
-  const theme = useTheme();
-  const limit = 10;
-  const [visible, setVisible] = React.useState(false);
-  const showModal = () => setVisible(true);
+  const { width } = useWindowDimensions();
+  const isTiny = width < 350;
+  const isSmall = width < 400;
+  const isLarge = width >= 430;
 
+  const limit = 10;
+  const theme = useTheme();
+  const [visible, setVisible] = useState(false);
   const [editingAnalisis, setEditingAnalisis] = useState<Analisis | null>(null);
-  const hideModal = () => {
-    setVisible(false);
-    setEditingAnalisis(null);
-  };
-  const handleEdit = (analisis: Analisis) => {
-    setEditingAnalisis(analisis);
-    setVisible(true);
-  };
+
   const {
     data,
     isError,
@@ -42,21 +42,25 @@ const AnalisisEficienciaPage = () => {
     isRefetching,
   } = useGetAnalisisSuelo(limit);
 
+  const showModal = () => setVisible(true);
+  const hideModal = () => {
+    setVisible(false);
+    setEditingAnalisis(null);
+  };
+  const handleEdit = (analisis: Analisis) => {
+    setEditingAnalisis(analisis);
+    setVisible(true);
+  };
   const loadMore = () => {
-    if (hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
-    }
+    if (hasNextPage && !isFetchingNextPage) fetchNextPage();
   };
 
-  const allAnalisis = data?.pages.flatMap((page) => page.data.data) || [];
+  const allAnalisis = data?.pages.flatMap((p) => p.data.data) ?? [];
 
   if (isLoading && !isRefetching) {
     return (
       <View
-        style={[
-          styles.loadingContainer,
-          { backgroundColor: theme.colors.background },
-        ]}
+        style={[styles.center, { backgroundColor: theme.colors.background }]}
       >
         <ActivityIndicator size="large" />
       </View>
@@ -65,22 +69,21 @@ const AnalisisEficienciaPage = () => {
 
   if (isError) {
     return (
-      <ThemedView style={styles.container}>
-        <ThemedButton
-          icon="add-outline"
-          onPress={showModal}
-          style={styles.addButton}
-          title="Agregar Análisis"
+      <ThemedView style={styles.flex}>
+        <Header
+          onPressAdd={showModal}
+          isSmall={isSmall}
+          isTiny={isTiny}
+          isLarge={isLarge}
         />
-
         <MessageError
           titulo="Error al cargar análisis"
           descripcion="Ocurrió un problema al cargar los análisis de suelo. Por favor intente nuevamente."
         />
         <ThemedButton
           icon="refresh"
-          onPress={() => refetch()}
-          style={styles.retryButton}
+          onPress={refetch}
+          style={styles.retryBtn}
           title="Reintentar"
         />
         <ModalAgregarAnalisis visible={visible} hideModal={hideModal} />
@@ -89,18 +92,13 @@ const AnalisisEficienciaPage = () => {
   }
 
   return (
-    <ThemedView style={styles.container}>
-      <ThemedView style={styles.header}>
-        <ThemedText type="title" style={styles.title}>
-          Análisis de Suelo
-        </ThemedText>
-        <ThemedButton
-          icon="add-outline"
-          onPress={showModal}
-          style={styles.addButton}
-          title="Nuevo Análisis"
-        />
-      </ThemedView>
+    <SafeAreaView style={styles.flex}>
+      <Header
+        onPressAdd={showModal}
+        isSmall={isSmall}
+        isTiny={isTiny}
+        isLarge={isLarge}
+      />
 
       <FlatList
         data={allAnalisis}
@@ -108,23 +106,29 @@ const AnalisisEficienciaPage = () => {
         renderItem={({ item }) => (
           <CardAnalisisSuelo analisis={item} handleEdit={handleEdit} />
         )}
-        contentContainerStyle={styles.listContainer}
+        contentContainerStyle={{
+          paddingHorizontal: isTiny ? 8 : isLarge ? 20 : 12,
+          paddingBottom: 24,
+        }}
         onEndReached={loadMore}
-        onEndReachedThreshold={0.2}
+        onEndReachedThreshold={0.15}
         refreshControl={
           <RefreshControl
             refreshing={isRefetching}
             onRefresh={refetch}
-            colors={[theme.colors.primary]}
+            colors={
+              Platform.OS === "android" ? [theme.colors.primary] : undefined
+            }
+            tintColor={theme.colors.primary}
           />
         }
         ListFooterComponent={
           isFetchingNextPage ? (
-            <ActivityIndicator size="small" style={styles.footerLoader} />
+            <ActivityIndicator size="small" style={{ marginVertical: 16 }} />
           ) : null
         }
         ListEmptyComponent={
-          <View style={styles.emptyContainer}>
+          <View style={styles.empty}>
             <MessageError
               titulo="No hay análisis registrados"
               descripcion="No se encontraron análisis de suelo para mostrar."
@@ -132,69 +136,75 @@ const AnalisisEficienciaPage = () => {
             <ThemedButton
               icon="add-outline"
               onPress={showModal}
-              style={styles.emptyButton}
+              style={styles.emptyBtn}
               title="Crear Primer Análisis"
             />
           </View>
         }
       />
+
       <ModalAgregarAnalisis
         visible={visible}
         hideModal={hideModal}
         editingAnalisis={editingAnalisis}
       />
-    </ThemedView>
+    </SafeAreaView>
   );
 };
 
+const Header = ({
+  onPressAdd,
+  isSmall,
+  isTiny,
+  isLarge,
+}: {
+  onPressAdd: () => void;
+  isSmall: boolean;
+  isTiny: boolean;
+  isLarge: boolean;
+}) => (
+  <ThemedView
+    style={{
+      paddingVertical: isTiny ? 8 : 12,
+      paddingHorizontal: isTiny ? 12 : isLarge ? 24 : 16,
+      borderBottomWidth: StyleSheet.hairlineWidth,
+      borderBottomColor: "#cfd0d0",
+    }}
+  >
+    <ThemedText
+      type="title"
+      style={{
+        fontSize: isTiny ? 20 : isSmall ? 22 : 24,
+        fontWeight: "bold",
+        textAlign: "center",
+        marginBottom: isTiny ? 8 : 12,
+      }}
+    >
+      Análisis de Suelo
+    </ThemedText>
+
+    <ThemedButton
+      icon="add-outline"
+      onPress={onPressAdd}
+      style={{ borderRadius: 8, alignSelf: "center" }}
+      title="Nuevo Análisis"
+    />
+  </ThemedView>
+);
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  header: {
-    padding: 16,
-    paddingBottom: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 16,
-    textAlign: "center",
-  },
-  addButton: {
-    marginBottom: 16,
-    borderRadius: 8,
-  },
-  listContainer: {
-    padding: 8,
-  },
-  card: {
-    marginBottom: 12,
-  },
-  footerLoader: {
-    marginVertical: 16,
-  },
-  emptyContainer: {
+  flex: { flex: 1 },
+  center: { flex: 1, justifyContent: "center", alignItems: "center" },
+
+  empty: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     padding: 32,
   },
-  emptyButton: {
-    marginTop: 24,
-    borderRadius: 8,
-  },
-  retryButton: {
-    marginTop: 16,
-    borderRadius: 8,
-  },
+  emptyBtn: { marginTop: 24, borderRadius: 8 },
+
+  retryBtn: { marginTop: 16, borderRadius: 8 },
 });
 
 export default AnalisisEficienciaPage;

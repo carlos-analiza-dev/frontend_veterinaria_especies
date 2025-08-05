@@ -1,7 +1,7 @@
 import { Alternativa } from "@/core/produccion/interface/obter-producciones-userId.interface";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { Dimensions, Platform, StyleSheet, View } from "react-native";
 import { Divider, useTheme } from "react-native-paper";
 import { ThemedText } from "../../theme/components/ThemedText";
 
@@ -13,45 +13,125 @@ const ProduccionAlternativaCard: React.FC<ProduccionAlternativaCardProps> = ({
   alternativa,
 }) => {
   const theme = useTheme();
+  const windowWidth = Dimensions.get("window").width;
+  const isSmallScreen = windowWidth < 375;
+  const isMediumScreen = windowWidth >= 375 && windowWidth < 414;
+
+  const dynamicStyles = {
+    container: {
+      borderRadius: isSmallScreen ? 6 : 8,
+      marginBottom: isSmallScreen ? 6 : 8,
+      padding: isSmallScreen ? 10 : 12,
+    },
+    title: {
+      fontSize: isSmallScreen ? 16 : isMediumScreen ? 17 : 18,
+      marginBottom: isSmallScreen ? 10 : 12,
+    },
+    actividadTipo: {
+      fontSize: isSmallScreen ? 14 : 16,
+    },
+    textSize: isSmallScreen ? 12 : 14,
+    iconSize: isSmallScreen ? 16 : 20,
+    detailMargin: isSmallScreen ? 4 : 6,
+    dividerMargin: isSmallScreen ? 8 : 12,
+    detailsMargin: Platform.select({
+      ios: isSmallScreen ? 6 : 8,
+      android: isSmallScreen ? 4 : 6,
+      default: 8,
+    }),
+  };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.surface }]}>
-      <ThemedText style={styles.title}>
-        <MaterialCommunityIcons name="swap-horizontal" size={20} /> Actividades
-        Alternativas
+    <View
+      style={[
+        styles.container,
+        dynamicStyles.container,
+        { backgroundColor: theme.colors.surface },
+      ]}
+    >
+      <ThemedText style={[styles.title, dynamicStyles.title]}>
+        <MaterialCommunityIcons
+          name="swap-horizontal"
+          size={dynamicStyles.iconSize}
+        />{" "}
+        Actividades Alternativas
       </ThemedText>
 
       {alternativa.actividades.map((actividad, index) => (
         <View key={index} style={styles.actividadContainer}>
           <View style={styles.actividadHeader}>
-            <ThemedText style={styles.actividadTipo}>
+            <ThemedText
+              style={[styles.actividadTipo, dynamicStyles.actividadTipo]}
+            >
               {actividad.tipo}
             </ThemedText>
           </View>
 
-          <View style={styles.detailsContainer}>
-            <View style={styles.detailRow}>
-              <ThemedText style={styles.detailLabel}>
+          <View
+            style={[
+              styles.detailsContainer,
+              { marginLeft: dynamicStyles.detailsMargin },
+            ]}
+          >
+            <View
+              style={[
+                styles.detailRow,
+                { marginBottom: dynamicStyles.detailMargin },
+              ]}
+            >
+              <ThemedText
+                style={[
+                  styles.detailLabel,
+                  { fontSize: dynamicStyles.textSize },
+                ]}
+              >
                 Cantidad producida:
               </ThemedText>
-              <ThemedText>
+              <ThemedText style={{ fontSize: dynamicStyles.textSize }}>
                 {actividad.cantidad_producida} {actividad.unidad_medida || ""}
               </ThemedText>
             </View>
 
-            <View style={styles.detailRow}>
-              <ThemedText style={styles.detailLabel}>
+            <View
+              style={[
+                styles.detailRow,
+                { marginBottom: dynamicStyles.detailMargin },
+              ]}
+            >
+              <ThemedText
+                style={[
+                  styles.detailLabel,
+                  { fontSize: dynamicStyles.textSize },
+                ]}
+              >
                 Ingresos anuales:
               </ThemedText>
-              <ThemedText>
+              <ThemedText style={{ fontSize: dynamicStyles.textSize }}>
                 L {actividad.ingresos_anuales.toLocaleString()}
               </ThemedText>
             </View>
 
             {actividad.descripcion && (
-              <View style={styles.detailRow}>
-                <ThemedText style={styles.detailLabel}>Descripción:</ThemedText>
-                <ThemedText style={styles.descripcion}>
+              <View
+                style={[
+                  styles.detailRow,
+                  { marginBottom: dynamicStyles.detailMargin },
+                ]}
+              >
+                <ThemedText
+                  style={[
+                    styles.detailLabel,
+                    { fontSize: dynamicStyles.textSize },
+                  ]}
+                >
+                  Descripción:
+                </ThemedText>
+                <ThemedText
+                  style={[
+                    styles.descripcion,
+                    { fontSize: dynamicStyles.textSize },
+                  ]}
+                >
                   {actividad.descripcion}
                 </ThemedText>
               </View>
@@ -59,7 +139,12 @@ const ProduccionAlternativaCard: React.FC<ProduccionAlternativaCardProps> = ({
           </View>
 
           {index < alternativa.actividades.length - 1 && (
-            <Divider style={styles.divider} />
+            <Divider
+              style={[
+                styles.divider,
+                { marginVertical: dynamicStyles.dividerMargin },
+              ]}
+            />
           )}
         </View>
       ))}
@@ -71,11 +156,10 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: 8,
     marginBottom: 8,
+    padding: 12,
   },
   title: {
-    fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 12,
     flexDirection: "row",
     alignItems: "center",
   },
@@ -86,16 +170,12 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   actividadTipo: {
-    fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "bold",
   },
-  detailsContainer: {
-    marginLeft: 8,
-  },
+  detailsContainer: {},
   detailRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 6,
   },
   detailLabel: {
     fontWeight: "bold",
@@ -104,10 +184,12 @@ const styles = StyleSheet.create({
   descripcion: {
     flexShrink: 1,
     textAlign: "right",
+    flex: 1,
+    flexWrap: "wrap",
   },
   divider: {
-    marginVertical: 12,
     backgroundColor: "#D7CCC8",
+    height: 1,
   },
 });
 

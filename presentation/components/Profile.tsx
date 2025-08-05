@@ -6,13 +6,20 @@ import { useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
-import { Alert, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  Alert,
+  Dimensions,
+  Platform,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 import { Avatar } from "react-native-paper";
 import Toast from "react-native-toast-message";
 import MyIcon from "../auth/components/MyIcon";
 import { ThemedText } from "../theme/components/ThemedText";
 import { ThemedView } from "../theme/components/ThemedView";
 import ImageGallery from "./ImageGallery";
+const { width } = Dimensions.get("window");
 
 interface Props {
   user: User | undefined;
@@ -106,6 +113,80 @@ const Profile = ({ user, height, primary, onUpdateProfileImage }: Props) => {
     }
   };
 
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    header: {
+      backgroundColor: "black",
+      width: "100%",
+      position: "relative",
+    },
+    avatarWrapper: {
+      position: "absolute",
+      alignSelf: "flex-start",
+      marginLeft: width * 0.05,
+      borderRadius: 100,
+      borderWidth: 4,
+      borderColor: "white",
+      backgroundColor: "white",
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+      elevation: 5,
+    },
+    avatarImage: {
+      borderRadius: 50,
+    },
+    contentContainer: {
+      paddingHorizontal: width * 0.04,
+      marginTop: Platform.select({
+        ios: 60,
+        android: 50,
+        default: 60,
+      }),
+    },
+    userInfoHeader: {
+      marginBottom: 16,
+    },
+    username: {
+      color: "#657786",
+      fontSize: width > 400 ? 16 : 14,
+      marginTop: 4,
+    },
+    bio: {
+      fontSize: width > 400 ? 16 : 14,
+      marginBottom: 16,
+      lineHeight: 22,
+    },
+    detailsContainer: {
+      marginBottom: 16,
+      gap: 8,
+    },
+    detailItem: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+    },
+    detailText: {
+      fontSize: width > 400 ? 15 : 13,
+      color: "#657786",
+      flexShrink: 1,
+    },
+    editIcon: {
+      position: "absolute",
+      right: 0,
+      bottom: 0,
+      backgroundColor: "rgba(0,0,0,0.6)",
+      borderRadius: 15,
+      padding: 5,
+    },
+  });
+
   return (
     <ThemedView style={styles.container}>
       <ThemedView style={[styles.header, { height: height * 0.2 }]}>
@@ -188,90 +269,3 @@ const Profile = ({ user, height, primary, onUpdateProfileImage }: Props) => {
 };
 
 export default Profile;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    backgroundColor: "black",
-    width: "100%",
-    position: "relative",
-  },
-  avatarWrapper: {
-    position: "absolute",
-    alignSelf: "flex-start",
-    marginLeft: 20,
-    borderRadius: 100,
-    borderWidth: 4,
-    borderColor: "white",
-    backgroundColor: "white",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  avatarImage: {
-    borderRadius: 50,
-  },
-  contentContainer: {
-    paddingHorizontal: 16,
-  },
-  userInfoHeader: {
-    marginBottom: 16,
-  },
-  username: {
-    color: "#657786",
-    fontSize: 16,
-    marginTop: 4,
-  },
-  bio: {
-    fontSize: 16,
-    marginBottom: 16,
-    lineHeight: 22,
-  },
-  detailsContainer: {
-    marginBottom: 16,
-    gap: 8,
-  },
-  detailItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  detailText: {
-    fontSize: 15,
-    color: "#657786",
-  },
-  statsContainer: {
-    flexDirection: "row",
-    gap: 24,
-    marginTop: 16,
-    marginBottom: 24,
-  },
-  statItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  statNumber: {
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-  statLabel: {
-    fontSize: 14,
-    color: "#657786",
-  },
-  editIcon: {
-    position: "absolute",
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(0,0,0,0.6)",
-    borderRadius: 15,
-    padding: 5,
-  },
-});

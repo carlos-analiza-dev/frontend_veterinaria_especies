@@ -17,6 +17,7 @@ import React, { useRef, useState } from "react";
 import {
   Alert,
   Animated,
+  Dimensions,
   Easing,
   StyleSheet,
   TouchableOpacity,
@@ -24,6 +25,9 @@ import {
 } from "react-native";
 import { Avatar, Card, Divider, useTheme } from "react-native-paper";
 import Toast from "react-native-toast-message";
+const { height, width: screenWidth } = Dimensions.get("window");
+
+const isSmallScreen = screenWidth < 375;
 
 interface Props {
   animal: Animal;
@@ -33,6 +37,7 @@ interface Props {
 
 const AnimalCard = ({ animal, onPress, onUpdateProfileImage }: Props) => {
   const { colors } = useTheme();
+
   const scaleValue = useRef(new Animated.Value(1)).current;
   const queryClient = useQueryClient();
   const imageUrl = animal.profileImages[0]?.url?.replace(
@@ -173,7 +178,7 @@ const AnimalCard = ({ animal, onPress, onUpdateProfileImage }: Props) => {
               left={() => (
                 <TouchableOpacity onPress={openGallery}>
                   <Avatar.Image
-                    size={48}
+                    size={isSmallScreen ? 40 : 48}
                     source={
                       animal && animal?.profileImages.length > 0
                         ? { uri: imageUrl }
@@ -187,13 +192,20 @@ const AnimalCard = ({ animal, onPress, onUpdateProfileImage }: Props) => {
                   onPress={() => pickImage(animal.id)}
                   style={styles.editIcon}
                 >
-                  <MyIcon name="camera" size={20} color="white" />
+                  <MyIcon
+                    name="camera"
+                    size={isSmallScreen ? 18 : 20}
+                    color="white"
+                  />
                 </TouchableOpacity>
               )}
-              titleStyle={{ color: colors.onSurface }}
-              subtitleStyle={{ color: colors.onSurfaceVariant }}
+              titleStyle={[styles.title, { color: colors.onSurface }]}
+              subtitleStyle={[
+                styles.subtitle,
+                { color: colors.onSurfaceVariant },
+              ]}
             />
-            <Card.Content>
+            <Card.Content style={styles.content}>
               <InfoAnimal animal={animal} />
 
               {animal.tipo_alimentacion.length > 0 && (
@@ -270,25 +282,37 @@ const AnimalCard = ({ animal, onPress, onUpdateProfileImage }: Props) => {
 const styles = StyleSheet.create({
   cardContainer: {
     marginBottom: 12,
-    marginHorizontal: 8,
+    marginHorizontal: isSmallScreen ? 4 : 8,
   },
   card: {
     elevation: 2,
     borderRadius: 12,
     overflow: "hidden",
   },
-
+  title: {
+    fontSize: isSmallScreen ? 16 : 18,
+    fontWeight: "bold",
+    marginBottom: 2,
+  },
+  subtitle: {
+    fontSize: isSmallScreen ? 12 : 14,
+    marginTop: 2,
+  },
+  content: {
+    paddingHorizontal: isSmallScreen ? 10 : 16,
+    paddingVertical: isSmallScreen ? 8 : 12,
+  },
   divider: {
     height: 1,
-    marginVertical: 8,
+    marginVertical: isSmallScreen ? 6 : 8,
   },
   editIcon: {
     position: "absolute",
-    right: 0,
-    bottom: 0,
+    right: isSmallScreen ? 4 : 8,
+    bottom: isSmallScreen ? 4 : 8,
     backgroundColor: "rgba(0,0,0,0.6)",
     borderRadius: 15,
-    padding: 5,
+    padding: isSmallScreen ? 4 : 5,
   },
 });
 

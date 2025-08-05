@@ -11,7 +11,9 @@ import { isAxiosError } from "axios";
 import React, { useCallback, useState } from "react";
 import {
   ActivityIndicator,
+  Dimensions,
   FlatList,
+  Platform,
   RefreshControl,
   StyleSheet,
   Text,
@@ -31,9 +33,66 @@ const CitasPendientesVeterinario = () => {
   const userId = user?.id || "";
   const limit = 10;
   const [mostrarHojaRuta, setMostrarHojaRuta] = useState(false);
+  const { width, height } = Dimensions.get("window");
+  const isSmallDevice = width < 375;
+  const isTablet = width >= 768;
 
-  const styles = createStyles(textColor, emptyTextColor);
+  const getStyles = (textColor: string, emptyTextColor: string) =>
+    StyleSheet.create({
+      container: {
+        flex: 1,
+        padding: isSmallDevice ? 8 : isTablet ? 20 : 12,
+      },
+      title: {
+        fontSize: isSmallDevice ? 20 : isTablet ? 26 : 22,
+        fontWeight: "bold",
+        marginVertical: isSmallDevice ? 10 : 15,
+        textAlign: "center",
+        color: textColor,
+      },
+      loadingContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+      },
+      listContent: {
+        paddingBottom: isTablet ? 30 : 20,
+      },
+      emptyContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 20,
+      },
+      emptyText: {
+        fontSize: isSmallDevice ? 14 : 16,
+        color: emptyTextColor,
+        textAlign: "center",
+      },
+      footerLoader: {
+        marginVertical: 20,
+      },
+      button: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: isSmallDevice ? 10 : isTablet ? 15 : 12,
+        borderRadius: 8,
+        marginBottom: isSmallDevice ? 12 : 16,
+        marginHorizontal: isTablet ? width * 0.2 : 0,
+      },
+      buttonText: {
+        color: "white",
+        marginLeft: 8,
+        fontWeight: "bold",
+        fontSize: isSmallDevice ? 14 : 16,
+      },
+      cardContainer: {
+        marginHorizontal: isTablet ? width * 0.1 : 0,
+      },
+    });
 
+  const currentStyles = getStyles(textColor, emptyTextColor);
   const {
     data: citas,
     isLoading,
@@ -131,10 +190,7 @@ const CitasPendientesVeterinario = () => {
     </ThemedView>;
   }
 
-  const allCitas =
-    citas?.pages
-      .flatMap((page) => page.citas)
-      .filter((cita) => cita.estado.toLowerCase() === "pendiente") || [];
+  const allCitas = citas?.pages.flatMap((page) => page.citas) || [];
 
   if (mostrarHojaRuta) {
     return (
@@ -146,108 +202,71 @@ const CitasPendientesVeterinario = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Citas</Text>
+    <View style={currentStyles.container}>
+      <Text style={currentStyles.title}>Citas</Text>
 
       {allCitas && allCitas.length > 0 && (
         <TouchableOpacity
-          style={[styles.button, { backgroundColor: colorPrimary }]}
+          style={[currentStyles.button, { backgroundColor: colorPrimary }]}
           onPress={() => setMostrarHojaRuta(true)}
         >
-          <MaterialIcons name="zoom-in-map" size={20} color="white" />
-          <Text style={styles.buttonText}>Ver Ruta Optimizada</Text>
+          <MaterialIcons
+            name="zoom-in-map"
+            size={isSmallDevice ? 18 : isTablet ? 24 : 20}
+            color="white"
+          />
+          <Text style={currentStyles.buttonText}>Ver Ruta Optimizada</Text>
         </TouchableOpacity>
       )}
 
       <FlatList
         data={allCitas}
         renderItem={({ item }) => (
-          <CardCitasMedico
-            item={item}
-            onConfirm={() => handleConfirmCita(item.id)}
-            onCancel={() => handleCancelCita(item.id)}
-          />
+          <View style={currentStyles.cardContainer}>
+            <CardCitasMedico
+              item={item}
+              onConfirm={() => handleConfirmCita(item.id)}
+              onCancel={() => handleCancelCita(item.id)}
+            />
+          </View>
         )}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={currentStyles.listContent}
         refreshControl={
           <RefreshControl
             refreshing={isRefetching}
             onRefresh={onRefresh}
             colors={[colorPrimary]}
+            progressViewOffset={isSmallDevice ? 30 : 0}
           />
         }
         onEndReached={loadMore}
-        onEndReachedThreshold={0.1}
+        onEndReachedThreshold={Platform.select({
+          ios: 0.1,
+          android: 0.3,
+        })}
         ListFooterComponent={
           isFetchingNextPage ? (
             <ActivityIndicator
-              size="small"
+              size={isSmallDevice ? "small" : "large"}
               color={colorPrimary}
-              style={styles.footerLoader}
+              style={currentStyles.footerLoader}
             />
           ) : null
         }
         ListEmptyComponent={
           !isLoading ? (
-            <MessageError
-              titulo="No se encontraron citas"
-              descripcion="No se encontraron citas para este modulo en este momento."
-            />
+            <View style={currentStyles.emptyContainer}>
+              <MessageError
+                titulo="No se encontraron citas"
+                descripcion="No se encontraron citas para este modulo en este momento."
+              />
+            </View>
           ) : null
         }
       />
     </View>
   );
 };
-
-const createStyles = (textColor: string, emptyTextColor: string) =>
-  StyleSheet.create({
-    container: {
-      flex: 1,
-      padding: 10,
-    },
-    title: {
-      fontSize: 22,
-      fontWeight: "bold",
-      marginVertical: 15,
-      textAlign: "center",
-      color: textColor,
-    },
-    loadingContainer: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-    },
-    listContent: {
-      paddingBottom: 20,
-    },
-    emptyContainer: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-      padding: 20,
-    },
-    emptyText: {
-      fontSize: 16,
-      color: emptyTextColor,
-    },
-    footerLoader: {
-      marginVertical: 20,
-    },
-    button: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "center",
-      padding: 12,
-      borderRadius: 8,
-      marginBottom: 16,
-    },
-    buttonText: {
-      color: "white",
-      marginLeft: 8,
-      fontWeight: "bold",
-    },
-  });
 
 export default CitasPendientesVeterinario;

@@ -13,7 +13,7 @@ import ThemedPicker from "@/presentation/theme/components/ThemedPicker";
 import ThemedTextInput from "@/presentation/theme/components/ThemedTextInput";
 import React from "react";
 import { Control, Controller, UseFormWatch } from "react-hook-form";
-import { StyleSheet, Text, View } from "react-native";
+import { Dimensions, StyleSheet, Text, View } from "react-native";
 import { Divider, useTheme } from "react-native-paper";
 
 interface Props {
@@ -33,12 +33,48 @@ const GanaderaSection: React.FC<Props> = ({
       value: calidad.value,
     })) || [];
   const { colors } = useTheme();
+  const windowWidth = Dimensions.get("window").width;
+  const isSmallScreen = windowWidth < 375;
+  const isMediumScreen = windowWidth >= 375 && windowWidth < 414;
+
+  const dynamicStyles = {
+    sectionTitle: {
+      fontSize: isSmallScreen ? 18 : isMediumScreen ? 19 : 20,
+      marginVertical: isSmallScreen ? 12 : 16,
+    },
+    label: {
+      fontSize: isSmallScreen ? 14 : 16,
+    },
+    subSectionTitle: {
+      fontSize: isSmallScreen ? 16 : isMediumScreen ? 17 : 18,
+      marginBottom: isSmallScreen ? 8 : 12,
+    },
+    inputMargin: isSmallScreen ? 6 : 8,
+    divider: {
+      marginVertical: isSmallScreen ? 8 : 12,
+      height: isSmallScreen ? 1 : 3,
+    },
+    checkboxContainer: {
+      marginVertical: isSmallScreen ? 4 : 8,
+    },
+    subSection: {
+      padding: isSmallScreen ? 4 : 5,
+      marginBottom: isSmallScreen ? 3 : 5,
+    },
+  };
   return (
-    <View style={{ backgroundColor: colors.background }}>
+    <View
+      style={{
+        backgroundColor: colors.background,
+        paddingHorizontal: isSmallScreen ? 8 : 12,
+      }}
+    >
       <Text style={styles.sectionTitle}>Producción Ganadera</Text>
 
-      <View style={styles.checkboxGroup}>
-        <Text style={[styles.label, { fontWeight: "bold" }]}>
+      <View style={[styles.checkboxGroup, dynamicStyles.checkboxContainer]}>
+        <Text
+          style={[styles.label, { fontWeight: "bold" }, dynamicStyles.label]}
+        >
           Tipos de Producción:
         </Text>
         {tiposProduccion.map((tipo) => (
@@ -66,8 +102,10 @@ const GanaderaSection: React.FC<Props> = ({
       {watch("ganadera.tiposProduccion")?.includes(
         TipoProduccionGanadera.LECHE
       ) && (
-        <View style={styles.subSection}>
-          <Text style={styles.subSectionTitle}>Producción de Leche</Text>
+        <View style={[styles.subSection, dynamicStyles.subSection]}>
+          <Text style={[styles.subSectionTitle, dynamicStyles.subSectionTitle]}>
+            Producción de Leche
+          </Text>
 
           <Controller
             control={control}
@@ -137,7 +175,12 @@ const GanaderaSection: React.FC<Props> = ({
             )}
           />
 
-          <Text style={{ fontWeight: "bold", fontSize: 16 }}>
+          <Text
+            style={{
+              fontWeight: "bold",
+              fontSize: dynamicStyles.label.fontSize,
+            }}
+          >
             Fecha promedio de secado
           </Text>
           <ThemedButton
@@ -148,6 +191,7 @@ const GanaderaSection: React.FC<Props> = ({
               watch("ganadera.fechaPromedioSecado") ||
               "Seleccionar fecha promedio de secado"
             }
+            style={{ marginBottom: dynamicStyles.inputMargin }}
           />
           <Divider style={styles.divider} />
         </View>
@@ -156,8 +200,10 @@ const GanaderaSection: React.FC<Props> = ({
       {watch("ganadera.tiposProduccion")?.includes(
         TipoProduccionGanadera.CARNE_BOVINA
       ) && (
-        <View style={styles.subSection}>
-          <Text style={styles.subSectionTitle}>Producción de Carne Bovina</Text>
+        <View style={[styles.subSection, dynamicStyles.subSection]}>
+          <Text style={[styles.subSectionTitle, dynamicStyles.subSectionTitle]}>
+            Producción de Carne Bovina
+          </Text>
           <Controller
             control={control}
             name="ganadera.cabezasEngordeBovino"
@@ -189,8 +235,8 @@ const GanaderaSection: React.FC<Props> = ({
       {watch("ganadera.tiposProduccion")?.includes(
         TipoProduccionGanadera.CARNE_PORCINA
       ) && (
-        <View style={styles.subSection}>
-          <Text style={styles.subSectionTitle}>
+        <View style={[styles.subSection, dynamicStyles.subSection]}>
+          <Text style={[styles.subSectionTitle, dynamicStyles.subSectionTitle]}>
             Producción de Carne Porcina
           </Text>
           <Controller
@@ -236,8 +282,10 @@ const GanaderaSection: React.FC<Props> = ({
       {watch("ganadera.tiposProduccion")?.includes(
         TipoProduccionGanadera.CARNE_AVE
       ) && (
-        <View style={styles.subSection}>
-          <Text style={styles.subSectionTitle}>Producción Carne de Ave</Text>
+        <View style={[styles.subSection, dynamicStyles.subSection]}>
+          <Text style={[styles.subSectionTitle, dynamicStyles.subSectionTitle]}>
+            Producción Carne de Ave
+          </Text>
           <Controller
             control={control}
             name="ganadera.mortalidadLoteAves"
@@ -257,8 +305,10 @@ const GanaderaSection: React.FC<Props> = ({
       {watch("ganadera.tiposProduccion")?.includes(
         TipoProduccionGanadera.HUEVO
       ) && (
-        <View style={styles.subSection}>
-          <Text style={styles.subSectionTitle}>Producción de Huevo</Text>
+        <View style={[styles.subSection, dynamicStyles.subSection]}>
+          <Text style={[styles.subSectionTitle, dynamicStyles.subSectionTitle]}>
+            Producción de Huevo
+          </Text>
           <Controller
             control={control}
             name="ganadera.huevosPorDia"
@@ -302,8 +352,8 @@ const GanaderaSection: React.FC<Props> = ({
       {watch("ganadera.tiposProduccion")?.includes(
         TipoProduccionGanadera.CARNE_CAPRINO
       ) && (
-        <View style={styles.subSection}>
-          <Text style={styles.subSectionTitle}>
+        <View style={[styles.subSection, dynamicStyles.subSection]}>
+          <Text style={[styles.subSectionTitle, dynamicStyles.subSectionTitle]}>
             Producción de Carne Caprino
           </Text>
           <Controller
@@ -349,8 +399,10 @@ const GanaderaSection: React.FC<Props> = ({
       {watch("ganadera.tiposProduccion")?.includes(
         TipoProduccionGanadera.GANADO_PIE
       ) && (
-        <View style={styles.subSection}>
-          <Text style={styles.subSectionTitle}>Ganado en Pie</Text>
+        <View style={[styles.subSection, dynamicStyles.subSection]}>
+          <Text style={[styles.subSectionTitle, dynamicStyles.subSectionTitle]}>
+            Ganado en Pie
+          </Text>
           <Controller
             control={control}
             name="ganadera.animalesDisponibles"
@@ -383,8 +435,10 @@ const GanaderaSection: React.FC<Props> = ({
       {watch("ganadera.tiposProduccion")?.includes(
         TipoProduccionGanadera.OTRO
       ) && (
-        <View style={styles.subSection}>
-          <Text style={styles.subSectionTitle}>Otro tipo de producción</Text>
+        <View style={[styles.subSection, dynamicStyles.subSection]}>
+          <Text style={[styles.subSectionTitle, dynamicStyles.subSectionTitle]}>
+            Otro tipo de producción
+          </Text>
           <Controller
             control={control}
             name="ganadera.otroProductoNombre"
@@ -428,33 +482,25 @@ const GanaderaSection: React.FC<Props> = ({
 
 const styles = StyleSheet.create({
   sectionTitle: {
-    fontSize: 20,
     fontWeight: "bold",
-    marginVertical: 16,
     color: "#333",
   },
   checkboxGroup: {
     marginVertical: 8,
   },
   label: {
-    fontSize: 16,
     marginBottom: 8,
     color: "#555",
   },
   subSection: {
-    marginBottom: 5,
-    padding: 5,
     borderRadius: 8,
   },
   subSectionTitle: {
-    fontSize: 18,
     fontWeight: "600",
-    marginBottom: 12,
     color: "#444",
   },
   divider: {
-    marginVertical: 12,
-    height: 3,
+    backgroundColor: "#D7CCC8",
   },
 });
 
