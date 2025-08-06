@@ -129,8 +129,8 @@ const AnimalesPageGanadero = () => {
     setEspecieId((prevId) => (prevId === id ? "" : id));
   };
 
-  const onRefresh = useCallback(() => {
-    refetch();
+  const onRefresh = useCallback(async () => {
+    await refetch();
   }, [refetch]);
 
   const renderItem = useCallback(
@@ -187,6 +187,7 @@ const AnimalesPageGanadero = () => {
         <MessageError
           titulo="Error al cargar los animales"
           descripcion="No se encontraron animales disponibles en este momento."
+          onPress={() => onRefresh()}
         />
 
         <FAB
@@ -243,6 +244,7 @@ const AnimalesPageGanadero = () => {
             <MessageError
               titulo="Sin animales"
               descripcion="Esta finca no tiene animales registrados."
+              onPress={() => onRefresh()}
             />
           )
         }

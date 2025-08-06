@@ -69,6 +69,7 @@ const ServicioPageAdmin = () => {
         <MessageError
           titulo="No se encontraron servicios"
           descripcion=" No se encontraron datos de los servicios en este módulo. Por favor, verifica más tarde o vuelve a intentar."
+          onPress={() => onRefresh()}
         />
         <ModalAddService visible={visible} setVisible={setVisible} />
       </ThemedView>

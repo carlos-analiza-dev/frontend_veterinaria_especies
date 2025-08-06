@@ -34,6 +34,10 @@ const MedicosPage = () => {
     }
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
+  const onRefresh = useCallback(async () => {
+    await refetch();
+  }, [refetch]);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchTerm(name);
@@ -56,6 +60,7 @@ const MedicosPage = () => {
         <MessageError
           titulo="Error al cargar los medicos"
           descripcion=" No se encontraron datos de medicos en este módulo. Por favor, verifica más tarde o vuelve a intentar."
+          onPress={() => onRefresh()}
         />
 
         <FAB

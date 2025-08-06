@@ -151,6 +151,7 @@ const UsersScreenAdmin = () => {
             <MessageError
               titulo="No se encontraron usuarios"
               descripcion="No hay usuarios disponibles para este módulo en este momento."
+              onPress={() => onRefresh()}
             />
           ) : null
         }

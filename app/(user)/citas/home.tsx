@@ -139,6 +139,7 @@ const HomeUser = () => {
               <MessageError
                 titulo="No se encontraron citas"
                 descripcion="No se encontraron citas para este módulo en este momento."
+                onPress={() => onRefresh()}
               />
             </View>
           ) : null

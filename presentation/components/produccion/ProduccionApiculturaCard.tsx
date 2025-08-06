@@ -105,7 +105,6 @@ const styles = StyleSheet.create({
   },
   label: {
     fontWeight: "bold",
-    color: "#555",
   },
   divider: {
     marginVertical: 12,

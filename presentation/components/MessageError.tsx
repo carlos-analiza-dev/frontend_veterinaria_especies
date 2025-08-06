@@ -1,14 +1,16 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTheme } from "react-native-paper";
+import ThemedButton from "../theme/components/ThemedButton";
 import { ThemedText } from "../theme/components/ThemedText";
 import { ThemedView } from "../theme/components/ThemedView";
 
 interface Props {
   titulo: string;
   descripcion: string;
+  onPress?: () => Promise<void>;
 }
 
-const MessageError = ({ titulo, descripcion }: Props) => {
+const MessageError = ({ titulo, descripcion, onPress }: Props) => {
   const { colors } = useTheme();
   return (
     <ThemedView
@@ -37,6 +39,14 @@ const MessageError = ({ titulo, descripcion }: Props) => {
       >
         {descripcion}
       </ThemedText>
+      {onPress && (
+        <ThemedButton
+          icon="reload-outline"
+          title="Reintentar"
+          onPress={() => onPress()}
+          variant="outline"
+        />
+      )}
     </ThemedView>
   );
 };

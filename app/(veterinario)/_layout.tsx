@@ -12,6 +12,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { TokenExpiredModal } from "@/presentation/auth/components/TokenExpiredModal";
 import { Redirect, router } from "expo-router";
 import { useEffect, useState } from "react";
+import CitasConfirmadasVeterinario from "./citas-confirmadas/citas-confirmadas";
 import CitasPendientesVeterinario from "./citas-veterinario/citas-pendientes";
 import CustomDrawerVeterinario from "./components/CustomDrawerVeterinario";
 import PerfilMedico from "./perfil-veterinario/perfil-vet";
@@ -62,6 +63,23 @@ export default function VeterinarioLayout() {
     );
   };
 
+  const VeterinarioCitasConfirmadas = () => {
+    return (
+      <VeterinarioStack.Navigator screenOptions={{ headerShown: false }}>
+        <VeterinarioStack.Screen
+          name="CitasConfirmadasVeterinario"
+          component={CitasConfirmadasVeterinario}
+          options={{
+            headerShown: true,
+            headerTitle: "Citas Confirmadas",
+            headerRight: () => <LogoutIconButton />,
+            headerLeft: () => <DrawerToggleButton tintColor={iconColor} />,
+          }}
+        />
+      </VeterinarioStack.Navigator>
+    );
+  };
+
   return (
     <>
       <Drawer.Navigator
@@ -73,6 +91,10 @@ export default function VeterinarioLayout() {
         <Drawer.Screen
           name="citas-pendientes"
           component={VeterinarioStackHome}
+        />
+        <Drawer.Screen
+          name="citas-confirmadas"
+          component={VeterinarioCitasConfirmadas}
         />
         <Drawer.Screen
           name="perfil-vet"

@@ -234,7 +234,6 @@ const styles = StyleSheet.create({
   },
   label: {
     fontWeight: "bold",
-    color: "#555",
   },
   divider: {
     backgroundColor: "#ddd",

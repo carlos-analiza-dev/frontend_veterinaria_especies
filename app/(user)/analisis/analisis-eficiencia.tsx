@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -51,6 +51,10 @@ const AnalisisEficienciaPage = () => {
     setEditingAnalisis(analisis);
     setVisible(true);
   };
+  const onRefresh = useCallback(async () => {
+    await refetch();
+  }, [refetch]);
+
   const loadMore = () => {
     if (hasNextPage && !isFetchingNextPage) fetchNextPage();
   };
@@ -79,6 +83,7 @@ const AnalisisEficienciaPage = () => {
         <MessageError
           titulo="Error al cargar análisis"
           descripcion="Ocurrió un problema al cargar los análisis de suelo. Por favor intente nuevamente."
+          onPress={() => onRefresh()}
         />
         <ThemedButton
           icon="refresh"
@@ -132,6 +137,7 @@ const AnalisisEficienciaPage = () => {
             <MessageError
               titulo="No hay análisis registrados"
               descripcion="No se encontraron análisis de suelo para mostrar."
+              onPress={() => onRefresh()}
             />
             <ThemedButton
               icon="add-outline"

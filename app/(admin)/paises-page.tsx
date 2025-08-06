@@ -47,6 +47,7 @@ const PaisesPage = () => {
         <MessageError
           titulo="Error al cargar los paises"
           descripcion=" No se encontraron datos de paises en este módulo. Por favor, verifica más tarde o vuelve a intentar."
+          onPress={() => onRefresh()}
         />
 
         <FAB

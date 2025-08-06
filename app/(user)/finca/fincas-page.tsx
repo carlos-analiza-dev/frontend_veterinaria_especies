@@ -70,8 +70,8 @@ const FincasPageGanaderos = () => {
     isRefetching,
   } = useFincasPropietarios(user?.id ?? "", debouncedSearchTerm);
 
-  const onRefresh = useCallback(() => {
-    refetch();
+  const onRefresh = useCallback(async () => {
+    await refetch();
   }, [refetch]);
 
   if (isLoading) {
@@ -95,6 +95,7 @@ const FincasPageGanaderos = () => {
         <MessageError
           titulo="Sin fincas"
           descripcion="No se encontraron fincas disponibles en este momento"
+          onPress={() => onRefresh()}
         />
         <FAB
           iconName="add"

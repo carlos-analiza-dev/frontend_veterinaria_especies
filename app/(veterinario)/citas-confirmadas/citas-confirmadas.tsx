@@ -1,6 +1,6 @@
 import { ActualizarCita } from "@/core/citas/accions/update-cita";
 import { EstadoCita } from "@/helpers/funciones/estadoCita";
-import useGetCitasPendientesByMedico from "@/hooks/citas/useGetCitasPendientesByMedico";
+import useGetCitasConfirmadasByMedico from "@/hooks/citas/useGetCitasConfirmadasByMedico";
 import { useAuthStore } from "@/presentation/auth/store/useAuthStore";
 import CardCitasMedico from "@/presentation/components/citas/CardCitasMedico";
 import HojaRutaOptimizada from "@/presentation/components/citas/HojaRutaOptimizada";
@@ -24,7 +24,7 @@ import {
 } from "react-native";
 import Toast from "react-native-toast-message";
 
-const CitasPendientesVeterinario = () => {
+const CitasConfirmadasVeterinario = () => {
   const { user } = useAuthStore();
   const colorPrimary = useThemeColor({}, "primary");
   const textColor = useThemeColor({}, "text");
@@ -43,7 +43,6 @@ const CitasPendientesVeterinario = () => {
         flex: 1,
         padding: isSmallDevice ? 8 : isTablet ? 20 : 12,
       },
-
       loadingContainer: {
         flex: 1,
         justifyContent: "center",
@@ -96,7 +95,7 @@ const CitasPendientesVeterinario = () => {
     isError,
     hasNextPage,
     isFetchingNextPage,
-  } = useGetCitasPendientesByMedico(userId, limit);
+  } = useGetCitasConfirmadasByMedico(userId, limit);
 
   const onRefresh = useCallback(async () => {
     await refetch();
@@ -114,23 +113,12 @@ const CitasPendientesVeterinario = () => {
     onSuccess: async () => {
       Toast.show({
         type: "success",
-        text1: "Exito",
+        text1: "Éxito",
         text2: "Cita actualizada exitosamente",
       });
-      const allCitas = citas?.pages.flatMap((page) => page.citas) || [];
-
-      if (allCitas.length === 1) {
-        queryClient.setQueryData(
-          ["citas-pendientes-medico", userId, limit],
-          () => ({
-            pages: [],
-            pageParams: [],
-          })
-        );
-      }
 
       queryClient.invalidateQueries({
-        queryKey: ["citas-pendientes-medico", userId, limit],
+        queryKey: ["obtener-citas-confirmadas", userId, limit],
       });
       await refetch();
     },
@@ -158,18 +146,8 @@ const CitasPendientesVeterinario = () => {
     },
   });
 
-  const handleConfirmCita = (id: string) => {
-    updateCitaMutation.mutate({ id, estado: EstadoCita.CONFIRMADA });
-    queryClient.invalidateQueries({
-      queryKey: ["citas-pendientes-medico", userId, limit],
-    });
-  };
-
-  const handleCancelCita = (id: string) => {
-    updateCitaMutation.mutate({ id, estado: EstadoCita.CANCELADA });
-    queryClient.invalidateQueries({
-      queryKey: ["citas-pendientes-medico", userId, limit],
-    });
+  const handleCompleteCita = (id: string) => {
+    updateCitaMutation.mutate({ id, estado: EstadoCita.COMPLETADA });
   };
 
   if (isLoading || updateCitaMutation.isPending) {
@@ -233,8 +211,7 @@ const CitasPendientesVeterinario = () => {
           <View style={currentStyles.cardContainer}>
             <CardCitasMedico
               item={item}
-              onConfirm={() => handleConfirmCita(item.id)}
-              onCancel={() => handleCancelCita(item.id)}
+              onComplete={() => handleCompleteCita(item.id)}
             />
           </View>
         )}
@@ -277,4 +254,4 @@ const CitasPendientesVeterinario = () => {
   );
 };
 
-export default CitasPendientesVeterinario;
+export default CitasConfirmadasVeterinario;

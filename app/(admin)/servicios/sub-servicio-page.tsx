@@ -12,7 +12,7 @@ import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import { RouteProp } from "@react-navigation/native";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -58,6 +58,10 @@ const SubServiciosPage = ({ route }: DetailsSubServicioProps) => {
   } = useGetSubServiciosByServicioId(servicioId);
 
   const { data: paises } = useGetPaisesActivos();
+
+  const onRefresh = useCallback(async () => {
+    await refetch();
+  }, [refetch]);
 
   const handleAddSubService = () => {
     setModalVisible(true);
@@ -190,6 +194,7 @@ const SubServiciosPage = ({ route }: DetailsSubServicioProps) => {
         <MessageError
           titulo="No se encontraron servicios"
           descripcion="No se encontraron datos de los servicios en este módulo. Por favor, verifica más tarde o vuelve a intentar."
+          onPress={() => onRefresh()}
         />
         <ModalAddSubServices
           visible={modalVisible}

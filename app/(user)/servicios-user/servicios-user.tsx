@@ -51,6 +51,7 @@ const ServicesUser = () => {
         <MessageError
           titulo="Error al cargar servicios"
           descripcion="Ocurrió un problema al obtener los servicios. Por favor, inténtalo de nuevo más tarde."
+          onPress={() => onRefresh()}
         />
       </ThemedView>
     );
@@ -62,6 +63,7 @@ const ServicesUser = () => {
         <MessageError
           titulo="No hay servicios disponibles"
           descripcion="Actualmente no hay servicios activos. Por favor, verifica más tarde."
+          onPress={() => onRefresh()}
         />
       </ThemedView>
     );

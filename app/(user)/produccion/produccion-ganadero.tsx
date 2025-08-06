@@ -61,6 +61,7 @@ const ProduccionGanaderoPage = () => {
         <MessageError
           titulo="Error al cargar las producciones"
           descripcion="No se encontraron datos de las producciones en este módulo. Por favor, verifica más tarde o vuelve a intentar."
+          onPress={() => onRefresh()}
         />
       </ThemedView>
     );
@@ -90,6 +91,7 @@ const ProduccionGanaderoPage = () => {
           <MessageError
             titulo="No hay producciones registradas"
             descripcion="No se encontraron producciones registradas. Puedes crear una nueva producción haciendo clic en el botón +"
+            onPress={() => onRefresh()}
           />
         }
         refreshControl={

@@ -41,6 +41,18 @@ const CustomDrawerVeterinario = ({ navigation, logout }: Props) => {
 
       <TouchableOpacity
         style={styles.drawerItem}
+        onPress={() => navigation.navigate("citas-confirmadas")}
+      >
+        <MyIcon
+          name="calendar-clear-outline"
+          size={24}
+          color={colors.primary}
+        />
+        <ThemedText style={[styles.itemText]}>Citas Confirmadas</ThemedText>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.drawerItem}
         onPress={() => navigation.navigate("perfil-vet")}
       >
         <MyIcon name="person-outline" size={24} color={colors.primary} />

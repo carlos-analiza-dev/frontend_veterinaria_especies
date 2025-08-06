@@ -11,6 +11,7 @@ import GanaderaSection from "@/presentation/components/produccion/GanaderaSectio
 import ThemedButton from "@/presentation/theme/components/ThemedButton";
 import ThemedPicker from "@/presentation/theme/components/ThemedPicker";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
+import ButtonFilter from "@/presentation/theme/components/ui/ButtonFilter";
 import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -19,6 +20,7 @@ import { useNavigation } from "expo-router";
 import React, { useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import {
+  Dimensions,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -26,12 +28,11 @@ import {
   Switch,
   View,
 } from "react-native";
-import {
-  SegmentedButtons,
-  Text,
-  useTheme as usePaperTheme,
-} from "react-native-paper";
+import { Text, useTheme as usePaperTheme } from "react-native-paper";
 import Toast from "react-native-toast-message";
+const { width, height } = Dimensions.get("window");
+const isSmallDevice = width < 375;
+const buttonWidth = width / 3 - 16;
 
 type ProductionSection =
   | "ganadera"
@@ -54,7 +55,7 @@ const CrearProduccionPage = () => {
     null
   );
   const { data: fincas } = useFincasPropietarios(userId);
-  const [showFincaError, setShowFincaError] = useState(false);
+
   const { control, handleSubmit, watch, setValue, reset } =
     useForm<CreateProduccionFinca>();
 
@@ -97,8 +98,10 @@ const CrearProduccionPage = () => {
       label: "Ganaderia",
       disabled: !fincaSeleccionada,
       icon: "cow",
-      description: "Registro de producción ganadera (leche, carne, etc.)",
-      style: section === "ganadera" ? { backgroundColor: primary } : {},
+      style: {
+        width: buttonWidth,
+        ...(section === "ganadera" ? { backgroundColor: primary } : {}),
+      },
       labelStyle: section === "ganadera" ? { color: "#fff" } : {},
     },
     {
@@ -106,8 +109,10 @@ const CrearProduccionPage = () => {
       label: "Forrajes",
       disabled: !fincaSeleccionada,
       icon: "grass",
-      description: "Gestión de producción de forrajes para alimentación animal",
-      style: section === "forrajes" ? { backgroundColor: primary } : {},
+      style: {
+        width: buttonWidth,
+        ...(section === "forrajes" ? { backgroundColor: primary } : {}),
+      },
       labelStyle: section === "forrajes" ? { color: "#fff" } : {},
     },
     {
@@ -115,8 +120,10 @@ const CrearProduccionPage = () => {
       label: "Agricola",
       disabled: !fincaSeleccionada,
       icon: "sprout",
-      description: "Registro de cultivos y producción agrícola",
-      style: section === "agricola" ? { backgroundColor: primary } : {},
+      style: {
+        width: buttonWidth,
+        ...(section === "agricola" ? { backgroundColor: primary } : {}),
+      },
       labelStyle: section === "agricola" ? { color: "#fff" } : {},
     },
     {
@@ -124,8 +131,10 @@ const CrearProduccionPage = () => {
       label: "Apicultura",
       disabled: !fincaSeleccionada,
       icon: "bee",
-      description: "Producción de miel y derivados apícolas",
-      style: section === "apicultura" ? { backgroundColor: primary } : {},
+      style: {
+        width: buttonWidth,
+        ...(section === "apicultura" ? { backgroundColor: primary } : {}),
+      },
       labelStyle: section === "apicultura" ? { color: "#fff" } : {},
     },
     {
@@ -133,8 +142,10 @@ const CrearProduccionPage = () => {
       label: "Alternativa",
       disabled: !fincaSeleccionada,
       icon: "swap-horizontal",
-      description: "Otras actividades productivas alternativas",
-      style: section === "alternativa" ? { backgroundColor: primary } : {},
+      style: {
+        width: buttonWidth,
+        ...(section === "alternativa" ? { backgroundColor: primary } : {}),
+      },
       labelStyle: section === "alternativa" ? { color: "#fff" } : {},
     },
   ];
@@ -258,19 +269,29 @@ const CrearProduccionPage = () => {
     <ThemedView
       style={[styles.container, { backgroundColor: colors.background }]}
     >
-      <ThemedView style={styles.segmentContainer}>
-        <SegmentedButtons
-          value={section}
-          onValueChange={(value) => setSection(value as ProductionSection)}
-          buttons={sectionButtons}
-        />
-      </ThemedView>
-
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
       >
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.buttonsContainer}>
+            {sectionButtons.map((btn) => (
+              <ButtonFilter
+                key={btn.value}
+                title={btn.label}
+                onPress={() => setSection(btn.value as ProductionSection)}
+                variant={section === btn.value ? "primary" : "outline"}
+                disabled={!fincaSeleccionada}
+                textStyle={section === btn.value ? { color: "white" } : {}}
+              />
+            ))}
+          </View>
+
           <Controller
             control={control}
             name="fincaId"
@@ -292,69 +313,31 @@ const CrearProduccionPage = () => {
           />
 
           <View style={styles.switchGroup}>
-            <View style={styles.switchContainer}>
-              <Text style={styles.label}>Producción mixta:</Text>
-              <Controller
-                control={control}
-                name="produccion_mixta"
-                render={({ field: { value, onChange } }) => (
-                  <Switch
-                    value={value ?? false}
-                    onValueChange={onChange}
-                    trackColor={{ false: "#767577", true: colors.primary }}
-                    thumbColor={value ? colors.onPrimary : "#f4f3f4"}
-                  />
-                )}
-              />
-            </View>
-
-            <View style={styles.switchContainer}>
-              <Text style={styles.label}>Transformación artesanal:</Text>
-              <Controller
-                control={control}
-                name="transformacion_artesanal"
-                render={({ field: { value, onChange } }) => (
-                  <Switch
-                    value={value ?? false}
-                    onValueChange={onChange}
-                    trackColor={{ false: "#767577", true: colors.primary }}
-                    thumbColor={value ? colors.onPrimary : "#f4f3f4"}
-                  />
-                )}
-              />
-            </View>
-
-            <View style={styles.switchContainer}>
-              <Text style={styles.label}>Consumo propio:</Text>
-              <Controller
-                control={control}
-                name="consumo_propio"
-                render={({ field: { value, onChange } }) => (
-                  <Switch
-                    value={value ?? false}
-                    onValueChange={onChange}
-                    trackColor={{ false: "#767577", true: colors.primary }}
-                    thumbColor={value ? colors.onPrimary : "#f4f3f4"}
-                  />
-                )}
-              />
-            </View>
-
-            <View style={styles.switchContainer}>
-              <Text style={styles.label}>Producción para venta:</Text>
-              <Controller
-                control={control}
-                name="produccion_venta"
-                render={({ field: { value, onChange } }) => (
-                  <Switch
-                    value={value ?? false}
-                    onValueChange={onChange}
-                    trackColor={{ false: "#767577", true: colors.primary }}
-                    thumbColor={value ? colors.onPrimary : "#f4f3f4"}
-                  />
-                )}
-              />
-            </View>
+            {[
+              { name: "produccion_mixta", label: "Producción mixta" },
+              {
+                name: "transformacion_artesanal",
+                label: "Transformación artesanal",
+              },
+              { name: "consumo_propio", label: "Consumo propio" },
+              { name: "produccion_venta", label: "Producción para venta" },
+            ].map((item) => (
+              <View key={item.name} style={styles.switchContainer}>
+                <Text style={styles.label}>{item.label}:</Text>
+                <Controller
+                  control={control}
+                  name={item.name as any}
+                  render={({ field: { value, onChange } }) => (
+                    <Switch
+                      value={value ?? false}
+                      onValueChange={onChange}
+                      trackColor={{ false: "#767577", true: colors.primary }}
+                      thumbColor={value ? colors.onPrimary : "#f4f3f4"}
+                    />
+                  )}
+                />
+              </View>
+            ))}
           </View>
 
           {renderSection()}
@@ -373,7 +356,7 @@ const CrearProduccionPage = () => {
         <DateTimePicker
           value={new Date()}
           mode="date"
-          display="default"
+          display={Platform.OS === "android" ? "default" : "inline"}
           onChange={handleDateChange}
         />
       )}
@@ -384,54 +367,67 @@ const CrearProduccionPage = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    padding: isSmallDevice ? 12 : 16,
   },
   scrollContainer: {
     paddingBottom: 32,
-    gap: 16,
+    gap: isSmallDevice ? 12 : 16,
+    minHeight: height * 0.8,
   },
   segmentContainer: {
+    marginVertical: isSmallDevice ? 8 : 16,
+    alignItems: "center",
+  },
+  segmentedButtons: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    maxWidth: "100%",
+  },
+  buttonsContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
     marginVertical: 16,
   },
-  keyboardAvoidingView: {
-    flex: 1,
+  sectionButton: {
+    marginBottom: 8,
+    paddingVertical: 8,
+  },
+  pickerContainer: {
+    marginBottom: isSmallDevice ? 8 : 16,
   },
   label: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  errorText: {
-    color: "red",
-    fontSize: 14,
-    marginTop: 4,
+    fontSize: isSmallDevice ? 14 : 16,
+    flexShrink: 1,
+    flexWrap: "wrap",
+    maxWidth: "70%",
   },
   switchGroup: {
-    marginVertical: 16,
-    padding: 16,
+    marginVertical: isSmallDevice ? 8 : 16,
+    padding: isSmallDevice ? 12 : 16,
     borderRadius: 8,
-
-    gap: 12,
+    gap: isSmallDevice ? 8 : 12,
   },
   switchContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    width: "100%",
   },
   submitButton: {
-    marginTop: 24,
-    paddingVertical: 12,
+    marginTop: isSmallDevice ? 16 : 24,
+    paddingVertical: isSmallDevice ? 10 : 12,
   },
   noFincaSelected: {
-    marginTop: 20,
-    padding: 16,
+    marginTop: isSmallDevice ? 12 : 20,
+    padding: isSmallDevice ? 12 : 16,
     borderRadius: 8,
-    backgroundColor: "#f0f0f0",
     alignItems: "center",
   },
   noFincaText: {
-    color: "#666",
+    fontSize: isSmallDevice ? 14 : 16,
     textAlign: "center",
-    fontSize: 16,
   },
 });
 

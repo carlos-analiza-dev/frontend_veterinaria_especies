@@ -5,7 +5,7 @@ import MessageError from "@/presentation/components/MessageError";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import { useNavigation } from "expo-router";
-import React from "react";
+import React, { useCallback } from "react";
 import {
   ActivityIndicator,
   Dimensions,
@@ -33,6 +33,10 @@ const InsumosCapexPage = () => {
   const theme = useTheme();
   const primary = useThemeColor({}, "primary");
 
+  const onRefresh = useCallback(async () => {
+    await refetch();
+  }, [refetch]);
+
   const flattenedInsumos = insumos?.pages?.flatMap((page) => page.data) || [];
 
   const handleLoadMore = () => {
@@ -55,6 +59,7 @@ const InsumosCapexPage = () => {
         <MessageError
           titulo="Error al cargar los insumos"
           descripcion="No se encontraron datos de insumos para este módulo. Por favor, verifica más tarde o vuelve a intentar."
+          onPress={() => onRefresh()}
         />
         <FAB
           iconName="add-outline"

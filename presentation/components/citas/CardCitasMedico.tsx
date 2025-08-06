@@ -18,7 +18,7 @@ import {
   View,
 } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
-const { width, height } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 const isSmallDevice = width < 375;
 const isTablet = width >= 768;
 
@@ -127,7 +127,7 @@ const CardCitasMedico = ({ item, onConfirm, onCancel, onComplete }: Props) => {
       flex: 1,
     },
     serviceName: {
-      fontSize: isSmallDevice ? 16 : isTablet ? 20 : 18,
+      fontSize: isSmallDevice ? 12 : isTablet ? 16 : 14,
       fontWeight: "bold",
       color: "#333",
       marginLeft: isSmallDevice ? 6 : 8,
@@ -138,7 +138,7 @@ const CardCitasMedico = ({ item, onConfirm, onCancel, onComplete }: Props) => {
       borderRadius: 12,
     },
     statusText: {
-      fontSize: isSmallDevice ? 10 : 12,
+      fontSize: isSmallDevice ? 6 : 8,
       fontWeight: "bold",
       color: "#FFF",
     },
@@ -446,9 +446,28 @@ const CardCitasMedico = ({ item, onConfirm, onCancel, onComplete }: Props) => {
         </Text>
       </View>
 
-      {item.estado.toLowerCase() === "pendiente" && (
-        <View style={styles.actionsContainer}>
-          {onCancel && (
+      <View style={styles.actionsContainer}>
+        {item.estado.toLowerCase() === "pendiente" && onConfirm && (
+          <TouchableOpacity
+            style={[styles.actionButton, styles.confirmButton]}
+            onPress={onConfirm}
+          >
+            <Text style={styles.actionButtonText}>Confirmar</Text>
+          </TouchableOpacity>
+        )}
+
+        {item.estado.toLowerCase() === "confirmada" && onComplete && (
+          <TouchableOpacity
+            style={[styles.actionButton, styles.completeButton]}
+            onPress={onComplete}
+          >
+            <Text style={styles.actionButtonText}>Completar</Text>
+          </TouchableOpacity>
+        )}
+
+        {(item.estado.toLowerCase() === "pendiente" ||
+          item.estado.toLowerCase() === "confirmada") &&
+          onCancel && (
             <TouchableOpacity
               style={[styles.actionButton, styles.cancelButton]}
               onPress={onCancel}
@@ -456,37 +475,7 @@ const CardCitasMedico = ({ item, onConfirm, onCancel, onComplete }: Props) => {
               <Text style={styles.actionButtonText}>Cancelar</Text>
             </TouchableOpacity>
           )}
-          {onComplete && (
-            <TouchableOpacity
-              style={[styles.actionButton, styles.completeButton]}
-              onPress={onComplete}
-            >
-              <Text style={styles.actionButtonText}>Completar</Text>
-            </TouchableOpacity>
-          )}
-          {onConfirm && (
-            <TouchableOpacity
-              style={[styles.actionButton, styles.confirmButton]}
-              onPress={onConfirm}
-            >
-              <Text style={styles.actionButtonText}>Confirmar</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-      )}
-
-      {item.estado.toLowerCase() !== "pendiente" && (
-        <View
-          style={[
-            styles.statusContainer,
-            item.estado.toLowerCase() === "completada"
-              ? styles.completedContainer
-              : styles.canceledContainer,
-          ]}
-        >
-          <Text style={styles.statusLabel}>{item.estado.toUpperCase()}</Text>
-        </View>
-      )}
+      </View>
     </View>
   );
 };
