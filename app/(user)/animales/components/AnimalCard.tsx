@@ -1,3 +1,4 @@
+import { ActualizarAnimalMuerte } from "@/core/animales/accions/update-animal-status-muerte";
 import { Animal } from "@/core/animales/interfaces/response-animales.interface";
 import { eliminarImagenAnimal } from "@/core/animales_profile/core/delete-image-animal";
 import MyIcon from "@/presentation/auth/components/MyIcon";
@@ -22,12 +23,39 @@ import {
   StyleSheet,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  View,
 } from "react-native";
-import { Avatar, Card, Divider, useTheme } from "react-native-paper";
+import {
+  Avatar,
+  Button,
+  Card,
+  Dialog,
+  Divider,
+  Portal,
+  Switch,
+  Text,
+  TextInput,
+  useTheme,
+} from "react-native-paper";
 import Toast from "react-native-toast-message";
-const { height, width: screenWidth } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
 
-const isSmallScreen = screenWidth < 375;
+const breakpoints = {
+  small: 375,
+  medium: 414,
+  large: 768,
+  xlarge: 1024,
+};
+
+const scale = (size: number) => {
+  const scaleFactor = width / breakpoints.small;
+  const scaledSize = size * Math.min(scaleFactor, 1.5);
+  return Math.round(scaledSize);
+};
+
+const isSmallDevice = width < breakpoints.small;
+const isMediumDevice = width >= breakpoints.small && width < breakpoints.medium;
+const isTablet = width >= breakpoints.large;
 
 interface Props {
   animal: Animal;
@@ -37,7 +65,9 @@ interface Props {
 
 const AnimalCard = ({ animal, onPress, onUpdateProfileImage }: Props) => {
   const { colors } = useTheme();
-
+  const [deathDialogVisible, setDeathDialogVisible] = useState(false);
+  const [deathStatus, setDeathStatus] = useState(animal.animal_muerte);
+  const [deathReason, setDeathReason] = useState(animal.razon_muerte);
   const scaleValue = useRef(new Animated.Value(1)).current;
   const queryClient = useQueryClient();
   const imageUrl = animal.profileImages[0]?.url?.replace(
@@ -178,7 +208,7 @@ const AnimalCard = ({ animal, onPress, onUpdateProfileImage }: Props) => {
               left={() => (
                 <TouchableOpacity onPress={openGallery}>
                   <Avatar.Image
-                    size={isSmallScreen ? 40 : 48}
+                    size={isSmallDevice ? 40 : 48}
                     source={
                       animal && animal?.profileImages.length > 0
                         ? { uri: imageUrl }
@@ -188,16 +218,33 @@ const AnimalCard = ({ animal, onPress, onUpdateProfileImage }: Props) => {
                 </TouchableOpacity>
               )}
               right={() => (
-                <TouchableOpacity
-                  onPress={() => pickImage(animal.id)}
-                  style={styles.editIcon}
-                >
-                  <MyIcon
-                    name="camera"
-                    size={isSmallScreen ? 18 : 20}
-                    color="white"
-                  />
-                </TouchableOpacity>
+                <View style={styles.rightIconsContainer}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setDeathStatus(animal.animal_muerte);
+                      setDeathReason(animal.razon_muerte);
+                      setDeathDialogVisible(true);
+                    }}
+                    style={styles.iconButton}
+                  >
+                    <MyIcon
+                      name={animal.animal_muerte ? "warning" : "heart"}
+                      size={isSmallDevice ? 16 : 18}
+                      color="white"
+                    />
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() => pickImage(animal.id)}
+                    style={styles.iconButton}
+                  >
+                    <MyIcon
+                      name="camera"
+                      size={isSmallDevice ? 16 : 18}
+                      color="white"
+                    />
+                  </TouchableOpacity>
+                </View>
               )}
               titleStyle={[styles.title, { color: colors.onSurface }]}
               subtitleStyle={[
@@ -275,44 +322,177 @@ const AnimalCard = ({ animal, onPress, onUpdateProfileImage }: Props) => {
         onClose={() => setGalleryVisible(false)}
         onDelete={handleDeleteImage}
       />
+      <Portal>
+        <Dialog
+          visible={deathDialogVisible}
+          onDismiss={() => setDeathDialogVisible(false)}
+        >
+          <Dialog.Title>
+            {deathStatus ? "Marcar como fallecido" : "Marcar como vivo"}
+          </Dialog.Title>
+          <Dialog.Content>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: 16,
+              }}
+            >
+              <Text>¿El animal ha fallecido?</Text>
+              <Switch
+                value={deathStatus}
+                onValueChange={(value) => {
+                  setDeathStatus(value);
+                  if (!value) setDeathReason("N/D");
+                }}
+              />
+            </View>
+
+            {deathStatus && (
+              <TextInput
+                label="Razón de la muerte"
+                value={deathReason}
+                onChangeText={setDeathReason}
+                mode="outlined"
+                style={{ marginTop: 8 }}
+              />
+            )}
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => setDeathDialogVisible(false)}>
+              Cancelar
+            </Button>
+            <Button
+              onPress={async () => {
+                try {
+                  if (
+                    deathStatus &&
+                    (!deathReason ||
+                      deathReason.trim() === "" ||
+                      deathReason === "N/D")
+                  ) {
+                    Toast.show({
+                      type: "error",
+                      text1: "Error",
+                      text2:
+                        "Debe ingresar una razón de muerte válida (no puede estar vacía o ser 'N/D')",
+                    });
+                    return;
+                  }
+                  await ActualizarAnimalMuerte(animal.id, {
+                    animal_muerte: deathStatus,
+                    razon_muerte: deathReason,
+                  });
+                  Toast.show({
+                    type: "success",
+                    text1: "Estado actualizado",
+                    text2: deathStatus
+                      ? "Animal marcado como fallecido"
+                      : "Animal marcado como vivo",
+                  });
+                  queryClient.invalidateQueries({
+                    queryKey: ["animales-propietario"],
+                  });
+                  setDeathDialogVisible(false);
+                } catch (error) {
+                  if (isAxiosError(error)) {
+                    const messages = error.response?.data?.message;
+                    const errorMessage = Array.isArray(messages)
+                      ? messages[0]
+                      : typeof messages === "string"
+                      ? messages
+                      : "Hubo un error al actualizar el estado";
+
+                    Toast.show({
+                      type: "error",
+                      text1: errorMessage,
+                    });
+                  } else {
+                    Toast.show({
+                      type: "error",
+                      text1: "Error inesperado",
+                      text2: "Contacte al administrador",
+                    });
+                  }
+                }
+              }}
+            >
+              Guardar
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </>
   );
 };
 
 const styles = StyleSheet.create({
   cardContainer: {
-    marginBottom: 12,
-    marginHorizontal: isSmallScreen ? 4 : 8,
+    marginBottom: scale(12),
+    marginHorizontal: isTablet ? scale(16) : scale(8),
   },
   card: {
     elevation: 2,
-    borderRadius: 12,
+    borderRadius: scale(12),
     overflow: "hidden",
+    maxWidth: isTablet ? 600 : "100%", // Limitar ancho en tablets
+    alignSelf: isTablet ? "center" : "auto", // Centrar en tablets
   },
   title: {
-    fontSize: isSmallScreen ? 16 : 18,
+    fontSize: isSmallDevice
+      ? scale(14)
+      : isMediumDevice
+      ? scale(16)
+      : scale(18),
     fontWeight: "bold",
-    marginBottom: 2,
+    marginBottom: scale(2),
+    maxWidth: width * 0.6, // Prevenir overflow
   },
   subtitle: {
-    fontSize: isSmallScreen ? 12 : 14,
-    marginTop: 2,
+    fontSize: isSmallDevice
+      ? scale(11)
+      : isMediumDevice
+      ? scale(12)
+      : scale(14),
+    marginTop: scale(2),
+    maxWidth: width * 0.6,
   },
   content: {
-    paddingHorizontal: isSmallScreen ? 10 : 16,
-    paddingVertical: isSmallScreen ? 8 : 12,
+    paddingHorizontal: isSmallDevice
+      ? scale(10)
+      : isMediumDevice
+      ? scale(14)
+      : scale(16),
+    paddingVertical: isSmallDevice
+      ? scale(6)
+      : isMediumDevice
+      ? scale(10)
+      : scale(12),
   },
   divider: {
     height: 1,
-    marginVertical: isSmallScreen ? 6 : 8,
+    marginVertical: isSmallDevice
+      ? scale(4)
+      : isMediumDevice
+      ? scale(6)
+      : scale(8),
   },
-  editIcon: {
-    position: "absolute",
-    right: isSmallScreen ? 4 : 8,
-    bottom: isSmallScreen ? 4 : 8,
+  rightIconsContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    width: isTablet ? scale(100) : scale(80),
+    marginRight: isTablet ? scale(12) : scale(8),
+  },
+  iconButton: {
     backgroundColor: "rgba(0,0,0,0.6)",
-    borderRadius: 15,
-    padding: isSmallScreen ? 4 : 5,
+    borderRadius: scale(20),
+    width: isTablet ? scale(36) : scale(32),
+    height: isTablet ? scale(36) : scale(32),
+    justifyContent: "center",
+    alignItems: "center",
+    marginLeft: isTablet ? scale(12) : scale(8),
   },
 });
 

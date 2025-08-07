@@ -162,9 +162,8 @@ const styles = StyleSheet.create({
     marginLeft: width * 0.02,
   },
   statusText: {
-    fontSize: width * 0.03,
+    fontSize: width * 0.02,
     fontWeight: "bold",
-    color: "#FFF",
   },
   dateTimeContainer: {
     flexDirection: "row",

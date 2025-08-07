@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import CitasConfirmadasVeterinario from "./citas-confirmadas/citas-confirmadas";
 import CitasPendientesVeterinario from "./citas-veterinario/citas-pendientes";
 import CustomDrawerVeterinario from "./components/CustomDrawerVeterinario";
+import HistorialCitasPage from "./historial-ciitas/historial-citas";
 import PerfilMedico from "./perfil-veterinario/perfil-vet";
 
 const Drawer = createDrawerNavigator();
@@ -80,6 +81,23 @@ export default function VeterinarioLayout() {
     );
   };
 
+  const VeterinarioHistorialCitas = () => {
+    return (
+      <VeterinarioStack.Navigator screenOptions={{ headerShown: false }}>
+        <VeterinarioStack.Screen
+          name="VeterinarioHistorialCitas"
+          component={HistorialCitasPage}
+          options={{
+            headerShown: true,
+            headerTitle: "Historial Citas",
+            headerRight: () => <LogoutIconButton />,
+            headerLeft: () => <DrawerToggleButton tintColor={iconColor} />,
+          }}
+        />
+      </VeterinarioStack.Navigator>
+    );
+  };
+
   return (
     <>
       <Drawer.Navigator
@@ -95,6 +113,10 @@ export default function VeterinarioLayout() {
         <Drawer.Screen
           name="citas-confirmadas"
           component={VeterinarioCitasConfirmadas}
+        />
+        <Drawer.Screen
+          name="historial-citas"
+          component={VeterinarioHistorialCitas}
         />
         <Drawer.Screen
           name="perfil-vet"

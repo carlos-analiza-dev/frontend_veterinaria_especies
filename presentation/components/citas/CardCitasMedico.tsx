@@ -2,6 +2,7 @@ import {
   Cita,
   Finca,
 } from "@/core/medicos/interfaces/obtener-citas-medicos.interface";
+import { Producto } from "@/core/productos/interfaces/response-productos-disponibles.interface";
 import { obtenerTiempoViajeGoogleMaps } from "@/helpers/funciones/calcularDistancia";
 import { formatDate } from "@/helpers/funciones/formatDate";
 import { getStatusColor } from "@/helpers/funciones/getStatusColor";
@@ -27,9 +28,24 @@ interface Props {
   onConfirm?: () => void;
   onCancel?: () => void;
   onComplete?: () => void;
+  onAddProducts?: () => void;
+  productosDisponibles?: Producto[];
+  selectedProducts?: { [key: string]: { product: Producto; quantity: number } };
+  totalAdicional?: number;
+  onRemoveProduct?: (productId: string) => void;
 }
 
-const CardCitasMedico = ({ item, onConfirm, onCancel, onComplete }: Props) => {
+const CardCitasMedico = ({
+  item,
+  onConfirm,
+  onCancel,
+  onComplete,
+  onAddProducts,
+  productosDisponibles,
+  selectedProducts = {},
+  totalAdicional = 0,
+  onRemoveProduct,
+}: Props) => {
   const { user } = useAuthStore();
   const [location, setLocation] = useState<Location.LocationObject | null>(
     null
@@ -299,6 +315,68 @@ const CardCitasMedico = ({ item, onConfirm, onCancel, onComplete }: Props) => {
     canceledContainer: {
       backgroundColor: "#FFEBEE",
     },
+    productsButton: {
+      backgroundColor: "#FF9800",
+    },
+    productsSummary: {
+      marginTop: 8,
+      padding: 12,
+      backgroundColor: "#F5F7FA",
+      borderRadius: 8,
+    },
+    productItem: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 8,
+      padding: 8,
+      backgroundColor: "#FFF",
+      borderRadius: 6,
+    },
+    productInfo: {
+      flex: 1,
+    },
+    productName: {
+      fontSize: 12,
+      color: "#333",
+    },
+    productPrice: {
+      fontSize: 11,
+      color: "#666",
+    },
+    productTotal: {
+      fontSize: 12,
+      fontWeight: "bold",
+      color: "#333",
+      minWidth: 60,
+      textAlign: "right",
+    },
+    deleteButton: {
+      marginLeft: 8,
+    },
+
+    additionalTotal: {
+      marginTop: 8,
+      paddingTop: 8,
+      borderTopWidth: 1,
+      borderTopColor: "#E0E0E0",
+      flexDirection: "row",
+      justifyContent: "space-between",
+    },
+    additionalTotalText: {
+      fontWeight: "bold",
+      color: "#2E7D32",
+    },
+    finalTotal: {
+      marginTop: 4,
+      flexDirection: "row",
+      justifyContent: "space-between",
+    },
+    finalTotalText: {
+      fontWeight: "bold",
+      fontSize: 16,
+      color: "#2E7D32",
+    },
   });
 
   return (
@@ -438,13 +516,61 @@ const CardCitasMedico = ({ item, onConfirm, onCancel, onComplete }: Props) => {
         </View>
       </View>
 
-      <View style={styles.priceContainer}>
-        <Text style={styles.priceLabel}>VALOR:</Text>
-        <Text style={styles.priceValue}>
-          {user?.pais.simbolo_moneda}
-          {item.totalPagar}
-        </Text>
-      </View>
+      {item.estado !== "completada" ? (
+        <View style={styles.priceContainer}>
+          <Text style={styles.priceLabel}>VALOR SERVICIO:</Text>
+          <Text style={styles.priceValue}>
+            {user?.pais.simbolo_moneda}
+            {item.totalPagar}
+          </Text>
+        </View>
+      ) : (
+        <View style={styles.priceContainer}>
+          <Text style={styles.priceLabel}>TOTAL:</Text>
+          <Text style={styles.priceValue}>
+            {user?.pais.simbolo_moneda}
+            {item.totalFinal}
+          </Text>
+        </View>
+      )}
+      {Object.keys(selectedProducts).length > 0 && (
+        <View style={styles.productsSummary}>
+          <Text style={styles.sectionTitle}>INSUMOS AGREGADOS</Text>
+          {Object.values(selectedProducts).map(({ product, quantity }) => (
+            <View key={product.id} style={styles.productItem}>
+              <Text style={styles.productName}>
+                {product.nombre} x {quantity}
+              </Text>
+              <Text style={styles.productTotal}>
+                {user?.pais.simbolo_moneda}
+                {(parseFloat(product.precio) * quantity).toFixed(2)}
+              </Text>
+              {onRemoveProduct && (
+                <TouchableOpacity
+                  style={styles.deleteButton}
+                  onPress={() => onRemoveProduct(product.id)}
+                >
+                  <MaterialIcons name="delete" size={20} color="#F44336" />
+                </TouchableOpacity>
+              )}
+            </View>
+          ))}
+          <View style={styles.additionalTotal}>
+            <Text>Subtotal insumos:</Text>
+            <Text style={styles.additionalTotalText}>
+              {user?.pais.simbolo_moneda}
+              {totalAdicional.toFixed(2)}
+            </Text>
+          </View>
+          <View style={styles.finalTotal}>
+            <Text>VALOR TOTAL:</Text>
+            <Text style={styles.finalTotalText}>
+              {user?.pais.simbolo_moneda}
+              {(parseFloat(item.totalPagar) + totalAdicional).toFixed(2)}
+            </Text>
+          </View>
+        </View>
+      )}
 
       <View style={styles.actionsContainer}>
         {item.estado.toLowerCase() === "pendiente" && onConfirm && (
@@ -456,13 +582,25 @@ const CardCitasMedico = ({ item, onConfirm, onCancel, onComplete }: Props) => {
           </TouchableOpacity>
         )}
 
-        {item.estado.toLowerCase() === "confirmada" && onComplete && (
-          <TouchableOpacity
-            style={[styles.actionButton, styles.completeButton]}
-            onPress={onComplete}
-          >
-            <Text style={styles.actionButtonText}>Completar</Text>
-          </TouchableOpacity>
+        {item.estado.toLowerCase() === "confirmada" && (
+          <>
+            {onAddProducts && (
+              <TouchableOpacity
+                style={[styles.actionButton, styles.productsButton]}
+                onPress={onAddProducts}
+              >
+                <Text style={styles.actionButtonText}>Agregar Insumos</Text>
+              </TouchableOpacity>
+            )}
+            {onComplete && (
+              <TouchableOpacity
+                style={[styles.actionButton, styles.completeButton]}
+                onPress={onComplete}
+              >
+                <Text style={styles.actionButtonText}>Completar</Text>
+              </TouchableOpacity>
+            )}
+          </>
         )}
 
         {(item.estado.toLowerCase() === "pendiente" ||

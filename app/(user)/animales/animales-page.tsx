@@ -11,6 +11,7 @@ import SelectFincas from "@/presentation/components/fincas/SelectFincas";
 import MessageError from "@/presentation/components/MessageError";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
+import { useQueryClient } from "@tanstack/react-query";
 import { useNavigation } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import {
@@ -35,6 +36,7 @@ const AnimalesPageGanadero = () => {
   const [especieId, setEspecieId] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const queryClient = useQueryClient();
 
   const styles = StyleSheet.create({
     container: {

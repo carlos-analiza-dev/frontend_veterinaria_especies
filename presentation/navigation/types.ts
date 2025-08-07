@@ -28,6 +28,7 @@ export type UsersStackParamList = {
   AgregarCitaServicio: { servicioId: string; nombre_servicio: string };
   CitasPendientesVeterinario: undefined;
   CitasConfirmadasVeterinario: undefined;
+  VeterinarioHistorialCitas: undefined;
   PerfilMedico: undefined;
   ProduccionPage: undefined;
   InsumosGanaderoPage: undefined;

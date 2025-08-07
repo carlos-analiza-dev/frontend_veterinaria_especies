@@ -16,6 +16,7 @@ const useGetCitasPendientesByMedico = (id: string, limit: number) => {
     },
 
     enabled: !!id,
+    refetchInterval: 10000,
   });
 };
 

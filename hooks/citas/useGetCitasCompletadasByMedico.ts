@@ -1,11 +1,11 @@
-import { ObtenerCitasConfirmadasByMedico } from "@/core/citas/accions/obtener-citas-confirmadas-by-medico";
+import { ObtenerCitasCompletadasByMedico } from "@/core/citas/accions/obtener-citas-completadas-by-medico";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
-const useGetCitasConfirmadasByMedico = (id: string, limit: number = 10) => {
+const useGetCitasCompletadasByMedico = (id: string, limit: number = 10) => {
   return useInfiniteQuery({
-    queryKey: ["obtener-citas-confirmadas", id],
+    queryKey: ["obtener-citas-completadas", id],
     queryFn: ({ pageParam = 0 }) =>
-      ObtenerCitasConfirmadasByMedico(id, limit, pageParam * limit),
+      ObtenerCitasCompletadasByMedico(id, limit, pageParam * limit),
     getNextPageParam: (lastPage, allPages) => {
       const totalItems = lastPage.total;
       const loadedItems = allPages.reduce(
@@ -20,4 +20,4 @@ const useGetCitasConfirmadasByMedico = (id: string, limit: number = 10) => {
   });
 };
 
-export default useGetCitasConfirmadasByMedico;
+export default useGetCitasCompletadasByMedico;

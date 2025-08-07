@@ -10,6 +10,8 @@ export interface CrearAnimalByFinca {
   edad_promedio?: number;
   fecha_nacimiento: string;
   observaciones?: string;
+  animal_muerte?: boolean;
+  razon_muerte?: string;
   propietarioId: string;
   fincaId: string;
   castrado: boolean;

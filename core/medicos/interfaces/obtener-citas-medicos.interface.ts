@@ -11,6 +11,7 @@ export interface Cita {
   duracion: number;
   estado: string;
   totalPagar: string;
+  totalFinal: string;
   cantidadAnimales: number;
   medico: Medico;
   animales: Animale[];

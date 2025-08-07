@@ -53,6 +53,14 @@ const CustomDrawerVeterinario = ({ navigation, logout }: Props) => {
 
       <TouchableOpacity
         style={styles.drawerItem}
+        onPress={() => navigation.navigate("historial-citas")}
+      >
+        <MyIcon name="calendar-outline" size={24} color={colors.primary} />
+        <ThemedText style={[styles.itemText]}>Historial Citas</ThemedText>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.drawerItem}
         onPress={() => navigation.navigate("perfil-vet")}
       >
         <MyIcon name="person-outline" size={24} color={colors.primary} />
