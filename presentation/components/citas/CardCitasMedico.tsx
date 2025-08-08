@@ -1,3 +1,4 @@
+import { ObtenerFacturaCita } from "@/core/gerenate-pdf/accions/get-generarePdf-cita";
 import {
   Cita,
   Finca,
@@ -7,6 +8,7 @@ import { obtenerTiempoViajeGoogleMaps } from "@/helpers/funciones/calcularDistan
 import { formatDate } from "@/helpers/funciones/formatDate";
 import { getStatusColor } from "@/helpers/funciones/getStatusColor";
 import { useAuthStore } from "@/presentation/auth/store/useAuthStore";
+import ThemedButton from "@/presentation/theme/components/ThemedButton";
 import { MaterialIcons } from "@expo/vector-icons";
 import * as Location from "expo-location";
 import React, { useEffect, useState } from "react";
@@ -613,6 +615,16 @@ const CardCitasMedico = ({
               <Text style={styles.actionButtonText}>Cancelar</Text>
             </TouchableOpacity>
           )}
+        {item.estado.toLowerCase() === "completada" && (
+          <ThemedButton
+            onPress={() => ObtenerFacturaCita(item.id)}
+            title="Enviar Factura"
+            style={styles.actionButton}
+            icon="send-outline"
+            variant="outline"
+            iconPosition="right"
+          />
+        )}
       </View>
     </View>
   );

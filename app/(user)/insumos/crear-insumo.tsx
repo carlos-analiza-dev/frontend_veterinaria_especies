@@ -242,11 +242,7 @@ const CrearInsumoPage = () => {
             onPress={handleSubmit(onSubmit)}
             icon="arrow-forward-outline"
             title="Crear Insumo"
-            disabled={
-              !watch("cantidadSku") ||
-              !watch("materiaPrima") ||
-              mutation.isPending
-            }
+            disabled={!watch("cantidadSku") || mutation.isPending}
             style={styles.submitButton}
           />
         </ThemedView>

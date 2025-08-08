@@ -6,6 +6,7 @@ const useGetInsumos = () => {
     queryKey: ["obtener-insumos"],
     queryFn: ObtenerInsumos,
     retry: false,
+    refetchInterval: 10000,
   });
 };
 

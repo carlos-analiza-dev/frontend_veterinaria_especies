@@ -1,5 +1,6 @@
+import { CreateCitaInsumos } from "@/core/cita-insumos/accions/crear-cita-insumos";
+import { CrearCitaInsumos } from "@/core/cita-insumos/interface/crear-cita-insumo.interface";
 import { ActualizarCita } from "@/core/citas/accions/update-cita";
-import { EditarCantidadInventario } from "@/core/inventario/accions/actualizar-cantidad-inventario";
 
 import { Cita } from "@/core/medicos/interfaces/obtener-citas-medicos.interface";
 import { Producto } from "@/core/productos/interfaces/response-productos-disponibles.interface";
@@ -150,6 +151,27 @@ const CitasConfirmadasVeterinario = () => {
     if (!selectedCita) return;
 
     try {
+      if (selectedProducts[selectedCita.id]) {
+        const insumosPromises = Object.values(
+          selectedProducts[selectedCita.id]
+        ).map(async ({ product, quantity }) => {
+          const insumoData: CrearCitaInsumos = {
+            citaId: selectedCita.id,
+            insumoId: product.id,
+            cantidad: quantity,
+            precioUnitario: parseFloat(product.precio.toString()),
+          };
+
+          await CreateCitaInsumos(insumoData);
+          return { success: true, productId: product.id };
+        });
+
+        await Promise.all(insumosPromises);
+        queryClient.invalidateQueries({
+          queryKey: ["obtener-citas-confirmadas", userId, limit],
+        });
+      }
+
       Toast.show({
         type: "success",
         text1: "Insumos agregados",
@@ -299,40 +321,6 @@ const CitasConfirmadasVeterinario = () => {
     },
   });
 
-  const actualizarInventario = async (citaId: string) => {
-    if (!selectedProducts[citaId]) return;
-
-    const updates = Object.values(selectedProducts[citaId]).map(
-      async ({ product, quantity }) => {
-        try {
-          await EditarCantidadInventario(product.id, quantity);
-          return { success: true, productId: product.id };
-        } catch (error) {
-          Toast.show({
-            type: "error",
-            text1: "Error",
-            text2: `Error actualizando producto ${product.nombre}`,
-          });
-          return { success: false, productId: product.id, error };
-        }
-      }
-    );
-
-    const results = await Promise.all(updates);
-    queryClient.invalidateQueries({
-      queryKey: ["obtener-insumos"],
-    });
-
-    const failedUpdates = results.filter((result) => !result.success);
-    if (failedUpdates.length > 0) {
-      Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: `Error al actualizar ${failedUpdates.length} insumos en el inventario`,
-      });
-    }
-  };
-
   const handleCompleteCita = async (id: string) => {
     const cita = allCitas.find((c) => c.id === id);
     if (!cita) return;
@@ -354,8 +342,6 @@ const CitasConfirmadasVeterinario = () => {
             .join(", ");
           throw new Error(`No hay suficiente stock para: ${nombresProductos}`);
         }
-
-        await actualizarInventario(id);
       }
 
       await updateCitaMutation.mutateAsync({
